@@ -173,10 +173,10 @@ namespace mlp_network
 				double sum = 0;
 				for (size_t s = 0; s < numOutput_; ++s)
 				{
-					sum += outputDeltas_[s] * hiddenOutputWeights[i][s];
+					sum += outputDeltas_[s] * hiddenOutputWeights[i + 1][s];
 				}
 
-				hiddenDeltas_[i] = sum * hiddenFunction.derivative(hiddenOutputs[i]);
+				hiddenDeltas_[i] = sum * hiddenFunction.derivative(hiddenOutputs[i + 1]);
 				hiddenGradients_[j][i] = hiddenDeltas_[i] * networkInputs[j];
 			}
 		}
