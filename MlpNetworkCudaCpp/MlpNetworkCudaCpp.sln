@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MlpNetwork", "MlpNetwork\MlpNetwork.vcxproj", "{4BF7036D-7432-463F-A41C-A16CF03082DE}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B5853778-AACF-4197-AA83-DADA97B0D6C3} = {B5853778-AACF-4197-AA83-DADA97B0D6C3}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CudaLib", "CudaLib\CudaLib.vcxproj", "{B5853778-AACF-4197-AA83-DADA97B0D6C3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
+		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4BF7036D-7432-463F-A41C-A16CF03082DE}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4BF7036D-7432-463F-A41C-A16CF03082DE}.Debug|Win32.Build.0 = Debug|Win32
+		{4BF7036D-7432-463F-A41C-A16CF03082DE}.Debug|Win32.Deploy.0 = Debug|Win32
+		{4BF7036D-7432-463F-A41C-A16CF03082DE}.Debug|x64.ActiveCfg = Debug|Win32
+		{4BF7036D-7432-463F-A41C-A16CF03082DE}.Release|Win32.ActiveCfg = Release|Win32
+		{4BF7036D-7432-463F-A41C-A16CF03082DE}.Release|Win32.Build.0 = Release|Win32
+		{4BF7036D-7432-463F-A41C-A16CF03082DE}.Release|x64.ActiveCfg = Release|Win32
+		{B5853778-AACF-4197-AA83-DADA97B0D6C3}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B5853778-AACF-4197-AA83-DADA97B0D6C3}.Debug|Win32.Build.0 = Debug|Win32
+		{B5853778-AACF-4197-AA83-DADA97B0D6C3}.Debug|x64.ActiveCfg = Debug|x64
+		{B5853778-AACF-4197-AA83-DADA97B0D6C3}.Debug|x64.Build.0 = Debug|x64
+		{B5853778-AACF-4197-AA83-DADA97B0D6C3}.Release|Win32.ActiveCfg = Release|Win32
+		{B5853778-AACF-4197-AA83-DADA97B0D6C3}.Release|Win32.Build.0 = Release|Win32
+		{B5853778-AACF-4197-AA83-DADA97B0D6C3}.Release|x64.ActiveCfg = Release|x64
+		{B5853778-AACF-4197-AA83-DADA97B0D6C3}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
