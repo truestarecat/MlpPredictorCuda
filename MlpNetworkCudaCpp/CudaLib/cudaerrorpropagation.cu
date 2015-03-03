@@ -244,12 +244,10 @@ void normalizeWeights(float *d_inputHiddenWeights /*2d*/, float *d_hiddenOutputW
 	dim3 blockDim = getBlockDim1D();
 
 	dim3 gridDim1 = getGridDim1D(numInputHiddenWeights, blockDim.x);
-	//normalizeLayerWeightsKernel<<<gridDim1, blockDim>>>(d_inputHiddenWeights, 1.0f, numInputHiddenWeights);
-	normalizeLayerWeightsKernel<<<gridDim1, blockDim>>>(d_inputHiddenWeights, 0.5f, numInputHiddenWeights);
+	normalizeLayerWeightsKernel<<<gridDim1, blockDim>>>(d_inputHiddenWeights, 1.0f, numInputHiddenWeights);
 
 	dim3 gridDim2 = getGridDim1D(numHiddenOutputWeights, blockDim.x);
-	//normalizeLayerWeightsKernel<<<gridDim2, blockDim>>>(d_hiddenOutputWeights, 1.0f, numHiddenOutputWeights);
-	normalizeLayerWeightsKernel<<<gridDim2, blockDim>>>(d_hiddenOutputWeights, 0.5f, numHiddenOutputWeights);
+	normalizeLayerWeightsKernel<<<gridDim2, blockDim>>>(d_hiddenOutputWeights, 1.0f, numHiddenOutputWeights);
 }
 
 void randomizeWeights(CudaErrorPropagation *propagation)
@@ -296,7 +294,7 @@ CudaErrorPropagation* createErrorPropagation(float *h_inputData /*2d*/, float *h
 	cudaMalloc((void**) &(propagation->d_targetOutputsBatch), numSamples * numOutput * sizeof(float));
 	cudaMalloc((void**) &(propagation->d_outputDeltasBatch), numSamples * numOutput * sizeof(float));
 	cudaMalloc((void**) &(propagation->d_hiddenOutputGradients), (numHidden + 1) * numOutput * sizeof(float));
-	cudaMalloc((void**) &(propagation->d_hiddenDeltasBatch), numSamples * numHidden * sizeof(float)); // Error???
+	cudaMalloc((void**) &(propagation->d_hiddenDeltasBatch), numSamples * numHidden * sizeof(float));
 	cudaMalloc((void**) &(propagation->d_inputHiddenGradients), (numInput + 1) * numHidden * sizeof(float));
 	cudaMalloc((void**) &(propagation->d_errorsOutputsBatch), numSamples * numOutput * sizeof(float));
 	cudaMalloc((void**) &(propagation->d_errorsBatch), numSamples * sizeof(float));
