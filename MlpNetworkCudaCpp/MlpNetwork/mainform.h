@@ -256,7 +256,7 @@ namespace mlp_network
 			this->numHiddenNumericUpDown->Name = L"numHiddenNumericUpDown";
 			this->numHiddenNumericUpDown->Size = System::Drawing::Size(120, 20);
 			this->numHiddenNumericUpDown->TabIndex = 4;
-			this->numHiddenNumericUpDown->Value = System::Decimal(gcnew cli::array< System::Int32 >(4) { 6, 0, 0, 0 });
+			this->numHiddenNumericUpDown->Value = System::Decimal(gcnew cli::array< System::Int32 >(4) { 15, 0, 0, 0 });
 			// 
 			// label1
 			// 
@@ -296,7 +296,7 @@ namespace mlp_network
 			this->numInputNumericUpDown->Name = L"numInputNumericUpDown";
 			this->numInputNumericUpDown->Size = System::Drawing::Size(120, 20);
 			this->numInputNumericUpDown->TabIndex = 3;
-			this->numInputNumericUpDown->Value = System::Decimal(gcnew cli::array< System::Int32 >(4) { 11, 0, 0, 0 });
+			this->numInputNumericUpDown->Value = System::Decimal(gcnew cli::array< System::Int32 >(4) { 30, 0, 0, 0 });
 			// 
 			// label4
 			// 
@@ -455,7 +455,7 @@ namespace mlp_network
 			this->learningRateTextBox->Name = L"learningRateTextBox";
 			this->learningRateTextBox->Size = System::Drawing::Size(120, 20);
 			this->learningRateTextBox->TabIndex = 9;
-			this->learningRateTextBox->Text = L"0,025";
+			this->learningRateTextBox->Text = L"0,05";
 			// 
 			// momentumTextBox
 			// 
@@ -464,7 +464,7 @@ namespace mlp_network
 			this->momentumTextBox->Name = L"momentumTextBox";
 			this->momentumTextBox->Size = System::Drawing::Size(120, 20);
 			this->momentumTextBox->TabIndex = 10;
-			this->momentumTextBox->Text = L"0,0";
+			this->momentumTextBox->Text = L"1,0";
 			// 
 			// backPropagationRadioButton
 			// 

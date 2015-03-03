@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <math.h>
 
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
@@ -13,16 +14,16 @@
 #define MIN_LEARNING_RATE 0.000001f
 #define MAX_LEARNING_RATE 50.0f
 
-// Array[HEIGHT * WIDTH] 
+// Array[height * width] 
 __device__ long index2D(int i, int j, int width)
 {
 	return i * width + j;
 }
 
-// Array[HEIGHT * WIDTH * DEPTH]
-__device__ long index3D(int i, int j, int k, int width, int depth)
+// Array[depth * height * width]
+__device__ long index3D(int i, int j, int k, int height, int width)
 {
-	return (i * depth + j) * width + k;
+	return (i * height + j) * width + k;
 }
 
 __device__ float unipolarSigmoidFunction(float x)
@@ -76,10 +77,10 @@ __global__ void computeHOGradsBatchKernel(float *hoGradsBatch /*3d*/, float *err
 
 	oDeltasBatch[index2D(k, j, numOutput)] = error * unipolarSigmoidDerivative(netOutsBatch[index2D(k, j, numOutput)]);
 
-	hoGradsBatch[index3D(k, 0, j, numOutput, numSamples)] = oDeltasBatch[index2D(k, j, numOutput)] * 1.0f; // bias
+	hoGradsBatch[index3D(k, 0, j, (numHidden + 1), numOutput)] = oDeltasBatch[index2D(k, j, numOutput)] * 1.0f; // bias
 	for (int i = 0; i < numHidden; ++i)
 	{
-		hoGradsBatch[index3D(k, (i + 1), j, numOutput, numSamples)] = oDeltasBatch[index2D(k, j, numOutput)] * hOutsBatch[index2D(k, i, numOutput)];
+		hoGradsBatch[index3D(k, (i + 1), j, (numHidden + 1), numOutput)] = oDeltasBatch[index2D(k, j, numOutput)] * hOutsBatch[index2D(k, i, numHidden)];
 	}
 }
 
@@ -106,7 +107,7 @@ __global__ void computeIHGradsBatchKernel(float *ihGradsBatch /*3d*/, const floa
 		errorsBatch[k] = error;
 
 		hDeltasBatch[index2D(k, j, numHidden)] = sum * unipolarSigmoidDerivative(hOutsBatch[index2D(k, j, numHidden)]);
-		ihGradsBatch[index3D(k, i, j, numHidden, numSamples)] = hDeltasBatch[index2D(k, j, numHidden)] * input;
+		ihGradsBatch[index3D(k, i, j, (numInput + 1), numHidden)] = hDeltasBatch[index2D(k, j, numHidden)] * input;
 	}
 }
 
@@ -127,7 +128,7 @@ __global__ void computeLayerGradsKernel(float *layerGrads /*2d*/, float *layerGr
 		*error = 0.0f;
 	for (int k = 0; k < numSamples; ++k)
 	{
-		gradsSum += layerGradsBatch[index3D(k, i, j, numLayerOutput, numSamples)];
+		gradsSum += layerGradsBatch[index3D(k, i, j, (numLayerInput + 1), numLayerOutput)];
 
 		if (computeErrorOnFirstIteration)
 			*error += errorsBatch[k];
@@ -295,7 +296,7 @@ CudaErrorPropagation* createErrorPropagation(float *h_inputData /*2d*/, float *h
 	cudaMalloc((void**) &(propagation->d_targetOutputsBatch), numSamples * numOutput * sizeof(float));
 	cudaMalloc((void**) &(propagation->d_outputDeltasBatch), numSamples * numOutput * sizeof(float));
 	cudaMalloc((void**) &(propagation->d_hiddenOutputGradients), (numHidden + 1) * numOutput * sizeof(float));
-	cudaMalloc((void**) &(propagation->d_hiddenDeltasBatch), numSamples * numHidden * sizeof(float));
+	cudaMalloc((void**) &(propagation->d_hiddenDeltasBatch), numSamples * numHidden * sizeof(float)); // Error???
 	cudaMalloc((void**) &(propagation->d_inputHiddenGradients), (numInput + 1) * numHidden * sizeof(float));
 	cudaMalloc((void**) &(propagation->d_errorsOutputsBatch), numSamples * numOutput * sizeof(float));
 	cudaMalloc((void**) &(propagation->d_errorsBatch), numSamples * sizeof(float));
@@ -453,5 +454,6 @@ float performBackPropEpoch(CudaErrorPropagation *propagation, float learningRate
 	float h_error = 100.0f;
 	cudaError_t status = cudaMemcpy(&h_error, propagation->d_error, sizeof(float), cudaMemcpyKind::cudaMemcpyDeviceToHost);
 
-	return h_error * 0.5f;
+	//return h_error * 0.5f;
+	return sqrtf(h_error / propagation->numSamples);
 }
