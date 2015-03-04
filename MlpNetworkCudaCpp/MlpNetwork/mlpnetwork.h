@@ -2,13 +2,16 @@
 #define MLP_NETWORK_H
 
 #include "stdafx.h"
+#include "cudaerrorpropagation.h"
 
 namespace mlp_network
 {
 	class MlpNetwork
 	{
 	public:
-		MlpNetwork(int numInput, int numHidden, int numOutput);
+		MlpNetwork(int numInput, int numHidden, int numOutput,
+			ActivationFuncType hiddenFuncType = ActivationFuncType::UNIPOLAR_SIGMOID,
+			ActivationFuncType outputFuncType = ActivationFuncType::UNIPOLAR_SIGMOID);
 
 		int numInput() const
 		{
@@ -23,6 +26,16 @@ namespace mlp_network
 		int numOutput() const
 		{
 			return numOutput_;
+		}
+
+		ActivationFuncType hiddenFuncType() const
+		{
+			return hiddenFuncType_;
+		}
+
+		ActivationFuncType outputFuncType() const
+		{
+			return outputFuncType_;
 		}
 
 		const vector<float>& inputs() const
@@ -48,6 +61,16 @@ namespace mlp_network
 		const vector<float>& outputs() const
 		{
 			return outputs_;
+		}
+
+		void setHiddenFunction(ActivationFuncType type)
+		{
+			setLayerFunction(hiddenFunc_, type);
+		}
+
+		void setOutputFunction(ActivationFuncType type)
+		{
+			setLayerFunction(outputFunc_, type);
 		}
 
 		void setInputs(const vector<float> &inputs)
@@ -92,6 +115,8 @@ namespace mlp_network
 		matrix<float> computeOutput(const matrix<float> &inputData);
 
 	private:
+		void setLayerFunction(std::function<float(float)> &layerFunc, ActivationFuncType type);
+
 		static void computeLayerOutput(const matrix<float> &layerWeights, const vector<float> &layerInputs,
 			vector<float> &layerOutputs, int numLayerInput, int numLayerOutput);
 
@@ -103,6 +128,10 @@ namespace mlp_network
 		int numInput_;
 		int numHidden_;
 		int numOutput_;
+		ActivationFuncType hiddenFuncType_;
+		ActivationFuncType outputFuncType_;
+		std::function<float(float)> hiddenFunc_;
+		std::function<float(float)> outputFunc_;
 
 		vector<float> inputs_;
 		matrix<float> inputHiddenWeights_;

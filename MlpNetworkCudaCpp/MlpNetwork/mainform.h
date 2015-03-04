@@ -109,7 +109,7 @@ namespace mlp_network
 		float learningRate_;
 		float momentum_;
 		int hiddenFunctionIndex_;
-		int outputsFunctionIndex_;
+		int outputFunctionIndex_;
 
 #pragma region Windows Form Designer generated code
 		/// <summary>
@@ -755,7 +755,7 @@ namespace mlp_network
 		momentum_ = Convert::ToSingle(momentumTextBox->Text);
 
 		hiddenFunctionIndex_ = hiddenFunctionComboBox->SelectedIndex;
-		outputsFunctionIndex_ = outputFunctionComboBox->SelectedIndex;
+		outputFunctionIndex_ = outputFunctionComboBox->SelectedIndex;
 	}
 
 	//private: System::Void LearnNetwork()
@@ -811,10 +811,10 @@ namespace mlp_network
 
 	private: System::Void LearnNetworkCuda()
 	{
-		//auto hiddenFunctionType = (ActivationFunction::Type) hiddenFunctionIndex_;
-		//auto outputsFunctionType = (ActivationFunction::Type) outputsFunctionIndex_;
+		ActivationFuncType hiddenFunctionType = (ActivationFuncType) hiddenFunctionIndex_;
+		ActivationFuncType outputFunctionType = (ActivationFuncType) outputFunctionIndex_;
 
-		MlpNetwork network(numInput_, numHidden_, numOutput_);
+		MlpNetwork network(numInput_, numHidden_, numOutput_, hiddenFunctionType, outputFunctionType);
 
 		vector<float> rawInputData = NetworkPrediction::loadData("InputData.txt");
 		NetworkPrediction prediction(rawInputData, numInput_, numOutput_, divideFactor_);

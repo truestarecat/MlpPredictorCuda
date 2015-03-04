@@ -17,7 +17,8 @@ namespace mlp_network
 		int numSamples = dataset.numSamples();
 
 		propagation_ = ::createErrorPropagation(inputDataFlatten, outputDataFlatten,
-			inputHiddenWeightsFlatten, hiddenOutputWeightsFlatten, numInput, numHidden, numOutput, numSamples);
+			inputHiddenWeightsFlatten, hiddenOutputWeightsFlatten, numInput, numHidden, numOutput, numSamples,
+			network.hiddenFuncType(), network.outputFuncType());
 
 		delete [] inputDataFlatten;
 		delete [] outputDataFlatten;

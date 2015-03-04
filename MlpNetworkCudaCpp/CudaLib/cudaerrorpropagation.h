@@ -9,6 +9,16 @@
 #define CULIBAPI __declspec(dllimport)
 #endif
 
+typedef float(*func_ptr)(float x);
+
+enum ActivationFuncType
+{
+	UNIPOLAR_SIGMOID = 0,
+	BIPOLAR_SIGMOID = 1,
+	SINUSOID = 2,
+	LINEAR = 3
+};
+
 struct CudaErrorPropagation
 {
 	// Network and data
@@ -49,15 +59,21 @@ struct CudaErrorPropagation
 	// Computed weights
 	float *h_inputHiddenWeights /*2d*/;
 	float *h_hiddenOutputWeights /*2d*/;
+
+	func_ptr h_pHiddenFunction;
+	func_ptr h_pHiddenDerivative;
+	func_ptr h_pOutputFunction;
+	func_ptr h_pOutputDerivative;
 };
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-	CULIBAPI CudaErrorPropagation* createErrorPropagation(float *hostInputData /*2d*/, float *hostOutputData /*2d*/,
-	float *hostInputHiddenWeights /*2d*/, float *hostHiddenOutputWeights /*2d*/,
-	int numInput, int numHidden, int numOutput, int numSamples);
+	CULIBAPI CudaErrorPropagation* createErrorPropagation(float *h_inputData /*2d*/, float *h_outputData /*2d*/,
+		float *h_inputHiddenWeights /*2d*/, float *h_hiddenOutputWeights /*2d*/,
+		int numInput, int numHidden, int numOutput, int numSamples,
+		ActivationFuncType hiddenFunc, ActivationFuncType outputFunc);
 
 	CULIBAPI void destroyErrorPropagation(CudaErrorPropagation *propagation);
 

@@ -14,6 +14,8 @@
 #define MIN_LEARNING_RATE 0.000001f
 #define MAX_LEARNING_RATE 50.0f
 
+// Device functions
+
 // Array[height * width] 
 __device__ long index2D(int i, int j, int width)
 {
@@ -36,6 +38,36 @@ __device__ float unipolarSigmoidDerivative(float fX)
 	return fX * (1.0f - fX);
 }
 
+__device__ float bipolarSigmoidFunction(float x)
+{
+	return tanhf(x);
+}
+
+__device__ float bipolarSigmoidDerivative(float fX)
+{
+	return 1.0f - fX * fX;;
+}
+
+__device__ float sinusoidFunction(float x)
+{
+	return sinf(x);
+}
+
+__device__ float sinusoidDerivative(float fX)
+{
+	return sqrtf(1.0f - fX * fX);
+}
+
+__device__ float linearFunction(float x)
+{
+	return x;
+}
+
+__device__ float linearDerivative(float fX)
+{
+	return 1.0f;
+}
+
 __device__ int sign(float x)
 {
 	if (x > 0) return 1;
@@ -43,7 +75,23 @@ __device__ int sign(float x)
 	return 0;
 }
 
-__global__ void computeLayerOutputBatchKernel(const float *layerInsBatch /*2d*/,
+// Pointers to device functions
+
+__device__ func_ptr pUnipolarSigmoidFunction = unipolarSigmoidFunction;
+__device__ func_ptr pUnipolarSigmoidDerivative = unipolarSigmoidDerivative;
+
+__device__ func_ptr pBipolarSigmoidFunction = bipolarSigmoidFunction;
+__device__ func_ptr pBipolarSigmoidDerivative = bipolarSigmoidDerivative;
+
+__device__ func_ptr pSinusoidFunction = sinusoidFunction;
+__device__ func_ptr pSinusoidDerivative = sinusoidDerivative;
+
+__device__ func_ptr pLinearFunction = linearFunction;
+__device__ func_ptr pLinearDerivative = linearDerivative;
+
+// Cuda kernels
+
+__global__ void computeLayerOutputBatchKernel(func_ptr layerActivationFunc, const float *layerInsBatch /*2d*/,
 	const float *layerWeights /*2d*/, float *layerOutsBatch /*2d*/, int numLayerInput, int numLayerOutput, int numSamples)
 {
 	int j = blockIdx.x * blockDim.x + threadIdx.x;
@@ -58,11 +106,11 @@ __global__ void computeLayerOutputBatchKernel(const float *layerInsBatch /*2d*/,
 		sum += layerWeights[index2D((i + 1), j, numLayerOutput)] * layerInsBatch[index2D(k, i, numLayerInput)];
 	}
 
-	layerOutsBatch[index2D(k, j, numLayerOutput)] = unipolarSigmoidFunction(sum);
+	layerOutsBatch[index2D(k, j, numLayerOutput)] = layerActivationFunc(sum);
 }
 
-__global__ void computeHOGradsBatchKernel(float *hoGradsBatch /*3d*/, float *errorsOutsBatch /*2d*/, float *oDeltasBatch /*2d*/,
-	const float *hOutsBatch /*2d*/, const float *netOutsBatch /*2d*/, const float *targetOutsBatch /*2d*/,
+__global__ void computeHOGradsBatchKernel(func_ptr outputFuncDerivative, float *hoGradsBatch /*3d*/, float *errorsOutsBatch /*2d*/,
+	float *oDeltasBatch /*2d*/, const float *hOutsBatch /*2d*/, const float *netOutsBatch /*2d*/, const float *targetOutsBatch /*2d*/,
 	int numHidden, int numOutput, int numSamples)
 {
 	int j = blockIdx.x * blockDim.x + threadIdx.x;
@@ -75,7 +123,7 @@ __global__ void computeHOGradsBatchKernel(float *hoGradsBatch /*3d*/, float *err
 
 	errorsOutsBatch[index2D(k, j, numOutput)] = error * error;
 
-	oDeltasBatch[index2D(k, j, numOutput)] = error * unipolarSigmoidDerivative(netOutsBatch[index2D(k, j, numOutput)]);
+	oDeltasBatch[index2D(k, j, numOutput)] = error * outputFuncDerivative(netOutsBatch[index2D(k, j, numOutput)]);
 
 	hoGradsBatch[index3D(k, 0, j, (numHidden + 1), numOutput)] = oDeltasBatch[index2D(k, j, numOutput)] * 1.0f; // bias
 	for (int i = 0; i < numHidden; ++i)
@@ -84,9 +132,10 @@ __global__ void computeHOGradsBatchKernel(float *hoGradsBatch /*3d*/, float *err
 	}
 }
 
-__global__ void computeIHGradsBatchKernel(float *ihGradsBatch /*3d*/, const float *errorsOutsBatch /*2d*/,
-	float *errorsBatch, const float *hoWeights /*2d*/, const float *oDeltasBatch /*2d*/, float *hDeltasBatch /*2d*/,
-	const float *hOutsBatch /*2d*/, const float *netInsBatch /*2d*/, int numInput, int numHidden, int numOutput, int numSamples)
+__global__ void computeIHGradsBatchKernel(func_ptr hiddenFuncDerivative, float *ihGradsBatch /*3d*/,
+	const float *errorsOutsBatch /*2d*/, float *errorsBatch, const float *hoWeights /*2d*/, const float *oDeltasBatch /*2d*/,
+	float *hDeltasBatch /*2d*/, const float *hOutsBatch /*2d*/, const float *netInsBatch /*2d*/,
+	int numInput, int numHidden, int numOutput, int numSamples)
 {
 	int i = blockIdx.x * blockDim.x + threadIdx.x;
 	int k = blockIdx.y * blockDim.y + threadIdx.y;
@@ -106,7 +155,7 @@ __global__ void computeIHGradsBatchKernel(float *ihGradsBatch /*3d*/, const floa
 		}
 		errorsBatch[k] = error;
 
-		hDeltasBatch[index2D(k, j, numHidden)] = sum * unipolarSigmoidDerivative(hOutsBatch[index2D(k, j, numHidden)]);
+		hDeltasBatch[index2D(k, j, numHidden)] = sum * hiddenFuncDerivative(hOutsBatch[index2D(k, j, numHidden)]);
 		ihGradsBatch[index3D(k, i, j, (numInput + 1), numHidden)] = hDeltasBatch[index2D(k, j, numHidden)] * input;
 	}
 }
@@ -272,9 +321,37 @@ void randomizeLearningRates(CudaErrorPropagation *propagation)
 		numHiddenOutputLearningRates);
 }
 
+void setLayerFunctionAndDerivative(func_ptr *function, func_ptr *derivative, ActivationFuncType type)
+{
+	switch (type)
+	{
+	case ActivationFuncType::UNIPOLAR_SIGMOID:
+		cudaMemcpyFromSymbol(function, pUnipolarSigmoidFunction , sizeof(func_ptr));
+		cudaMemcpyFromSymbol(derivative, pUnipolarSigmoidDerivative, sizeof(func_ptr));
+		break;
+	case ActivationFuncType::BIPOLAR_SIGMOID:
+		cudaMemcpyFromSymbol(function, pBipolarSigmoidFunction, sizeof(func_ptr));
+		cudaMemcpyFromSymbol(derivative, pBipolarSigmoidDerivative, sizeof(func_ptr));
+		break;
+	case ActivationFuncType::SINUSOID:
+		cudaMemcpyFromSymbol(function, pSinusoidFunction, sizeof(func_ptr));
+		cudaMemcpyFromSymbol(derivative, pSinusoidDerivative, sizeof(func_ptr));
+		break;
+	case ActivationFuncType::LINEAR:
+		cudaMemcpyFromSymbol(function, pLinearFunction, sizeof(func_ptr));
+		cudaMemcpyFromSymbol(derivative, pLinearDerivative, sizeof(func_ptr));
+		break;
+	default:
+		cudaMemcpyFromSymbol(function, pUnipolarSigmoidFunction, sizeof(func_ptr));
+		cudaMemcpyFromSymbol(derivative, pUnipolarSigmoidDerivative, sizeof(func_ptr));
+		break;
+	}
+}
+
 CudaErrorPropagation* createErrorPropagation(float *h_inputData /*2d*/, float *h_outputData /*2d*/,
 	float *h_inputHiddenWeights /*2d*/, float *h_hiddenOutputWeights /*2d*/,
-	int numInput, int numHidden, int numOutput, int numSamples)
+	int numInput, int numHidden, int numOutput, int numSamples,
+	ActivationFuncType hiddenFunc, ActivationFuncType outputFunc)
 {
 	CudaErrorPropagation *propagation = (CudaErrorPropagation *) malloc(sizeof(CudaErrorPropagation));
 
@@ -330,6 +407,10 @@ CudaErrorPropagation* createErrorPropagation(float *h_inputData /*2d*/, float *h
 	cudaMemset(propagation->d_previousHiddenOutputGradients, 0, (numHidden + 1) * numOutput * sizeof(float));
 
 	randomizeLearningRates(propagation);
+
+	// Set layers activation functions and derivatives
+	setLayerFunctionAndDerivative(&(propagation->h_pHiddenFunction), &(propagation->h_pHiddenDerivative), hiddenFunc);
+	setLayerFunctionAndDerivative(&(propagation->h_pOutputFunction), &(propagation->h_pOutputDerivative), outputFunc);
 	
 	return propagation;
 }
@@ -395,13 +476,15 @@ void computeOutputBatch(CudaErrorPropagation *propagation)
 {
 	dim3 blockDim = getBlockDim2D();
 
-	dim3 gridDim1 = getGridDim2D(propagation->numHidden, blockDim.x, propagation->numSamples, blockDim.y);
-	computeLayerOutputBatchKernel<<<gridDim1, blockDim>>>(propagation->d_inputsBatch, propagation->d_inputHiddenWeights,
-		propagation->d_hiddenOutputsBatch, propagation->numInput, propagation->numHidden, propagation->numSamples);
+	dim3 gridDim1 = getGridDim2D(propagation->numHidden, blockDim.x, propagation->numSamples, blockDim.y);	
+	computeLayerOutputBatchKernel<<<gridDim1, blockDim>>>(propagation->h_pHiddenFunction, propagation->d_inputsBatch,
+		propagation->d_inputHiddenWeights, propagation->d_hiddenOutputsBatch,
+		propagation->numInput, propagation->numHidden, propagation->numSamples);
 
-	dim3 gridDim2 = getGridDim2D(propagation->numOutput, blockDim.x, propagation->numSamples, blockDim.y);
-	computeLayerOutputBatchKernel<<<gridDim2, blockDim>>>(propagation->d_hiddenOutputsBatch, propagation->d_hiddenOutputWeights,
-		propagation->d_outputsBatch, propagation->numHidden, propagation->numOutput, propagation->numSamples);
+	dim3 gridDim2 = getGridDim2D(propagation->numOutput, blockDim.x, propagation->numSamples, blockDim.y);	
+	computeLayerOutputBatchKernel<<<gridDim2, blockDim>>>(propagation->h_pOutputFunction, propagation->d_hiddenOutputsBatch,
+		propagation->d_hiddenOutputWeights, propagation->d_outputsBatch,
+		propagation->numHidden, propagation->numOutput, propagation->numSamples);
 }
 
 void computeGradients(CudaErrorPropagation *propagation)
@@ -409,15 +492,16 @@ void computeGradients(CudaErrorPropagation *propagation)
 	dim3 blockDim = getBlockDim2D();
 
 	dim3 gridDim1 = getGridDim2D(propagation->numOutput, blockDim.x, propagation->numSamples, blockDim.y);
-	computeHOGradsBatchKernel<<<gridDim1, blockDim>>>(propagation->d_hiddenOutputGradientsBatch, propagation->d_errorsOutputsBatch,
-		propagation->d_outputDeltasBatch, propagation->d_hiddenOutputsBatch, propagation->d_outputsBatch,
-		propagation->d_targetOutputsBatch, propagation->numHidden, propagation->numOutput, propagation->numSamples);
+	computeHOGradsBatchKernel<<<gridDim1, blockDim>>>(propagation->h_pOutputDerivative, propagation->d_hiddenOutputGradientsBatch,
+		propagation->d_errorsOutputsBatch, propagation->d_outputDeltasBatch, propagation->d_hiddenOutputsBatch,
+		propagation->d_outputsBatch, propagation->d_targetOutputsBatch, propagation->numHidden, propagation->numOutput,
+		propagation->numSamples);
 
 	dim3 gridDim2 = getGridDim2D(propagation->numInput + 1 /* bias */, blockDim.x, propagation->numSamples, blockDim.y);
-	computeIHGradsBatchKernel<<<gridDim2, blockDim>>>(propagation->d_inputHiddenGradientsBatch, propagation->d_errorsOutputsBatch,
-		propagation->d_errorsBatch, propagation->d_hiddenOutputWeights, propagation->d_outputDeltasBatch,
-		propagation->d_hiddenDeltasBatch, propagation->d_hiddenOutputsBatch, propagation->d_inputsBatch,
-		propagation->numInput, propagation->numHidden, propagation->numOutput, propagation->numSamples);
+	computeIHGradsBatchKernel<<<gridDim2, blockDim>>>(propagation->h_pHiddenDerivative, propagation->d_inputHiddenGradientsBatch,
+		propagation->d_errorsOutputsBatch, propagation->d_errorsBatch, propagation->d_hiddenOutputWeights,
+		propagation->d_outputDeltasBatch, propagation->d_hiddenDeltasBatch, propagation->d_hiddenOutputsBatch,
+		propagation->d_inputsBatch, propagation->numInput, propagation->numHidden, propagation->numOutput, propagation->numSamples);
 
 	dim3 gridDim3 = getGridDim2D(propagation->numInput + 1 /* bias */, blockDim.x, propagation->numHidden, blockDim.y);
 	computeLayerGradsKernel<<<gridDim3, blockDim>>>(propagation->d_inputHiddenGradients, propagation->d_inputHiddenGradientsBatch,
