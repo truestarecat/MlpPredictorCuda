@@ -201,31 +201,31 @@ __global__ void updateLayerWeightsBackPropKernel(const float *layerGrads /*2d*/,
 	prevLayerWeightDeltas[index2D(i, j, numLayerOutput)] = deltaW;
 }
 
-//private void UpdateLayerWeights(float [] [] layerGradients, float [] [] previousLayerGradients,
-//	float [] [] layerWeights, float [] [] layerLearningRates, int numLayerInput, int numLayerOutput)
-//{
-//	for (int i = 0; i < numLayerInput + 1; i++)
-//	{
-//		for (int j = 0; j < numLayerOutput; j++)
-//		{
-//			float previousGradient = previousLayerGradients[i][j];
-//			float currentGradient = layerGradients[i][j];
-//			float change = previousGradient * currentGradient;
-//
-//			if (change > 0)
-//			{
-//				layerLearningRates[i][j] = Math.Min(A * layerLearningRates[i][j], MaxLearningRate);
-//			}
-//			else if (change < 0)
-//			{
-//				layerLearningRates[i][j] = Math.Max(B * layerLearningRates[i][j], MinLearningRate);
-//			}
-//
-//			float deltaW = -layerLearningRates[i][j] * Sign(currentGradient);
-//			layerWeights[i][j] += deltaW;
-//		}
-//	}
-//}
+__global__ void updateLayerWeightsResilientPropKernel(const float *layerGrads /*2d*/, const float *prevLayerGrads /*2d*/,
+	float *layerWeights /*2d*/, float *layerLearningRates /*2d*/, int numLayerInput, int numLayerOutput)
+{
+	int i = blockIdx.x * blockDim.x + threadIdx.x;
+	int j = blockIdx.y * blockDim.y + threadIdx.y;
+
+	if (i >= (numLayerInput + 1 /* bias */) || j >= numLayerOutput)
+		return;
+
+	float previousGradient = prevLayerGrads[index2D(i, j, numLayerOutput)];
+	float currentGradient = layerGrads[index2D(i, j, numLayerOutput)];
+	float change = previousGradient * currentGradient;
+
+	if (change > 0)
+	{
+		layerLearningRates[index2D(i, j, numLayerOutput)] = fminf(A * layerLearningRates[index2D(i, j, numLayerOutput)], MAX_LEARNING_RATE);
+	}
+	else if (change < 0)
+	{
+		layerLearningRates[index2D(i, j, numLayerOutput)] = fmaxf(B * layerLearningRates[index2D(i, j, numLayerOutput)], MIN_LEARNING_RATE);
+	}
+
+	float deltaW = -layerLearningRates[index2D(i, j, numLayerOutput)] * sign(currentGradient);
+	layerWeights[index2D(i, j, numLayerOutput)] += deltaW;
+}
 
 // Make randomly generated weights in (0.0, 1.0] be in the interval from -maxAbs to +maxAbs.
 __global__ void normalizeLayerWeightsKernel(float *layerWeights /*2d*/, float maxAbs, int numLayerWeights)
@@ -514,7 +514,7 @@ void computeGradients(CudaErrorPropagation *propagation)
 		propagation->numHidden, propagation->numOutput, propagation->numSamples, false);
 }
 
-void updateWeights(CudaErrorPropagation *propagation, float learningRate, float momentum)
+void updateWeightsBackProp(CudaErrorPropagation *propagation, float learningRate, float momentum)
 {
 	dim3 blockDim = getBlockDim2D();
 	
@@ -527,15 +527,45 @@ void updateWeights(CudaErrorPropagation *propagation, float learningRate, float 
 		propagation->d_previousHiddenOutputWeightDeltas, learningRate, momentum, propagation->numHidden, propagation->numOutput);
 }
 
+void updateWeightsResilientProp(CudaErrorPropagation *propagation)
+{
+	dim3 blockDim = getBlockDim2D();
+
+	dim3 gridDim1 = getGridDim2D(propagation->numInput + 1 /* bias */, blockDim.x, propagation->numHidden, blockDim.y);
+	updateLayerWeightsResilientPropKernel << <gridDim1, blockDim >> >(propagation->d_inputHiddenGradients,
+		propagation->d_previousInputHiddenGradients, propagation->d_inputHiddenWeights, propagation->d_inputHiddenLearningRates,
+		propagation->numInput, propagation->numHidden);
+
+	dim3 gridDim2 = getGridDim2D(propagation->numHidden + 1 /* bias */, blockDim.x, propagation->numOutput, blockDim.y);
+	updateLayerWeightsResilientPropKernel << <gridDim2, blockDim >> >(propagation->d_hiddenOutputGradients,
+		propagation->d_previousHiddenOutputGradients, propagation->d_hiddenOutputWeights, propagation->d_hiddenOutputLearningRates,
+		propagation->numHidden, propagation->numOutput);
+}
+
 float performBackPropEpoch(CudaErrorPropagation *propagation, float learningRate, float momentum)
 {
 	computeOutputBatch(propagation);
 	computeGradients(propagation);
-	updateWeights(propagation, learningRate, momentum);
+	updateWeightsBackProp(propagation, learningRate, momentum);
 
 	float h_error = 100.0f;
 	cudaError_t status = cudaMemcpy(&h_error, propagation->d_error, sizeof(float), cudaMemcpyKind::cudaMemcpyDeviceToHost);
 
 	//return h_error * 0.5f;
-	return sqrtf(h_error / propagation->numSamples);
+	//return sqrtf(h_error / propagation->numSamples);
+	return h_error;
+}
+
+float performResilientPropEpoch(CudaErrorPropagation *propagation)
+{
+	computeOutputBatch(propagation);
+	computeGradients(propagation);
+	updateWeightsResilientProp(propagation);
+
+	float h_error = 100.0f;
+	cudaError_t status = cudaMemcpy(&h_error, propagation->d_error, sizeof(float), cudaMemcpyKind::cudaMemcpyDeviceToHost);
+
+	//return h_error * 0.5f;
+	//return sqrtf(h_error / propagation->numSamples);
+	return h_error;
 }

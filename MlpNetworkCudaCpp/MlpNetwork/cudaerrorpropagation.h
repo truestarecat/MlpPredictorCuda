@@ -1,7 +1,7 @@
 #ifndef CUDA_ERROR_PROPAGATION_H
 #define CUDA_ERROR_PROPAGATION_H
 
-//#define CUDALUB_EXPORTS
+#define CUDALUB_EXPORTS
 
 #ifdef CUDALUB_EXPORTS
 #define CULIBAPI __declspec(dllexport)
@@ -84,6 +84,8 @@ extern "C" {
 	CULIBAPI void randomizeWeights(CudaErrorPropagation *propagation);
 
 	CULIBAPI float performBackPropEpoch(CudaErrorPropagation *propagation, float learningRate, float momentum);
+
+	CULIBAPI float performResilientPropEpoch(CudaErrorPropagation *propagation);
 
 #ifdef __cplusplus
 }

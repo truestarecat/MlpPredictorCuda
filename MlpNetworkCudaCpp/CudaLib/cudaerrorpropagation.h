@@ -85,6 +85,8 @@ extern "C" {
 
 	CULIBAPI float performBackPropEpoch(CudaErrorPropagation *propagation, float learningRate, float momentum);
 
+	CULIBAPI float performResilientPropEpoch(CudaErrorPropagation *propagation);
+
 #ifdef __cplusplus
 }
 #endif

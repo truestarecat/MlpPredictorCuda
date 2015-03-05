@@ -52,7 +52,8 @@ namespace mlp_network
 	private: System::Windows::Forms::TabPage^  tabPage1;
 	private: System::Windows::Forms::TabPage^  tabPage2;
 	private: ZedGraph::ZedGraphControl^  resultGraph;
-	private: ZedGraph::ZedGraphControl^  errorGraph;
+	private: ZedGraph::ZedGraphControl^  learningErrorGraph;
+
 
 	private: System::Windows::Forms::TableLayoutPanel^  tableLayoutPanel1;
 	private: System::Windows::Forms::Label^  label1;
@@ -109,7 +110,9 @@ namespace mlp_network
 		float learningRate_;
 		float momentum_;
 		int hiddenFunctionIndex_;
-		int outputFunctionIndex_;
+	private: System::Windows::Forms::TabPage^  tabPage3;
+	private: ZedGraph::ZedGraphControl^  testingErrorGraph;
+			 int outputFunctionIndex_;
 
 #pragma region Windows Form Designer generated code
 		/// <summary>
@@ -158,7 +161,9 @@ namespace mlp_network
 			this->tabPage1 = (gcnew System::Windows::Forms::TabPage());
 			this->resultGraph = (gcnew ZedGraph::ZedGraphControl());
 			this->tabPage2 = (gcnew System::Windows::Forms::TabPage());
-			this->errorGraph = (gcnew ZedGraph::ZedGraphControl());
+			this->learningErrorGraph = (gcnew ZedGraph::ZedGraphControl());
+			this->tabPage3 = (gcnew System::Windows::Forms::TabPage());
+			this->testingErrorGraph = (gcnew ZedGraph::ZedGraphControl());
 			this->learnButton = (gcnew System::Windows::Forms::Button());
 			this->groupBox1->SuspendLayout();
 			this->tableLayoutPanel1->SuspendLayout();
@@ -174,6 +179,7 @@ namespace mlp_network
 			this->tabControl1->SuspendLayout();
 			this->tabPage1->SuspendLayout();
 			this->tabPage2->SuspendLayout();
+			this->tabPage3->SuspendLayout();
 			this->SuspendLayout();
 			// 
 			// groupBox1
@@ -547,6 +553,7 @@ namespace mlp_network
 			// 
 			this->label10->AutoSize = true;
 			this->label10->Dock = System::Windows::Forms::DockStyle::Fill;
+			this->label10->Enabled = false;
 			this->label10->Location = System::Drawing::Point(3, 21);
 			this->label10->Name = L"label10";
 			this->label10->Size = System::Drawing::Size(199, 22);
@@ -558,6 +565,7 @@ namespace mlp_network
 			// 
 			this->learningRmsLabel->AutoSize = true;
 			this->learningRmsLabel->Dock = System::Windows::Forms::DockStyle::Fill;
+			this->learningRmsLabel->Enabled = false;
 			this->learningRmsLabel->Location = System::Drawing::Point(208, 21);
 			this->learningRmsLabel->Name = L"learningRmsLabel";
 			this->learningRmsLabel->Size = System::Drawing::Size(131, 22);
@@ -569,6 +577,7 @@ namespace mlp_network
 			// 
 			this->label13->AutoSize = true;
 			this->label13->Dock = System::Windows::Forms::DockStyle::Fill;
+			this->label13->Enabled = false;
 			this->label13->Location = System::Drawing::Point(3, 43);
 			this->label13->Name = L"label13";
 			this->label13->Size = System::Drawing::Size(199, 23);
@@ -580,6 +589,7 @@ namespace mlp_network
 			// 
 			this->testingRmsLabel->AutoSize = true;
 			this->testingRmsLabel->Dock = System::Windows::Forms::DockStyle::Fill;
+			this->testingRmsLabel->Enabled = false;
 			this->testingRmsLabel->Location = System::Drawing::Point(208, 43);
 			this->testingRmsLabel->Name = L"testingRmsLabel";
 			this->testingRmsLabel->Size = System::Drawing::Size(131, 23);
@@ -604,6 +614,7 @@ namespace mlp_network
 			// 
 			this->tabControl1->Controls->Add(this->tabPage1);
 			this->tabControl1->Controls->Add(this->tabPage2);
+			this->tabControl1->Controls->Add(this->tabPage3);
 			this->tabControl1->Dock = System::Windows::Forms::DockStyle::Fill;
 			this->tabControl1->Location = System::Drawing::Point(3, 16);
 			this->tabControl1->Name = L"tabControl1";
@@ -639,7 +650,7 @@ namespace mlp_network
 			// 
 			// tabPage2
 			// 
-			this->tabPage2->Controls->Add(this->errorGraph);
+			this->tabPage2->Controls->Add(this->learningErrorGraph);
 			this->tabPage2->Location = System::Drawing::Point(4, 22);
 			this->tabPage2->Name = L"tabPage2";
 			this->tabPage2->Padding = System::Windows::Forms::Padding(3);
@@ -648,20 +659,46 @@ namespace mlp_network
 			this->tabPage2->Text = L"Ошибка обучения";
 			this->tabPage2->UseVisualStyleBackColor = true;
 			// 
-			// errorGraph
+			// learningErrorGraph
 			// 
-			this->errorGraph->Dock = System::Windows::Forms::DockStyle::Fill;
-			this->errorGraph->Location = System::Drawing::Point(3, 3);
-			this->errorGraph->Name = L"errorGraph";
-			this->errorGraph->ScrollGrace = 0;
-			this->errorGraph->ScrollMaxX = 0;
-			this->errorGraph->ScrollMaxY = 0;
-			this->errorGraph->ScrollMaxY2 = 0;
-			this->errorGraph->ScrollMinX = 0;
-			this->errorGraph->ScrollMinY = 0;
-			this->errorGraph->ScrollMinY2 = 0;
-			this->errorGraph->Size = System::Drawing::Size(591, 459);
-			this->errorGraph->TabIndex = 0;
+			this->learningErrorGraph->Dock = System::Windows::Forms::DockStyle::Fill;
+			this->learningErrorGraph->Location = System::Drawing::Point(3, 3);
+			this->learningErrorGraph->Name = L"learningErrorGraph";
+			this->learningErrorGraph->ScrollGrace = 0;
+			this->learningErrorGraph->ScrollMaxX = 0;
+			this->learningErrorGraph->ScrollMaxY = 0;
+			this->learningErrorGraph->ScrollMaxY2 = 0;
+			this->learningErrorGraph->ScrollMinX = 0;
+			this->learningErrorGraph->ScrollMinY = 0;
+			this->learningErrorGraph->ScrollMinY2 = 0;
+			this->learningErrorGraph->Size = System::Drawing::Size(591, 459);
+			this->learningErrorGraph->TabIndex = 0;
+			// 
+			// tabPage3
+			// 
+			this->tabPage3->Controls->Add(this->testingErrorGraph);
+			this->tabPage3->Location = System::Drawing::Point(4, 22);
+			this->tabPage3->Name = L"tabPage3";
+			this->tabPage3->Padding = System::Windows::Forms::Padding(3);
+			this->tabPage3->Size = System::Drawing::Size(597, 465);
+			this->tabPage3->TabIndex = 2;
+			this->tabPage3->Text = L"Ошибка тестирования";
+			this->tabPage3->UseVisualStyleBackColor = true;
+			// 
+			// testingErrorGraph
+			// 
+			this->testingErrorGraph->Dock = System::Windows::Forms::DockStyle::Fill;
+			this->testingErrorGraph->Location = System::Drawing::Point(3, 3);
+			this->testingErrorGraph->Name = L"testingErrorGraph";
+			this->testingErrorGraph->ScrollGrace = 0;
+			this->testingErrorGraph->ScrollMaxX = 0;
+			this->testingErrorGraph->ScrollMaxY = 0;
+			this->testingErrorGraph->ScrollMaxY2 = 0;
+			this->testingErrorGraph->ScrollMinX = 0;
+			this->testingErrorGraph->ScrollMinY = 0;
+			this->testingErrorGraph->ScrollMinY2 = 0;
+			this->testingErrorGraph->Size = System::Drawing::Size(591, 459);
+			this->testingErrorGraph->TabIndex = 1;
 			// 
 			// learnButton
 			// 
@@ -704,6 +741,7 @@ namespace mlp_network
 			this->tabControl1->ResumeLayout(false);
 			this->tabPage1->ResumeLayout(false);
 			this->tabPage2->ResumeLayout(false);
+			this->tabPage3->ResumeLayout(false);
 			this->ResumeLayout(false);
 
 		}
@@ -711,9 +749,9 @@ namespace mlp_network
 
 	private: System::Void MainForm_Load(System::Object^  sender, System::EventArgs^  e)
 	{
-		array<GraphPane ^> ^panes = { resultGraph->GraphPane, errorGraph->GraphPane };
+		array<GraphPane ^> ^panes = { resultGraph->GraphPane, learningErrorGraph->GraphPane, testingErrorGraph->GraphPane };
 
-		const size_t GRAPHS_COUNT = 2;
+		const size_t GRAPHS_COUNT = 3;
 		for (size_t i = 0; i < GRAPHS_COUNT; ++i)
 		{
 			panes[i]->CurveList->Clear();
@@ -832,7 +870,14 @@ namespace mlp_network
 		float tempMomentum = momentum_;
 		while (numEpoch < maxNumEpoch_ && error > maxLearningRms_)
 		{
-			error = propagation.performBackPropEpoch(learningRate_, momentum_);
+			if (backPropagationRadioButton->Checked)
+			{
+				error = propagation.performBackPropEpoch(learningRate_, momentum_);
+			}
+			else if (resilientPropagationRadioButton->Checked)
+			{
+				error = propagation.performResilientPropEpoch();
+			}
 
 			learningErrors.push_back(error);
 
@@ -841,18 +886,24 @@ namespace mlp_network
 
 		propagation.updateNetworkWeights();
 
-		numEpochLabel->Text = Convert::ToString(numEpoch);
-		learningRmsLabel->Text = Convert::ToString(learningErrors.back());
-
 		matrix<float> predictedOutput = network.computeOutput(fullDataset.inputData());
+		const matrix<float> &targetOutput = fullDataset.outputData();
+
+		vector<float> testingErrors = MatrixHelper::error(targetOutput, predictedOutput);
+
+		numEpochLabel->Text = Convert::ToString(numEpoch);
+		learningRmsLabel->Text = Convert::ToString(MatrixHelper::rms(learningErrors));
+		testingRmsLabel->Text = Convert::ToString(MatrixHelper::rms(testingErrors));
 
 		const vector<float> predictedOutputVector = MatrixHelper::convertMatrixToVector(predictedOutput);
-		const vector<float> testingOutputVector = MatrixHelper::convertMatrixToVector(fullDataset.outputData());
+		const vector<float> targetOutputVector = MatrixHelper::convertMatrixToVector(targetOutput);
 
 		DrawGraph(resultGraph, gcnew array<String ^> { L"Исходный график", L"Нейронная сеть" },
-			gcnew array<String ^> { L"Red", L"Blue"}, matrix<float> { testingOutputVector, predictedOutputVector });
+			gcnew array<String ^> { L"Red", L"Blue"}, matrix<float> { targetOutputVector, predictedOutputVector });
 
-		DrawGraph(errorGraph, gcnew array<String ^> { L"" }, gcnew array<String ^> { L"Red" }, matrix<float> { learningErrors });
+		DrawGraph(learningErrorGraph, gcnew array<String ^> { L"" }, gcnew array<String ^> { L"Red" }, matrix<float> { learningErrors });
+
+		DrawGraph(testingErrorGraph, gcnew array<String ^> { L"" }, gcnew array<String ^> { L"Red" }, matrix<float> { testingErrors });
 	}
 
 	private: System::Void DrawGraph(ZedGraphControl ^graph, array<String ^> ^labels, array<String ^> ^colors,

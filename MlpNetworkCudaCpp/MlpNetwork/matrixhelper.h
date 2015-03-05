@@ -1,6 +1,8 @@
 #ifndef MATRIX_HELPER_H
 #define MATRIX_HELPER_H
 
+#include "stdafx.h"
+
 namespace mlp_network
 {
 	class MatrixHelper
@@ -93,8 +95,8 @@ namespace mlp_network
 			}
 		}
 
-		// Вычисляет разницу двух векторов.
-		template <typename T> static double distance(const vector<T> &a, const vector<T> &b)
+		// Вычисляет функцию ошибки двух векторов.
+		template <typename T> static T error(const vector<T> &a, const vector<T> &b)
 		{
 			T sum = 0;
 			for (size_t i = 0; i < a.size(); ++i)
@@ -102,27 +104,45 @@ namespace mlp_network
 				sum += (a[i] - b[i]) * (a[i] - b[i]);
 			}
 
-			return sqrt(sum);
+			return sum;
+		}
+
+		// Вычисляет разницу двух векторов.
+		template <typename T> static T distance(const vector<T> &a, const vector<T> &b)
+		{
+			return sqrt(error(a, b));
 		}
 
 		// Вычисляет СреднеКвадратичное Отклонение одного вектора от другого.
-		template <typename T> static double rms(const vector<T> &a, const vector<T> &b)
+		template <typename T> static T rms(const vector<T> &a, const vector<T> &b)
 		{
 			//return distance(a, b) / sqrt(a.size() - 1);
 			return distance(a, b) / sqrt(a.size());
 		}
 
-		// Вычисляет СреднеКвадратичное Отклонение одной матрицы от другой.
-		template <typename T> static double rms(const matrix<T> &a, const matrix<T> &b)
+		// Вычисляет функцию ошибки одной матрицы от другой.
+		template <typename T> static vector<T> error(const matrix<T> &a, const matrix<T> &b)
 		{
-			T sum = 0;
-			for (size_t i = 0; i < a.size(); ++i)
+			vector<T> errorVector(a.size());
+			for (size_t i = 0; i < errorVector.size(); ++i)
 			{
-				sum += distance(a[i], b[i]) * distance(a[i], b[i]);
+				errorVector[i] = error(a[i], b[i]);
 			}
 
-			//return sqrt(sum / (a.size() - 1));
-			return sqrt(sum / a.size());
+			return errorVector;
+		}
+
+		// Вычисляет СреднеКвадратичние Отклонение ошибки.
+		template <typename T> static T rms(const vector<T> &errorVector)
+		{
+			T rmsValue = 0;
+			for (size_t i = 0; i < errorVector.size(); ++i)
+			{
+				rmsValue += errorVector[i];
+			}
+
+			//return rmsValue / sqrt(errorVector.size());
+			return sqrt(rmsValue / errorVector.size());
 		}
 
 		// Преобразует матрицу в вектор.

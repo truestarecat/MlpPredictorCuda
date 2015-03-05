@@ -27,6 +27,11 @@ namespace mlp_network
 			return ::performBackPropEpoch(propagation_, learningRate, momentum);
 		}
 
+		float performResilientPropEpoch()
+		{
+			return ::performResilientPropEpoch(propagation_);
+		}
+
 		void updateNetworkWeights();
 
 	private:
