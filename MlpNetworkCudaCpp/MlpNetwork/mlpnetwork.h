@@ -65,11 +65,13 @@ namespace mlp_network
 
 		void setHiddenFunction(ActivationFuncType type)
 		{
+			hiddenFuncType_ = type;
 			setLayerFunction(hiddenFunc_, type);
 		}
 
 		void setOutputFunction(ActivationFuncType type)
 		{
+			outputFuncType_ = type;
 			setLayerFunction(outputFunc_, type);
 		}
 
