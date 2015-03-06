@@ -4,6 +4,7 @@
 #include <string.h>
 #include <time.h>
 #include <math.h>
+#include <float.h>
 
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
@@ -532,12 +533,12 @@ void updateWeightsResilientProp(CudaErrorPropagation *propagation)
 	dim3 blockDim = getBlockDim2D();
 
 	dim3 gridDim1 = getGridDim2D(propagation->numInput + 1 /* bias */, blockDim.x, propagation->numHidden, blockDim.y);
-	updateLayerWeightsResilientPropKernel << <gridDim1, blockDim >> >(propagation->d_inputHiddenGradients,
+	updateLayerWeightsResilientPropKernel<<<gridDim1, blockDim>>>(propagation->d_inputHiddenGradients,
 		propagation->d_previousInputHiddenGradients, propagation->d_inputHiddenWeights, propagation->d_inputHiddenLearningRates,
 		propagation->numInput, propagation->numHidden);
 
 	dim3 gridDim2 = getGridDim2D(propagation->numHidden + 1 /* bias */, blockDim.x, propagation->numOutput, blockDim.y);
-	updateLayerWeightsResilientPropKernel << <gridDim2, blockDim >> >(propagation->d_hiddenOutputGradients,
+	updateLayerWeightsResilientPropKernel<<<gridDim2, blockDim>>>(propagation->d_hiddenOutputGradients,
 		propagation->d_previousHiddenOutputGradients, propagation->d_hiddenOutputWeights, propagation->d_hiddenOutputLearningRates,
 		propagation->numHidden, propagation->numOutput);
 }
@@ -548,12 +549,11 @@ float performBackPropEpoch(CudaErrorPropagation *propagation, float learningRate
 	computeGradients(propagation);
 	updateWeightsBackProp(propagation, learningRate, momentum);
 
-	float h_error = 100.0f;
+	float h_error = FLT_MAX;
 	cudaError_t status = cudaMemcpy(&h_error, propagation->d_error, sizeof(float), cudaMemcpyKind::cudaMemcpyDeviceToHost);
 
 	//return h_error * 0.5f;
-	//return sqrtf(h_error / propagation->numSamples);
-	return h_error;
+	return sqrtf((1.0f / propagation->numSamples) * (1.0f / propagation->numOutput) * h_error);
 }
 
 float performResilientPropEpoch(CudaErrorPropagation *propagation)
@@ -562,10 +562,9 @@ float performResilientPropEpoch(CudaErrorPropagation *propagation)
 	computeGradients(propagation);
 	updateWeightsResilientProp(propagation);
 
-	float h_error = 100.0f;
+	float h_error = FLT_MAX;
 	cudaError_t status = cudaMemcpy(&h_error, propagation->d_error, sizeof(float), cudaMemcpyKind::cudaMemcpyDeviceToHost);
 
 	//return h_error * 0.5f;
-	//return sqrtf(h_error / propagation->numSamples);
-	return h_error;
+	return sqrtf((1.0f / propagation->numSamples) * (1.0f / propagation->numOutput) * h_error);
 }

@@ -52,7 +52,8 @@ namespace mlp_network
 	private: System::Windows::Forms::TabPage^  tabPage1;
 	private: System::Windows::Forms::TabPage^  tabPage2;
 	private: ZedGraph::ZedGraphControl^  resultGraph;
-	private: ZedGraph::ZedGraphControl^  learningErrorGraph;
+	private: ZedGraph::ZedGraphControl^  learningRmsGraph;
+
 
 
 	private: System::Windows::Forms::TableLayoutPanel^  tableLayoutPanel1;
@@ -111,7 +112,8 @@ namespace mlp_network
 		float momentum_;
 		int hiddenFunctionIndex_;
 	private: System::Windows::Forms::TabPage^  tabPage3;
-	private: ZedGraph::ZedGraphControl^  testingErrorGraph;
+	private: ZedGraph::ZedGraphControl^  testingRmsGraph;
+
 			 int outputFunctionIndex_;
 
 #pragma region Windows Form Designer generated code
@@ -161,9 +163,9 @@ namespace mlp_network
 			this->tabPage1 = (gcnew System::Windows::Forms::TabPage());
 			this->resultGraph = (gcnew ZedGraph::ZedGraphControl());
 			this->tabPage2 = (gcnew System::Windows::Forms::TabPage());
-			this->learningErrorGraph = (gcnew ZedGraph::ZedGraphControl());
+			this->learningRmsGraph = (gcnew ZedGraph::ZedGraphControl());
 			this->tabPage3 = (gcnew System::Windows::Forms::TabPage());
-			this->testingErrorGraph = (gcnew ZedGraph::ZedGraphControl());
+			this->testingRmsGraph = (gcnew ZedGraph::ZedGraphControl());
 			this->learnButton = (gcnew System::Windows::Forms::Button());
 			this->groupBox1->SuspendLayout();
 			this->tableLayoutPanel1->SuspendLayout();
@@ -196,9 +198,9 @@ namespace mlp_network
 			// 
 			this->tableLayoutPanel1->ColumnCount = 2;
 			this->tableLayoutPanel1->ColumnStyles->Add((gcnew System::Windows::Forms::ColumnStyle(System::Windows::Forms::SizeType::Percent,
-				60)));
+				61.9883F)));
 			this->tableLayoutPanel1->ColumnStyles->Add((gcnew System::Windows::Forms::ColumnStyle(System::Windows::Forms::SizeType::Percent,
-				40)));
+				38.0117F)));
 			this->tableLayoutPanel1->Controls->Add(this->outputFunctionComboBox, 1, 4);
 			this->tableLayoutPanel1->Controls->Add(this->label5, 0, 4);
 			this->tableLayoutPanel1->Controls->Add(this->numOutputNumericUpDown, 1, 2);
@@ -229,7 +231,7 @@ namespace mlp_network
 				L"Логистическая", L"Гипертангенс",
 					L"Синус", L"Линейная"
 			});
-			this->outputFunctionComboBox->Location = System::Drawing::Point(208, 107);
+			this->outputFunctionComboBox->Location = System::Drawing::Point(215, 107);
 			this->outputFunctionComboBox->Name = L"outputFunctionComboBox";
 			this->outputFunctionComboBox->Size = System::Drawing::Size(120, 21);
 			this->outputFunctionComboBox->TabIndex = 9;
@@ -239,7 +241,7 @@ namespace mlp_network
 			this->label5->Dock = System::Windows::Forms::DockStyle::Fill;
 			this->label5->Location = System::Drawing::Point(3, 104);
 			this->label5->Name = L"label5";
-			this->label5->Size = System::Drawing::Size(199, 28);
+			this->label5->Size = System::Drawing::Size(206, 28);
 			this->label5->TabIndex = 7;
 			this->label5->Text = L"Функция активации выходного слоя:";
 			this->label5->TextAlign = System::Drawing::ContentAlignment::MiddleRight;
@@ -247,7 +249,7 @@ namespace mlp_network
 			// numOutputNumericUpDown
 			// 
 			this->numOutputNumericUpDown->Anchor = System::Windows::Forms::AnchorStyles::Left;
-			this->numOutputNumericUpDown->Location = System::Drawing::Point(208, 55);
+			this->numOutputNumericUpDown->Location = System::Drawing::Point(215, 55);
 			this->numOutputNumericUpDown->Minimum = System::Decimal(gcnew cli::array< System::Int32 >(4) { 1, 0, 0, 0 });
 			this->numOutputNumericUpDown->Name = L"numOutputNumericUpDown";
 			this->numOutputNumericUpDown->Size = System::Drawing::Size(120, 20);
@@ -257,7 +259,7 @@ namespace mlp_network
 			// numHiddenNumericUpDown
 			// 
 			this->numHiddenNumericUpDown->Anchor = System::Windows::Forms::AnchorStyles::Left;
-			this->numHiddenNumericUpDown->Location = System::Drawing::Point(208, 29);
+			this->numHiddenNumericUpDown->Location = System::Drawing::Point(215, 29);
 			this->numHiddenNumericUpDown->Minimum = System::Decimal(gcnew cli::array< System::Int32 >(4) { 1, 0, 0, 0 });
 			this->numHiddenNumericUpDown->Name = L"numHiddenNumericUpDown";
 			this->numHiddenNumericUpDown->Size = System::Drawing::Size(120, 20);
@@ -269,7 +271,7 @@ namespace mlp_network
 			this->label1->Dock = System::Windows::Forms::DockStyle::Fill;
 			this->label1->Location = System::Drawing::Point(3, 0);
 			this->label1->Name = L"label1";
-			this->label1->Size = System::Drawing::Size(199, 26);
+			this->label1->Size = System::Drawing::Size(206, 26);
 			this->label1->TabIndex = 0;
 			this->label1->Text = L"Число входов:";
 			this->label1->TextAlign = System::Drawing::ContentAlignment::MiddleRight;
@@ -279,7 +281,7 @@ namespace mlp_network
 			this->label2->Dock = System::Windows::Forms::DockStyle::Fill;
 			this->label2->Location = System::Drawing::Point(3, 26);
 			this->label2->Name = L"label2";
-			this->label2->Size = System::Drawing::Size(199, 26);
+			this->label2->Size = System::Drawing::Size(206, 26);
 			this->label2->TabIndex = 1;
 			this->label2->Text = L"Число скрытых нейронов:";
 			this->label2->TextAlign = System::Drawing::ContentAlignment::MiddleRight;
@@ -289,7 +291,7 @@ namespace mlp_network
 			this->label3->Dock = System::Windows::Forms::DockStyle::Fill;
 			this->label3->Location = System::Drawing::Point(3, 52);
 			this->label3->Name = L"label3";
-			this->label3->Size = System::Drawing::Size(199, 26);
+			this->label3->Size = System::Drawing::Size(206, 26);
 			this->label3->TabIndex = 2;
 			this->label3->Text = L"Число выходов:";
 			this->label3->TextAlign = System::Drawing::ContentAlignment::MiddleRight;
@@ -297,7 +299,7 @@ namespace mlp_network
 			// numInputNumericUpDown
 			// 
 			this->numInputNumericUpDown->Anchor = System::Windows::Forms::AnchorStyles::Left;
-			this->numInputNumericUpDown->Location = System::Drawing::Point(208, 3);
+			this->numInputNumericUpDown->Location = System::Drawing::Point(215, 3);
 			this->numInputNumericUpDown->Minimum = System::Decimal(gcnew cli::array< System::Int32 >(4) { 1, 0, 0, 0 });
 			this->numInputNumericUpDown->Name = L"numInputNumericUpDown";
 			this->numInputNumericUpDown->Size = System::Drawing::Size(120, 20);
@@ -309,7 +311,7 @@ namespace mlp_network
 			this->label4->Dock = System::Windows::Forms::DockStyle::Fill;
 			this->label4->Location = System::Drawing::Point(3, 78);
 			this->label4->Name = L"label4";
-			this->label4->Size = System::Drawing::Size(199, 26);
+			this->label4->Size = System::Drawing::Size(206, 26);
 			this->label4->TabIndex = 6;
 			this->label4->Text = L"Функция активации скрытого слоя:";
 			this->label4->TextAlign = System::Drawing::ContentAlignment::MiddleRight;
@@ -322,7 +324,7 @@ namespace mlp_network
 				L"Логистическая", L"Гипертангенс",
 					L"Синус", L"Линейная"
 			});
-			this->hiddenFunctionComboBox->Location = System::Drawing::Point(208, 81);
+			this->hiddenFunctionComboBox->Location = System::Drawing::Point(215, 81);
 			this->hiddenFunctionComboBox->Name = L"hiddenFunctionComboBox";
 			this->hiddenFunctionComboBox->Size = System::Drawing::Size(120, 21);
 			this->hiddenFunctionComboBox->TabIndex = 8;
@@ -343,9 +345,9 @@ namespace mlp_network
 			// 
 			this->tableLayoutPanel2->ColumnCount = 2;
 			this->tableLayoutPanel2->ColumnStyles->Add((gcnew System::Windows::Forms::ColumnStyle(System::Windows::Forms::SizeType::Percent,
-				60)));
+				62.2807F)));
 			this->tableLayoutPanel2->ColumnStyles->Add((gcnew System::Windows::Forms::ColumnStyle(System::Windows::Forms::SizeType::Percent,
-				40)));
+				37.7193F)));
 			this->tableLayoutPanel2->Controls->Add(this->label7, 0, 0);
 			this->tableLayoutPanel2->Controls->Add(this->label8, 0, 1);
 			this->tableLayoutPanel2->Controls->Add(this->label6, 0, 2);
@@ -377,7 +379,7 @@ namespace mlp_network
 			this->label7->Dock = System::Windows::Forms::DockStyle::Fill;
 			this->label7->Location = System::Drawing::Point(3, 0);
 			this->label7->Name = L"label7";
-			this->label7->Size = System::Drawing::Size(199, 30);
+			this->label7->Size = System::Drawing::Size(206, 30);
 			this->label7->TabIndex = 0;
 			this->label7->Text = L"Соотношение обучающей и тестирующей выборок:";
 			this->label7->TextAlign = System::Drawing::ContentAlignment::MiddleRight;
@@ -387,7 +389,7 @@ namespace mlp_network
 			this->label8->Dock = System::Windows::Forms::DockStyle::Fill;
 			this->label8->Location = System::Drawing::Point(3, 30);
 			this->label8->Name = L"label8";
-			this->label8->Size = System::Drawing::Size(199, 30);
+			this->label8->Size = System::Drawing::Size(206, 30);
 			this->label8->TabIndex = 1;
 			this->label8->Text = L"Максимальное СКО ошибки обучения:";
 			this->label8->TextAlign = System::Drawing::ContentAlignment::MiddleRight;
@@ -397,7 +399,7 @@ namespace mlp_network
 			this->label6->Dock = System::Windows::Forms::DockStyle::Fill;
 			this->label6->Location = System::Drawing::Point(3, 60);
 			this->label6->Name = L"label6";
-			this->label6->Size = System::Drawing::Size(199, 30);
+			this->label6->Size = System::Drawing::Size(206, 30);
 			this->label6->TabIndex = 2;
 			this->label6->Text = L"Максимальное число эпох обучения:";
 			this->label6->TextAlign = System::Drawing::ContentAlignment::MiddleRight;
@@ -406,7 +408,7 @@ namespace mlp_network
 			// 
 			this->maxNumIterationNumericUpDown->Anchor = System::Windows::Forms::AnchorStyles::Left;
 			this->maxNumIterationNumericUpDown->Increment = System::Decimal(gcnew cli::array< System::Int32 >(4) { 100, 0, 0, 0 });
-			this->maxNumIterationNumericUpDown->Location = System::Drawing::Point(208, 65);
+			this->maxNumIterationNumericUpDown->Location = System::Drawing::Point(215, 65);
 			this->maxNumIterationNumericUpDown->Maximum = System::Decimal(gcnew cli::array< System::Int32 >(4) { 1000000, 0, 0, 0 });
 			this->maxNumIterationNumericUpDown->Minimum = System::Decimal(gcnew cli::array< System::Int32 >(4) { 100, 0, 0, 0 });
 			this->maxNumIterationNumericUpDown->Name = L"maxNumIterationNumericUpDown";
@@ -417,7 +419,7 @@ namespace mlp_network
 			// divideFactorTextBox
 			// 
 			this->divideFactorTextBox->Anchor = System::Windows::Forms::AnchorStyles::Left;
-			this->divideFactorTextBox->Location = System::Drawing::Point(208, 5);
+			this->divideFactorTextBox->Location = System::Drawing::Point(215, 5);
 			this->divideFactorTextBox->Name = L"divideFactorTextBox";
 			this->divideFactorTextBox->Size = System::Drawing::Size(120, 20);
 			this->divideFactorTextBox->TabIndex = 5;
@@ -426,7 +428,7 @@ namespace mlp_network
 			// maxLearningRmsTextBox
 			// 
 			this->maxLearningRmsTextBox->Anchor = System::Windows::Forms::AnchorStyles::Left;
-			this->maxLearningRmsTextBox->Location = System::Drawing::Point(208, 35);
+			this->maxLearningRmsTextBox->Location = System::Drawing::Point(215, 35);
 			this->maxLearningRmsTextBox->Name = L"maxLearningRmsTextBox";
 			this->maxLearningRmsTextBox->Size = System::Drawing::Size(120, 20);
 			this->maxLearningRmsTextBox->TabIndex = 6;
@@ -438,7 +440,7 @@ namespace mlp_network
 			this->label11->Dock = System::Windows::Forms::DockStyle::Fill;
 			this->label11->Location = System::Drawing::Point(3, 120);
 			this->label11->Name = L"label11";
-			this->label11->Size = System::Drawing::Size(199, 30);
+			this->label11->Size = System::Drawing::Size(206, 30);
 			this->label11->TabIndex = 7;
 			this->label11->Text = L"Коэффициент обучения:";
 			this->label11->TextAlign = System::Drawing::ContentAlignment::MiddleRight;
@@ -449,7 +451,7 @@ namespace mlp_network
 			this->label12->Dock = System::Windows::Forms::DockStyle::Fill;
 			this->label12->Location = System::Drawing::Point(3, 150);
 			this->label12->Name = L"label12";
-			this->label12->Size = System::Drawing::Size(199, 30);
+			this->label12->Size = System::Drawing::Size(206, 30);
 			this->label12->TabIndex = 8;
 			this->label12->Text = L"Момент:";
 			this->label12->TextAlign = System::Drawing::ContentAlignment::MiddleRight;
@@ -457,7 +459,7 @@ namespace mlp_network
 			// learningRateTextBox
 			// 
 			this->learningRateTextBox->Anchor = System::Windows::Forms::AnchorStyles::Left;
-			this->learningRateTextBox->Location = System::Drawing::Point(208, 125);
+			this->learningRateTextBox->Location = System::Drawing::Point(215, 125);
 			this->learningRateTextBox->Name = L"learningRateTextBox";
 			this->learningRateTextBox->Size = System::Drawing::Size(120, 20);
 			this->learningRateTextBox->TabIndex = 9;
@@ -466,7 +468,7 @@ namespace mlp_network
 			// momentumTextBox
 			// 
 			this->momentumTextBox->Anchor = System::Windows::Forms::AnchorStyles::Left;
-			this->momentumTextBox->Location = System::Drawing::Point(208, 155);
+			this->momentumTextBox->Location = System::Drawing::Point(215, 155);
 			this->momentumTextBox->Name = L"momentumTextBox";
 			this->momentumTextBox->Size = System::Drawing::Size(120, 20);
 			this->momentumTextBox->TabIndex = 10;
@@ -510,9 +512,9 @@ namespace mlp_network
 			// 
 			this->tableLayoutPanel3->ColumnCount = 2;
 			this->tableLayoutPanel3->ColumnStyles->Add((gcnew System::Windows::Forms::ColumnStyle(System::Windows::Forms::SizeType::Percent,
-				60)));
+				62.2807F)));
 			this->tableLayoutPanel3->ColumnStyles->Add((gcnew System::Windows::Forms::ColumnStyle(System::Windows::Forms::SizeType::Percent,
-				40)));
+				37.7193F)));
 			this->tableLayoutPanel3->Controls->Add(this->label9, 0, 0);
 			this->tableLayoutPanel3->Controls->Add(this->numEpochLabel, 1, 0);
 			this->tableLayoutPanel3->Controls->Add(this->label10, 0, 1);
@@ -534,7 +536,7 @@ namespace mlp_network
 			this->label9->Dock = System::Windows::Forms::DockStyle::Fill;
 			this->label9->Location = System::Drawing::Point(3, 0);
 			this->label9->Name = L"label9";
-			this->label9->Size = System::Drawing::Size(199, 21);
+			this->label9->Size = System::Drawing::Size(206, 21);
 			this->label9->TabIndex = 1;
 			this->label9->Text = L"Число эпох обучения:";
 			this->label9->TextAlign = System::Drawing::ContentAlignment::MiddleRight;
@@ -542,9 +544,9 @@ namespace mlp_network
 			// numEpochLabel
 			// 
 			this->numEpochLabel->Dock = System::Windows::Forms::DockStyle::Fill;
-			this->numEpochLabel->Location = System::Drawing::Point(208, 0);
+			this->numEpochLabel->Location = System::Drawing::Point(215, 0);
 			this->numEpochLabel->Name = L"numEpochLabel";
-			this->numEpochLabel->Size = System::Drawing::Size(131, 21);
+			this->numEpochLabel->Size = System::Drawing::Size(124, 21);
 			this->numEpochLabel->TabIndex = 0;
 			this->numEpochLabel->Text = L"0";
 			this->numEpochLabel->TextAlign = System::Drawing::ContentAlignment::MiddleLeft;
@@ -553,22 +555,20 @@ namespace mlp_network
 			// 
 			this->label10->AutoSize = true;
 			this->label10->Dock = System::Windows::Forms::DockStyle::Fill;
-			this->label10->Enabled = false;
 			this->label10->Location = System::Drawing::Point(3, 21);
 			this->label10->Name = L"label10";
-			this->label10->Size = System::Drawing::Size(199, 22);
+			this->label10->Size = System::Drawing::Size(206, 22);
 			this->label10->TabIndex = 2;
-			this->label10->Text = L"СКО ошибки обучения:";
+			this->label10->Text = L"Последнее СКО ошибки обучения:";
 			this->label10->TextAlign = System::Drawing::ContentAlignment::MiddleRight;
 			// 
 			// learningRmsLabel
 			// 
 			this->learningRmsLabel->AutoSize = true;
 			this->learningRmsLabel->Dock = System::Windows::Forms::DockStyle::Fill;
-			this->learningRmsLabel->Enabled = false;
-			this->learningRmsLabel->Location = System::Drawing::Point(208, 21);
+			this->learningRmsLabel->Location = System::Drawing::Point(215, 21);
 			this->learningRmsLabel->Name = L"learningRmsLabel";
-			this->learningRmsLabel->Size = System::Drawing::Size(131, 22);
+			this->learningRmsLabel->Size = System::Drawing::Size(124, 22);
 			this->learningRmsLabel->TabIndex = 3;
 			this->learningRmsLabel->Text = L"0";
 			this->learningRmsLabel->TextAlign = System::Drawing::ContentAlignment::MiddleLeft;
@@ -577,22 +577,20 @@ namespace mlp_network
 			// 
 			this->label13->AutoSize = true;
 			this->label13->Dock = System::Windows::Forms::DockStyle::Fill;
-			this->label13->Enabled = false;
 			this->label13->Location = System::Drawing::Point(3, 43);
 			this->label13->Name = L"label13";
-			this->label13->Size = System::Drawing::Size(199, 23);
+			this->label13->Size = System::Drawing::Size(206, 23);
 			this->label13->TabIndex = 4;
-			this->label13->Text = L"СКО ошибки тестирования:";
+			this->label13->Text = L"Последнее СКО ошибки тестирования:";
 			this->label13->TextAlign = System::Drawing::ContentAlignment::MiddleRight;
 			// 
 			// testingRmsLabel
 			// 
 			this->testingRmsLabel->AutoSize = true;
 			this->testingRmsLabel->Dock = System::Windows::Forms::DockStyle::Fill;
-			this->testingRmsLabel->Enabled = false;
-			this->testingRmsLabel->Location = System::Drawing::Point(208, 43);
+			this->testingRmsLabel->Location = System::Drawing::Point(215, 43);
 			this->testingRmsLabel->Name = L"testingRmsLabel";
-			this->testingRmsLabel->Size = System::Drawing::Size(131, 23);
+			this->testingRmsLabel->Size = System::Drawing::Size(124, 23);
 			this->testingRmsLabel->TabIndex = 5;
 			this->testingRmsLabel->Text = L"0";
 			this->testingRmsLabel->TextAlign = System::Drawing::ContentAlignment::MiddleLeft;
@@ -650,55 +648,55 @@ namespace mlp_network
 			// 
 			// tabPage2
 			// 
-			this->tabPage2->Controls->Add(this->learningErrorGraph);
+			this->tabPage2->Controls->Add(this->learningRmsGraph);
 			this->tabPage2->Location = System::Drawing::Point(4, 22);
 			this->tabPage2->Name = L"tabPage2";
 			this->tabPage2->Padding = System::Windows::Forms::Padding(3);
 			this->tabPage2->Size = System::Drawing::Size(597, 465);
 			this->tabPage2->TabIndex = 1;
-			this->tabPage2->Text = L"Ошибка обучения";
+			this->tabPage2->Text = L"СКО ошибки обучения";
 			this->tabPage2->UseVisualStyleBackColor = true;
 			// 
-			// learningErrorGraph
+			// learningRmsGraph
 			// 
-			this->learningErrorGraph->Dock = System::Windows::Forms::DockStyle::Fill;
-			this->learningErrorGraph->Location = System::Drawing::Point(3, 3);
-			this->learningErrorGraph->Name = L"learningErrorGraph";
-			this->learningErrorGraph->ScrollGrace = 0;
-			this->learningErrorGraph->ScrollMaxX = 0;
-			this->learningErrorGraph->ScrollMaxY = 0;
-			this->learningErrorGraph->ScrollMaxY2 = 0;
-			this->learningErrorGraph->ScrollMinX = 0;
-			this->learningErrorGraph->ScrollMinY = 0;
-			this->learningErrorGraph->ScrollMinY2 = 0;
-			this->learningErrorGraph->Size = System::Drawing::Size(591, 459);
-			this->learningErrorGraph->TabIndex = 0;
+			this->learningRmsGraph->Dock = System::Windows::Forms::DockStyle::Fill;
+			this->learningRmsGraph->Location = System::Drawing::Point(3, 3);
+			this->learningRmsGraph->Name = L"learningRmsGraph";
+			this->learningRmsGraph->ScrollGrace = 0;
+			this->learningRmsGraph->ScrollMaxX = 0;
+			this->learningRmsGraph->ScrollMaxY = 0;
+			this->learningRmsGraph->ScrollMaxY2 = 0;
+			this->learningRmsGraph->ScrollMinX = 0;
+			this->learningRmsGraph->ScrollMinY = 0;
+			this->learningRmsGraph->ScrollMinY2 = 0;
+			this->learningRmsGraph->Size = System::Drawing::Size(591, 459);
+			this->learningRmsGraph->TabIndex = 0;
 			// 
 			// tabPage3
 			// 
-			this->tabPage3->Controls->Add(this->testingErrorGraph);
+			this->tabPage3->Controls->Add(this->testingRmsGraph);
 			this->tabPage3->Location = System::Drawing::Point(4, 22);
 			this->tabPage3->Name = L"tabPage3";
 			this->tabPage3->Padding = System::Windows::Forms::Padding(3);
 			this->tabPage3->Size = System::Drawing::Size(597, 465);
 			this->tabPage3->TabIndex = 2;
-			this->tabPage3->Text = L"Ошибка тестирования";
+			this->tabPage3->Text = L"СКО ошибки тестирования";
 			this->tabPage3->UseVisualStyleBackColor = true;
 			// 
-			// testingErrorGraph
+			// testingRmsGraph
 			// 
-			this->testingErrorGraph->Dock = System::Windows::Forms::DockStyle::Fill;
-			this->testingErrorGraph->Location = System::Drawing::Point(3, 3);
-			this->testingErrorGraph->Name = L"testingErrorGraph";
-			this->testingErrorGraph->ScrollGrace = 0;
-			this->testingErrorGraph->ScrollMaxX = 0;
-			this->testingErrorGraph->ScrollMaxY = 0;
-			this->testingErrorGraph->ScrollMaxY2 = 0;
-			this->testingErrorGraph->ScrollMinX = 0;
-			this->testingErrorGraph->ScrollMinY = 0;
-			this->testingErrorGraph->ScrollMinY2 = 0;
-			this->testingErrorGraph->Size = System::Drawing::Size(591, 459);
-			this->testingErrorGraph->TabIndex = 1;
+			this->testingRmsGraph->Dock = System::Windows::Forms::DockStyle::Fill;
+			this->testingRmsGraph->Location = System::Drawing::Point(3, 3);
+			this->testingRmsGraph->Name = L"testingRmsGraph";
+			this->testingRmsGraph->ScrollGrace = 0;
+			this->testingRmsGraph->ScrollMaxX = 0;
+			this->testingRmsGraph->ScrollMaxY = 0;
+			this->testingRmsGraph->ScrollMaxY2 = 0;
+			this->testingRmsGraph->ScrollMinX = 0;
+			this->testingRmsGraph->ScrollMinY = 0;
+			this->testingRmsGraph->ScrollMinY2 = 0;
+			this->testingRmsGraph->Size = System::Drawing::Size(591, 459);
+			this->testingRmsGraph->TabIndex = 1;
 			// 
 			// learnButton
 			// 
@@ -749,7 +747,7 @@ namespace mlp_network
 
 	private: System::Void MainForm_Load(System::Object^  sender, System::EventArgs^  e)
 	{
-		array<GraphPane ^> ^panes = { resultGraph->GraphPane, learningErrorGraph->GraphPane, testingErrorGraph->GraphPane };
+		array<GraphPane ^> ^panes = { resultGraph->GraphPane, learningRmsGraph->GraphPane, testingRmsGraph->GraphPane };
 
 		const size_t GRAPHS_COUNT = 3;
 		for (size_t i = 0; i < GRAPHS_COUNT; ++i)
@@ -769,7 +767,6 @@ namespace mlp_network
 
 			learnButton->Enabled = false;
 
-			//LearnNetwork();
 			LearnNetworkCuda();
 
 			learnButton->Enabled = true;
@@ -796,57 +793,6 @@ namespace mlp_network
 		outputFunctionIndex_ = outputFunctionComboBox->SelectedIndex;
 	}
 
-	//private: System::Void LearnNetwork()
-	//{
-	//	//auto hiddenFunctionType = (ActivationFunction::Type) hiddenFunctionIndex_;
-	//	//auto outputsFunctionType = (ActivationFunction::Type) outputsFunctionIndex_;
-
-	//	MlpNetwork network(numInput_, numHidden_, numOutput_);
-
-	//	vector<float> rawInputData = NetworkPrediction::loadData("InputData.txt");
-	//	NetworkPrediction prediction(rawInputData, numInput_, numOutput_, divideFactor_);
-	//	const NetworkDataset &fullDataset = prediction.fullDataset();
-	//	const NetworkDataset &learningDataset = prediction.learningDataset();
-	//	const NetworkDataset &testingDataset = prediction.testingDataset();
-
-	//	std::unique_ptr<INetworkTraining> training = nullptr;
-	//	if (backPropagationRadioButton->Checked)
-	//	{
-	//		float tempLearningRate = learningRate_;
-	//		float tempMomentum = momentum_;
-	//		training = std::make_unique<BackPropagation>(network, learningDataset, tempLearningRate, tempMomentum);
-	//	}
-	//	else if (resilientPropagationRadioButton->Checked)
-	//	{
-	//		//training = std::make_unique<ResilientPropagation>(network, learningDataset);
-	//	}
-
-	//	training->train(maxNumEpoch_, maxLearningRms_);
-
-	//	vector<float> learningErrors = training->learningErrors();
-
-	//	numEpochLabel->Text = Convert::ToString(training->numEpoch());
-	//	learningRmsLabel->Text = Convert::ToString(learningErrors.back());
-
-	//	float **predictedOutput = training->test(fullDataset);
-	//	const vector<float> predictedOutputVector = MatrixHelper::convert2DArrayToVector(predictedOutput,
-	//		fullDataset.numSamples(), fullDataset.numOutput());
-
-	//	for (size_t i = 0; i < fullDataset.numSamples(); ++i)
-	//	{
-	//		delete [] predictedOutput[i];
-	//	}
-	//	delete [] predictedOutput;
-
-	//	const vector<float> testingOutputVector = MatrixHelper::convert2DArrayToVector(fullDataset.outputData(),
-	//		fullDataset.numSamples(), fullDataset.numOutput());
-
-	//	DrawGraph(resultGraph, gcnew array<String ^> { L"Исходный график", L"Нейронная сеть" },
-	//		gcnew array<String ^> { L"Red", L"Blue"}, matrix<float> { testingOutputVector, predictedOutputVector });
-
-	//	DrawGraph(errorGraph, gcnew array<String ^> { L"" }, gcnew array<String ^> { L"Red" }, matrix<float> { learningErrors });
-	//}
-
 	private: System::Void LearnNetworkCuda()
 	{
 		ActivationFuncType hiddenFunctionType = (ActivationFuncType) hiddenFunctionIndex_;
@@ -865,7 +811,7 @@ namespace mlp_network
 
 		int numEpoch = 0;
 		float error = FLT_MAX;
-		vector<float> learningErrors;
+		vector<float> learningRms;
 		float tempLearningRate = learningRate_;
 		float tempMomentum = momentum_;
 		while (numEpoch < maxNumEpoch_ && error > maxLearningRms_)
@@ -879,7 +825,7 @@ namespace mlp_network
 				error = propagation.performResilientPropEpoch();
 			}
 
-			learningErrors.push_back(error);
+			learningRms.push_back(error);
 
 			++numEpoch;
 		}
@@ -889,11 +835,11 @@ namespace mlp_network
 		matrix<float> predictedOutput = network.computeOutput(fullDataset.inputData());
 		const matrix<float> &targetOutput = fullDataset.outputData();
 
-		vector<float> testingErrors = MatrixHelper::error(targetOutput, predictedOutput);
+		vector<float> testingRms = MatrixHelper::rms(targetOutput, predictedOutput);
 
 		numEpochLabel->Text = Convert::ToString(numEpoch);
-		learningRmsLabel->Text = Convert::ToString(MatrixHelper::rms(learningErrors));
-		testingRmsLabel->Text = Convert::ToString(MatrixHelper::rms(testingErrors));
+		learningRmsLabel->Text = Convert::ToString(learningRms.back());
+		testingRmsLabel->Text = Convert::ToString(testingRms.back());
 
 		const vector<float> predictedOutputVector = MatrixHelper::convertMatrixToVector(predictedOutput);
 		const vector<float> targetOutputVector = MatrixHelper::convertMatrixToVector(targetOutput);
@@ -901,9 +847,9 @@ namespace mlp_network
 		DrawGraph(resultGraph, gcnew array<String ^> { L"Исходный график", L"Нейронная сеть" },
 			gcnew array<String ^> { L"Red", L"Blue"}, matrix<float> { targetOutputVector, predictedOutputVector });
 
-		DrawGraph(learningErrorGraph, gcnew array<String ^> { L"" }, gcnew array<String ^> { L"Red" }, matrix<float> { learningErrors });
+		DrawGraph(learningRmsGraph, gcnew array<String ^> { L"" }, gcnew array<String ^> { L"Red" }, matrix<float> { learningRms });
 
-		DrawGraph(testingErrorGraph, gcnew array<String ^> { L"" }, gcnew array<String ^> { L"Red" }, matrix<float> { testingErrors });
+		DrawGraph(testingRmsGraph, gcnew array<String ^> { L"" }, gcnew array<String ^> { L"Red" }, matrix<float> { testingRms });
 	}
 
 	private: System::Void DrawGraph(ZedGraphControl ^graph, array<String ^> ^labels, array<String ^> ^colors,

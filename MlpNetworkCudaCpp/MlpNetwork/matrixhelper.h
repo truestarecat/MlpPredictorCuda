@@ -19,41 +19,6 @@ namespace mlp_network
 			return matrix;
 		}
 
-		template <typename T> static T** newMatrix(size_t rowCount, size_t columnCount)
-		{
-			T** matrix = new T*[rowCount];
-			for (size_t i = 0; i < rowCount; ++i)
-			{
-				matrix[i] = new T[columnCount];
-			}
-
-			return matrix;
-		}
-
-		template <typename T> static void deleteMatrix(T **matrix, size_t rowCount)
-		{
-			for (size_t i = 0; i < rowCount; ++i)
-			{
-				delete [] matrix[i];
-			}
-
-			delete [] matrix;
-		}
-
-		template <typename T> static vector<T> convert2DArrayToVector(T **matrix, size_t rows, size_t columns)
-		{
-			vector<T> result;
-			for (size_t i = 0; i < rows; ++i)
-			{
-				for (size_t j = 0; j < columns; ++j)
-				{
-					result.push_back(matrix[i][j]);
-				}
-			}
-
-			return result;
-		}
-
 		template <typename T> static T* convertMatrixToArray(const matrix<T> &matrix)
 		{
 			T *array = new T[matrix.size() * matrix[0].size()];
@@ -82,21 +47,8 @@ namespace mlp_network
 			return matrix;
 		}
 
-		// Заполняет матрицу случайными числами из заданного диапазона.
-		static void randomizeMatrix(matrix<double> &matrix, double minValue, double maxValue)
-		{
-			// Формула для генерации случайных чисел в диапазоне: _min + double(rand()) / RAND_MAX * (_max - _min).
-			for (size_t i = 0; i < matrix.size(); ++i)
-			{
-				for (size_t j = 0; j < matrix[i].size(); ++j)
-				{
-					matrix[i][j] = minValue + double(rand()) / RAND_MAX * (maxValue - minValue);
-				}
-			}
-		}
-
-		// Вычисляет функцию ошибки двух векторов.
-		template <typename T> static T error(const vector<T> &a, const vector<T> &b)
+		// Вычисляет СКО двух векторов.
+		template <typename T> static T rms(const vector<T> &a, const vector<T> &b)
 		{
 			T sum = 0;
 			for (size_t i = 0; i < a.size(); ++i)
@@ -104,45 +56,19 @@ namespace mlp_network
 				sum += (a[i] - b[i]) * (a[i] - b[i]);
 			}
 
-			return sum;
+			return sqrtf(sum / a.size());
 		}
 
-		// Вычисляет разницу двух векторов.
-		template <typename T> static T distance(const vector<T> &a, const vector<T> &b)
-		{
-			return sqrt(error(a, b));
-		}
-
-		// Вычисляет СреднеКвадратичное Отклонение одного вектора от другого.
-		template <typename T> static T rms(const vector<T> &a, const vector<T> &b)
-		{
-			//return distance(a, b) / sqrt(a.size() - 1);
-			return distance(a, b) / sqrt(a.size());
-		}
-
-		// Вычисляет функцию ошибки одной матрицы от другой.
-		template <typename T> static vector<T> error(const matrix<T> &a, const matrix<T> &b)
+		// Вычисляет СКО одной матрицы от другой.
+		template <typename T> static vector<T> rms(const matrix<T> &a, const matrix<T> &b)
 		{
 			vector<T> errorVector(a.size());
 			for (size_t i = 0; i < errorVector.size(); ++i)
 			{
-				errorVector[i] = error(a[i], b[i]);
+				errorVector[i] = rms(a[i], b[i]);
 			}
 
 			return errorVector;
-		}
-
-		// Вычисляет СреднеКвадратичние Отклонение ошибки.
-		template <typename T> static T rms(const vector<T> &errorVector)
-		{
-			T rmsValue = 0;
-			for (size_t i = 0; i < errorVector.size(); ++i)
-			{
-				rmsValue += errorVector[i];
-			}
-
-			//return rmsValue / sqrt(errorVector.size());
-			return sqrt(rmsValue / errorVector.size());
 		}
 
 		// Преобразует матрицу в вектор.
@@ -158,21 +84,6 @@ namespace mlp_network
 			}
 
 			return result;
-		}
-
-		// Заполняет вектор заданными значениями.
-		template <typename T> static void fillVector(vector<T> &vector, const T &value)
-		{
-			std::fill(vector.begin(), vector.end(), value);
-		}
-
-		// Заполняет матрицу заданными значениями.
-		template <typename T> static void fillMatrix(matrix<T> &matrix, const T &value)
-		{
-			for (vector<T> &vector : matrix)
-			{
-				std::fill(vector.begin(), vector.end(), value);
-			}
 		}
 
 		static long get1DIndexFrom2D(int i, int j, int width)
