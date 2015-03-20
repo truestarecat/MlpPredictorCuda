@@ -3,7 +3,7 @@ using System.ComponentModel;
 
 namespace MlpNetwork
 {
-    enum ActivationFunctionType
+    public enum ActivationFunctionType
     {
         [EnumDescription("Логистическая")]
         UnipolarSigmoid = 0,
@@ -18,9 +18,9 @@ namespace MlpNetwork
         Linear = 3
     }
 
-    delegate float Function(float x);
+    public delegate float Function(float x);
 
-    class MlpNetwork
+    public class MlpNetwork
     {
         private ActivationFunctionType hiddenFunctionType;
         private ActivationFunctionType outputFunctionType;

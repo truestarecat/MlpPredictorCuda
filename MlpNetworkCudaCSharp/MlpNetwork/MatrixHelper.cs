@@ -2,7 +2,7 @@
 
 namespace MlpNetwork
 {
-    class MatrixHelper
+    public class MatrixHelper
     {
 		public static float Rms(float[] a, float[] b)
 		{

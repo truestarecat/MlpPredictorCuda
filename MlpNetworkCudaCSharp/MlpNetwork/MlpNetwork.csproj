@@ -55,6 +55,12 @@
     <Compile Include="CudaErrorPropagation.cs" />
     <Compile Include="EnumDescriptionAttribute.cs" />
     <Compile Include="EnumHelper.cs" />
+    <Compile Include="LearningProgressForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LearningProgressForm.Designer.cs">
+      <DependentUpon>LearningProgressForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -68,6 +74,9 @@
     <Compile Include="NetworkPrediction.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="LearningProgressForm.resx">
+      <DependentUpon>LearningProgressForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>

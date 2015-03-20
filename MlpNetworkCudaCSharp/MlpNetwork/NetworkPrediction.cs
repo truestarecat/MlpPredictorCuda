@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace MlpNetwork
 {
-    class NetworkPrediction
+    public class NetworkPrediction
     {
         public NetworkDataSet FullDataSet { get; private set; }
         public NetworkDataSet LearningDataSet { get; private set; }

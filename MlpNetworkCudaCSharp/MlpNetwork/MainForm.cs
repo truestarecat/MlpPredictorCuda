@@ -86,39 +86,33 @@ namespace MlpNetwork
             NetworkDataSet learningDataSet = prediction.LearningDataSet;
             NetworkDataSet testingDataSet = prediction.TestingDataSet;
 
-            int numEpoch = 0;
-            float error = Single.MaxValue;
-            List<float> learningRmsList = new List<float>();
-            using(CudaErrorPropagation propagation = new CudaErrorPropagation(network, learningDataSet))
+            ErrorPropagationType propagationType = ErrorPropagationType.BackPropagation;
+            if (backPropagationRadioButton.Checked)
             {
-                propagation.RandomizeNetworkWeights();
-
-                while (numEpoch < maxNumEpoch && error > maxLearningRms)
-                {
-                    if (backPropagationRadioButton.Checked)
-                    {
-                        error = propagation.PerformBackPropEpoch(learningRate, momentum);
-                    }
-                    else if (resilientPropagationRadioButton.Checked)
-                    {
-                        error = propagation.PerformResilientPropEpoch();
-                    }
-
-                    learningRmsList.Add(error);
-
-                    ++numEpoch;
-                }
-
-                propagation.UpdateNetworkWeights();
+                propagationType = ErrorPropagationType.BackPropagation;
             }
-            float[] learningRms = learningRmsList.ToArray();
+            else if (resilientPropagationRadioButton.Checked)
+            {
+                propagationType = ErrorPropagationType.ResilientPropagation;
+            }
+
+            LearningProgressForm learningForm = new LearningProgressForm(propagationType, network,
+                learningDataSet, maxNumEpoch, maxLearningRms, learningRate, momentum);
+
+            DialogResult result = learningForm.ShowDialog();
+            if(result == DialogResult.Abort)
+            {
+                return;
+            }
+
+            float[] learningRms = learningForm.LearningRmsList.ToArray();
 
             float[][] predictedOutput = network.ComputeOutput(fullDataSet.GetInputData());
             float[][] targetOutput = fullDataSet.GetOutputData();
 
             float[] testingRms = MatrixHelper.Rms(targetOutput, predictedOutput);
 
-            numEpochLabel.Text = numEpoch.ToString();
+            numEpochLabel.Text = learningForm.NumEpoch.ToString();
             learningRmsLabel.Text = learningRms[learningRms.Length - 1].ToString();
             testingRmsLabel.Text = testingRms[testingRms.Length - 1].ToString();
 

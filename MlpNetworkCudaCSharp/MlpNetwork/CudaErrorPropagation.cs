@@ -3,7 +3,13 @@ using System.Runtime.InteropServices;
 
 namespace MlpNetwork
 {
-    class CudaErrorPropagation : IDisposable
+    public enum ErrorPropagationType
+    {
+        BackPropagation = 0,
+        ResilientPropagation = 1
+    }
+
+    public class CudaErrorPropagation : IDisposable
     {
         private MlpNetwork network;
         private NetworkDataSet dataSet;

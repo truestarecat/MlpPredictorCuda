@@ -19,6 +19,12 @@ enum ActivationFuncType
 	LINEAR = 3
 };
 
+enum ErrorPropagationType
+{
+	BACK_PROPAGATION = 0,
+	RESILIENT_PROPAGATION = 1
+};
+
 struct CudaErrorPropagation
 {
 	// Network and data

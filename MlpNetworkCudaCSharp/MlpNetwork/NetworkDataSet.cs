@@ -2,7 +2,7 @@
 
 namespace MlpNetwork
 {
-    class NetworkDataSet
+    public class NetworkDataSet
     {
         private float[][] inputData;
         private float[][] outputData;
