@@ -75,8 +75,7 @@ namespace MlpNetwork
             }
             set
             {
-                hiddenFunctionType = value;
-                SetLayerFunction(ref hiddenFunction, value);
+                SetLayerFunction(ref hiddenFunction, ref hiddenFunctionType, value);
             }
         }
 
@@ -88,8 +87,7 @@ namespace MlpNetwork
             }
             set
             {
-                outputFunctionType = value;
-                SetLayerFunction(ref outputFunction, value);
+                SetLayerFunction(ref outputFunction, ref outputFunctionType, value);
             }
         }
 
@@ -201,7 +199,8 @@ namespace MlpNetwork
             }
         }
 
-        private void SetLayerFunction(ref Function layerFunction, ActivationFunctionType type)
+        private void SetLayerFunction(ref Function layerFunction, ref ActivationFunctionType layerFunctionType,
+            ActivationFunctionType type)
         {
             switch (type)
             {
@@ -218,9 +217,10 @@ namespace MlpNetwork
                     layerFunction = x => x;
                     break;
                 default:
-                    layerFunction = x => 0.0f;
-                    break;
+                    throw new ArgumentException("Illegal function type");
             }
+
+            layerFunctionType = type;
         }
     }
 }
