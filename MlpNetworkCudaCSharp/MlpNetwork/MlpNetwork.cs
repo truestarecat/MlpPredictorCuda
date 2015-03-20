@@ -160,7 +160,7 @@ namespace MlpNetwork
             }
         }
 
-		public void ComputeOutput()
+        public void ComputeOutput()
         {
             ComputeLayerOutput(hiddenFunction, inputHiddenWeights, inputs, hiddenOutputs, NumInput, NumHidden);
             ComputeLayerOutput(outputFunction, hiddenOutputWeights, hiddenOutputs, outputs, NumHidden, NumOutput);
@@ -202,9 +202,9 @@ namespace MlpNetwork
         }
 
         private void SetLayerFunction(ref Function layerFunction, ActivationFunctionType type)
-	    {
-		    switch (type)
-		    {
+        {
+            switch (type)
+            {
                 case ActivationFunctionType.UnipolarSigmoid:
                     layerFunction = x => 1.0f / (1.0f + (float)Math.Exp(-x));
                     break;
@@ -220,7 +220,7 @@ namespace MlpNetwork
                 default:
                     layerFunction = x => 0.0f;
                     break;
-		    }
-	    }
+            }
+        }
     }
 }
