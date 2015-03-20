@@ -52,17 +52,17 @@ namespace MlpNetwork
 
             inputHiddenWeights = new float[numInput + 1][];
             for (int i = 0; i < inputHiddenWeights.Length; i++)
-			{
-			    inputHiddenWeights[i] = new float[numHidden];
-			}
+            {
+                inputHiddenWeights[i] = new float[numHidden];
+            }
 
 		    hiddenOutputs = new float[numHidden];
 
 		    hiddenOutputWeights = new float[numHidden + 1][];
             for (int i = 0; i < hiddenOutputWeights.Length; i++)
-			{
-			    hiddenOutputWeights[i] = new float[numOutput];
-			}
+            {
+                hiddenOutputWeights[i] = new float[numOutput];
+            }
 
             outputs = new float[numOutput];
         }
