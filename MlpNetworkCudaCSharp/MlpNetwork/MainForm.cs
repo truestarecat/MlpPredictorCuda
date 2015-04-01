@@ -8,16 +8,20 @@ namespace MlpNetwork
 {
     public partial class MainForm : Form
     {
-        private	float divideFactor;
-		private float maxLearningRms;
 		private int numInput;
 		private int numHidden;
 		private int numOutput;
+        private float divideFactor;
+        private float maxLearningRms;
 		private int maxNumEpoch;
 		private float learningRate;
 		private float momentum;
         private ActivationFunctionType hiddenFunctionType;
         private ActivationFunctionType outputFunctionType;
+        private ErrorPropagationType propagationType;
+
+        private MlpNetwork network;
+        private NetworkPrediction prediction;
 
         public MainForm()
         {
@@ -42,51 +46,45 @@ namespace MlpNetwork
             }
         }
 
-        private void learnButton_Click(object sender, EventArgs e)
+        private void learnNetworkButton_Click(object sender, EventArgs e)
         {
             try
             {
+                learnNetworkButton.Enabled = false;
+
                 SetParams();
 
-                learnButton.Enabled = false;
-
                 LearnNetworkCuda();
-
-                learnButton.Enabled = true;
             }
             catch
             {
-                learnButton.Enabled = true;
+                learnNetworkButton.Enabled = true;
                 MessageBox.Show("Неверный ввод параметров.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                learnNetworkButton.Enabled = true;
             }
         }
 
+        private void testNetworkButton_Click(object sender, EventArgs e)
+        {
+            TestNetwork();
+        } 
+
         private void SetParams()
         {
-            divideFactor = Convert.ToSingle(divideFactorTextBox.Text);
-            maxLearningRms = Convert.ToSingle(maxLearningRmsTextBox.Text);
-            numInput = Convert.ToInt32(numInputNumericUpDown.Value);
-            numHidden = Convert.ToInt32(numHiddenNumericUpDown.Value);
-            numOutput = Convert.ToInt32(numOutputNumericUpDown.Value);
-            maxNumEpoch = Convert.ToInt32(maxNumEpochNumericUpDown.Value);
-            learningRate = Convert.ToSingle(learningRateTextBox.Text);
-            momentum = Convert.ToSingle(momentumTextBox.Text);
+            this.numInput = (int)numInputNumericUpDown.Value;
+            this.numHidden = (int)numHiddenNumericUpDown.Value;
+            this.numOutput = (int)numOutputNumericUpDown.Value;
+            this.hiddenFunctionType = (ActivationFunctionType)hiddenFunctionComboBox.SelectedValue;
+            this.outputFunctionType = (ActivationFunctionType)outputFunctionComboBox.SelectedValue;
+            this.divideFactor = (float)divideFactorNumericUpDown.Value;
+            this.maxLearningRms = (float)maxLearningRmsNumericUpDown.Value;
+            this.maxNumEpoch = (int)maxNumEpochNumericUpDown.Value;
+            this.learningRate = (float)learningRateNumericUpDown.Value;
+            this.momentum = (float)momentumNumericUpDown.Value;
 
-            hiddenFunctionType = (ActivationFunctionType)hiddenFunctionComboBox.SelectedValue;
-            outputFunctionType = (ActivationFunctionType)outputFunctionComboBox.SelectedValue;
-        }
-
-        private void LearnNetworkCuda()
-        {
-            MlpNetwork network = new MlpNetwork(numInput, numHidden, numOutput, hiddenFunctionType, outputFunctionType);
-
-            float[] rawInputData = NetworkPrediction.LoadData("InputData.txt");
-            NetworkPrediction prediction = new NetworkPrediction(rawInputData, numInput, numOutput, divideFactor);
-            NetworkDataSet fullDataSet = prediction.FullDataSet;
-            NetworkDataSet learningDataSet = prediction.LearningDataSet;
-            NetworkDataSet testingDataSet = prediction.TestingDataSet;
-
-            ErrorPropagationType propagationType = ErrorPropagationType.BackPropagation;
             if (backPropagationRadioButton.Checked)
             {
                 propagationType = ErrorPropagationType.BackPropagation;
@@ -95,9 +93,17 @@ namespace MlpNetwork
             {
                 propagationType = ErrorPropagationType.ResilientPropagation;
             }
+        }
 
-            LearningProgressForm learningForm = new LearningProgressForm(propagationType, network,
-                learningDataSet, maxNumEpoch, maxLearningRms, learningRate, momentum);
+        private void LearnNetworkCuda()
+        {
+            network = new MlpNetwork(numInput, numHidden, numOutput, hiddenFunctionType, outputFunctionType);
+
+            float[] rawInputData = NetworkPrediction.LoadData("InputData.txt");
+            prediction = new NetworkPrediction(rawInputData, numInput, numOutput, divideFactor);
+
+            NetworkLearningForm learningForm = new NetworkLearningForm(propagationType, network,
+                prediction.LearningDataSet, maxNumEpoch, maxLearningRms, learningRate, momentum);
 
             DialogResult result = learningForm.ShowDialog();
             if(result == DialogResult.Abort)
@@ -107,23 +113,24 @@ namespace MlpNetwork
 
             float[] learningRms = learningForm.LearningRmsList.ToArray();
 
+            DrawGraph(learningRmsGraphControl, new string[] { "" }, new string[] { "Red" }, new float[][] { learningRms });
+        }
+
+        private void TestNetwork()
+        {
+            NetworkDataSet fullDataSet = prediction.FullDataSet;
+
             float[][] predictedOutput = network.ComputeOutput(fullDataSet.GetInputData());
             float[][] targetOutput = fullDataSet.GetOutputData();
 
             float[] testingRms = MatrixHelper.Rms(targetOutput, predictedOutput);
 
-            numEpochLabel.Text = learningForm.NumEpoch.ToString();
-            learningRmsLabel.Text = learningRms[learningRms.Length - 1].ToString();
-            testingRmsLabel.Text = testingRms[testingRms.Length - 1].ToString();
-
             float[] predictedOutputArray = MatrixHelper.Convert2DArrayTo1D(predictedOutput);
             float[] targetOutputArray = MatrixHelper.Convert2DArrayTo1D(targetOutput);
 
             DrawGraph(resultGraphControl, new string[] { "Исходный график", "Нейронная сеть" },
-                new string[] { "Red", "Blue"}, new float[][] { targetOutputArray, predictedOutputArray });
-
-            DrawGraph(learningRmsGraphControl, new string[] { "" }, new string[] { "Red" }, new float[][] { learningRms });
-
+                new string[] { "Red", "Blue" }, new float[][] { targetOutputArray, predictedOutputArray });
+         
             DrawGraph(testingRmsGraphControl, new string[] { "" }, new string[] { "Red" }, new float[][] { testingRms });
         }
 
@@ -151,6 +158,6 @@ namespace MlpNetwork
 
             graph.AxisChange();
             graph.Invalidate();
-        }
+        }     
     }
 }

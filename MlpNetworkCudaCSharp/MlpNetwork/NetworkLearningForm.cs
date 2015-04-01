@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace MlpNetwork
 {
-    public partial class LearningProgressForm : Form
+    public partial class NetworkLearningForm : Form
     {
         private ErrorPropagationType propagationType;
         private MlpNetwork network;
@@ -23,7 +23,7 @@ namespace MlpNetwork
 
         public int ProgressValue { get; private set; }
 
-        public LearningProgressForm(ErrorPropagationType propagationType, MlpNetwork network,
+        public NetworkLearningForm(ErrorPropagationType propagationType, MlpNetwork network,
             NetworkDataSet learningDataSet, int maxNumEpoch, float maxLearningRms, float learningRate, float momentum)
         {
             InitializeComponent();
@@ -48,7 +48,12 @@ namespace MlpNetwork
 
         private async void LearningProgressForm_Load(object sender, EventArgs e)
         {
-            var progress = new Progress<int>(i => learningProgressBar.PerformStep());
+            var progress = new Progress<float>(value =>
+            {
+                learningProgressBar.PerformStep();
+                numEpochLabel.Text = Convert.ToString(learningProgressBar.Value);
+                learningRmsLabel.Text = Convert.ToString(value);
+            });
             await Task.Factory.StartNew(() => LearnNetwork(progress, cancellationTokenSource.Token),
                 TaskCreationOptions.LongRunning);
 
@@ -63,7 +68,7 @@ namespace MlpNetwork
             }
         }
 
-        private void LearnNetwork(IProgress<int> progress, CancellationToken token)
+        private void LearnNetwork(IProgress<float> progress, CancellationToken token)
         {
             float error = Single.MaxValue;
             using (CudaErrorPropagation propagation = new CudaErrorPropagation(network, learningDataSet))
@@ -92,7 +97,7 @@ namespace MlpNetwork
 
                     LearningRmsList.Add(error);
 
-                    progress.Report(NumEpoch);
+                    progress.Report(error);
 
                     ++NumEpoch;
                 }
