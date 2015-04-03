@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 using ZedGraph;
 
@@ -11,7 +11,7 @@ namespace MlpNetwork
 		private int numInput;
 		private int numHidden;
 		private int numOutput;
-        private float divideFactor;
+        private float learningDataPercentage;
         private float maxLearningRms;
 		private int maxNumEpoch;
 		private float learningRate;
@@ -23,12 +23,18 @@ namespace MlpNetwork
         private MlpNetwork network;
         private NetworkPrediction prediction;
 
+        private float[] rawInputData;
+
         public MainForm()
         {
             InitializeComponent();
 
             this.hiddenFunctionComboBox.DataSource = typeof(ActivationFunctionType).ToList();
             this.outputFunctionComboBox.DataSource = typeof(ActivationFunctionType).ToList();
+
+            this.dataSeparatorComboBox.SelectedIndex = 0;
+
+            this.dataFilePathTextBox.Text = Application.StartupPath + @"\InputData.txt";
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -46,25 +52,34 @@ namespace MlpNetwork
             }
         }
 
+        private void выходToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        } 
+
+        private void browseDataFileButton_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog opd = new OpenFileDialog()
+            {
+                Filter = "Текстовый файл|*.txt",
+                InitialDirectory = Application.StartupPath
+            };
+
+            if (opd.ShowDialog() == DialogResult.OK)
+            {
+                dataFilePathTextBox.Text = opd.FileName;
+            }
+        }
+
         private void learnNetworkButton_Click(object sender, EventArgs e)
         {
-            try
-            {
-                learnNetworkButton.Enabled = false;
-
-                SetParams();
-
-                LearnNetworkCuda();
-            }
-            catch
-            {
-                learnNetworkButton.Enabled = true;
-                MessageBox.Show("Неверный ввод параметров.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            finally
-            {
-                learnNetworkButton.Enabled = true;
-            }
+            learnNetworkButton.Enabled = false;
+            
+            SetParams();
+            
+            LearnNetworkCuda();
+            
+            learnNetworkButton.Enabled = true;
         }
 
         private void testNetworkButton_Click(object sender, EventArgs e)
@@ -79,7 +94,7 @@ namespace MlpNetwork
             this.numOutput = (int)numOutputNumericUpDown.Value;
             this.hiddenFunctionType = (ActivationFunctionType)hiddenFunctionComboBox.SelectedValue;
             this.outputFunctionType = (ActivationFunctionType)outputFunctionComboBox.SelectedValue;
-            this.divideFactor = (float)divideFactorNumericUpDown.Value;
+            this.learningDataPercentage = (float)learningDataPercentageNumericUpDown.Value;
             this.maxLearningRms = (float)maxLearningRmsNumericUpDown.Value;
             this.maxNumEpoch = (int)maxNumEpochNumericUpDown.Value;
             this.learningRate = (float)learningRateNumericUpDown.Value;
@@ -95,12 +110,53 @@ namespace MlpNetwork
             }
         }
 
+        private bool LoadData()
+        {
+            string filePath = dataFilePathTextBox.Text;
+
+            if(String.IsNullOrWhiteSpace(filePath))
+            {
+                MessageBox.Show("Не задан путь к файлу с данными.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+
+            if(!File.Exists(filePath))
+            {
+                MessageBox.Show("Заданного файла не существует. Проверьте путь к файлу с данными.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+
+            try
+            {
+                string separator = null;
+                switch(dataSeparatorComboBox.SelectedItem.ToString())
+                {
+                    case "Новая строка":
+                        separator = Environment.NewLine;
+                        break;
+                    case "Пробел":
+                        separator = " ";
+                        break;
+                }
+
+                rawInputData = NetworkPrediction.LoadData(filePath, separator);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+        }
+
         private void LearnNetworkCuda()
         {
             network = new MlpNetwork(numInput, numHidden, numOutput, hiddenFunctionType, outputFunctionType);
 
-            float[] rawInputData = NetworkPrediction.LoadData("InputData.txt");
-            prediction = new NetworkPrediction(rawInputData, numInput, numOutput, divideFactor);
+            if (!LoadData())
+                return;
+
+            prediction = new NetworkPrediction(rawInputData, numInput, numOutput, learningDataPercentage / 100.0f);
 
             NetworkLearningForm learningForm = new NetworkLearningForm(propagationType, network,
                 prediction.LearningDataSet, maxNumEpoch, maxLearningRms, learningRate, momentum);
@@ -158,6 +214,6 @@ namespace MlpNetwork
 
             graph.AxisChange();
             graph.Invalidate();
-        }     
+        }   
     }
 }

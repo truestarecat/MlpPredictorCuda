@@ -1,8 +1,10 @@
 ﻿using System;
-using System.ComponentModel;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace MlpNetwork
 {
+    [Serializable]
     public enum ActivationFunctionType
     {
         [EnumDescription("Логистическая")]
@@ -18,8 +20,10 @@ namespace MlpNetwork
         Linear = 3
     }
 
+    [Serializable]
     public delegate float Function(float x);
 
+    [Serializable]
     public class MlpNetwork
     {
         private ActivationFunctionType hiddenFunctionType;
@@ -156,6 +160,30 @@ namespace MlpNetwork
             {
                 Array.Copy(newHiddenOutputWeights[i], this.hiddenOutputWeights[i], NumOutput);
             }
+        }
+
+        public static MlpNetwork LoadFromFile(string fileName)
+        {
+            MlpNetwork network = null;
+            using(var loader = new FileStream(fileName, FileMode.Open))
+            {
+                network = (MlpNetwork)new BinaryFormatter().Deserialize(loader);
+            }
+
+            return network;
+        }
+
+        public static void SaveToFile(string fileName, MlpNetwork network)
+        {
+            using (var saver = new FileStream(fileName, FileMode.Create))
+            {
+                new BinaryFormatter().Serialize(saver, network);
+            }
+        }
+
+        public void SaveToFile(string fileName)
+        {
+            SaveToFile(fileName, this);
         }
 
         public void ComputeOutput()

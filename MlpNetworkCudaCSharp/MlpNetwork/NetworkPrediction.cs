@@ -19,15 +19,21 @@ namespace MlpNetwork
 		    DivideSamples(divideFactor);
         }
 
-		public static float[] LoadData(string fileName)
+		public static float[] LoadData(string fileName, string dataSeparator)
         {
-            return File.ReadAllLines(fileName).Select(value => Single.Parse(value)).ToArray();
+            if (dataSeparator == null)
+                throw new ArgumentNullException("dataSeparator");
+
+            return File.ReadAllText(fileName)
+                       .Split(new string[] { dataSeparator }, StringSplitOptions.RemoveEmptyEntries)
+                       .Select(value => Single.Parse(value.Trim()))
+                       .ToArray();
         }
 
-		public static void SaveData(string fileName, float[] data)
-        {
-            File.WriteAllLines(fileName, data.Select(value => value.ToString()));
-        }
+        //public static void SaveData(string fileName, float[] data, string dataSeparator)
+        //{
+        //    File.WriteAllLines(fileName, data.Select(value => value.ToString()));
+        //}
 
         private void SampleData(float[] rawData, int networkInputsCount, int networkOutputsCount)
         {
