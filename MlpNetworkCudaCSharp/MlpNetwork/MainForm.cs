@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -52,10 +53,88 @@ namespace MlpNetwork
             }
         }
 
+        private void загрузитьToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if(LoadNetwork())
+            {
+                SetNetworkParamsToGui();
+            }
+        }
+
+        private void сохранитьToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveNetwork();
+        }
+
         private void выходToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.Close();
-        } 
+        }
+
+        private void руководствоПользователяToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Process.Start(@"Resources\Help.mht");
+            }
+            catch
+            {
+                MessageBox.Show("Файл справки не найден. Проверьте наличие файла \"Help.mht\" в папке Resources.",
+                                "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void оПрограммеToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            new AboutBox().ShowDialog();
+        }
+
+        private bool LoadNetwork()
+        {
+            OpenFileDialog opd = new OpenFileDialog()
+            {
+                Filter = "Файл нейросети|*.network",
+                InitialDirectory = Application.StartupPath + @"\Networks"
+            };
+
+            if (opd.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    network = MlpNetwork.LoadFromFile(opd.FileName);
+                    return true;
+                }
+                catch
+                {
+                    MessageBox.Show("Ошибка при открытии файла.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            return false;
+        }
+
+        private bool SaveNetwork()
+        {
+            SaveFileDialog sfd = new SaveFileDialog()
+            {
+                Filter = "Файл нейросети|*.network",
+                InitialDirectory = Application.StartupPath + @"\Networks"
+            };
+
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    network.SaveToFile(sfd.FileName);
+                    return true;
+                }
+                catch
+                {
+                    MessageBox.Show("Ошибка при сохранении файла.", "Ошибка",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            return false;
+        }
 
         private void browseDataFileButton_Click(object sender, EventArgs e)
         {
@@ -75,7 +154,7 @@ namespace MlpNetwork
         {
             learnNetworkButton.Enabled = false;
             
-            SetParams();
+            GetParamsFromGui();
             
             LearnNetworkCuda();
             
@@ -87,7 +166,7 @@ namespace MlpNetwork
             TestNetwork();
         } 
 
-        private void SetParams()
+        private void GetParamsFromGui()
         {
             this.numInput = (int)numInputNumericUpDown.Value;
             this.numHidden = (int)numHiddenNumericUpDown.Value;
@@ -108,6 +187,15 @@ namespace MlpNetwork
             {
                 propagationType = ErrorPropagationType.ResilientPropagation;
             }
+        }
+
+        private void SetNetworkParamsToGui()
+        {
+            numInputNumericUpDown.Value = network.NumInput;
+            numHiddenNumericUpDown.Value = network.NumHidden;
+            numOutputNumericUpDown.Value = network.NumOutput;
+            hiddenFunctionComboBox.SelectedValue = network.HiddenFunctionType;
+            outputFunctionComboBox.SelectedValue = network.OutputFunctionType;
         }
 
         private bool LoadData()
@@ -214,6 +302,6 @@ namespace MlpNetwork
 
             graph.AxisChange();
             graph.Invalidate();
-        }   
+        }
     }
 }
