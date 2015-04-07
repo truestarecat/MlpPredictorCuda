@@ -3,53 +3,69 @@ using System.Runtime.InteropServices;
 
 namespace MlpNetwork
 {
-    public enum ErrorPropagationType
+    public enum LearningAlgorithmType
     {
         BackPropagation = 0,
-        ResilientPropagation = 1
+        ResilientBackPropagation = 1
     }
 
+    [Serializable]
     public class CudaErrorPropagation : IDisposable
     {
         private MlpNetwork network;
         private NetworkDataSet dataSet;
 
-        private IntPtr propagationHandle = IntPtr.Zero;
-        private bool disposed = false;
+        [NonSerialized]
+        private IntPtr propagationHandle;
+
+        [NonSerialized]
+        private bool disposed;
 
         public CudaErrorPropagation(MlpNetwork network, NetworkDataSet dataSet)
         {
             this.network = network;
             this.dataSet = dataSet;
-
-            float[] inputDataFlatten = Convert2DArrayTo1D(dataSet.GetInputData());
-            float[] outputDataFlatten = Convert2DArrayTo1D(dataSet.GetOutputData());
-            float[] inputHiddenWeightsFlatten = Convert2DArrayTo1D(network.GetInputHiddenWeights());
-            float[] hiddenOutputWeightsFlatten = Convert2DArrayTo1D(network.GetHiddenOutputWeights());
-
-            propagationHandle = NativeMethods.CreateErrorPropagation(inputDataFlatten, outputDataFlatten,
-                inputHiddenWeightsFlatten, hiddenOutputWeightsFlatten,
-                network.NumInput, network.NumHidden, network.NumOutput, dataSet.NumSamples,
-                network.HiddenFunctionType, network.OutputFunctionType);
+            this.propagationHandle = IntPtr.Zero;
+            this.disposed = true;
         }
 
         public void RandomizeNetworkWeights()
         {
+            if(disposed)
+            {
+                InitializeNativeResources();
+            }
+
             NativeMethods.RandomizeWeights(propagationHandle);
         }
 
         public float PerformBackPropEpoch(float learningRate, float momentum)
         {
+            if (disposed)
+            {
+                InitializeNativeResources();
+            }
+
             return NativeMethods.PerformBackPropEpoch(propagationHandle, learningRate, momentum);
         }
 
         public float PerformResilientPropEpoch()
         {
+            if (disposed)
+            {
+                InitializeNativeResources();
+            }
+
             return NativeMethods.PerformResilientPropEpoch(propagationHandle);
         }
 
         public void UpdateNetworkWeights()
         {
+            if (disposed)
+            {
+                InitializeNativeResources();
+            }
+
             IntPtr ihWeightsFlattenPtr = this.GetInputHiddenWeightsPtr();
             IntPtr hoWeightsFlattenPtr = this.GetHiddenOutputWeightsPtr();
 
@@ -84,25 +100,50 @@ namespace MlpNetwork
         {
             if(!disposed)
             {
-                if(disposing)
-                {
-                    // Dispose managed resources.
-                }
+                //if(disposing)
+                //{
+
+                //}
 
                 NativeMethods.DestroyErrorPropagation(propagationHandle);
-                propagationHandle = IntPtr.Zero;
 
+                propagationHandle = IntPtr.Zero;
                 disposed = true;
             }
         }
 
+        private void InitializeNativeResources()
+        {
+            float[] inputDataFlatten = Convert2DArrayTo1D(dataSet.GetInputData());
+            float[] outputDataFlatten = Convert2DArrayTo1D(dataSet.GetOutputData());
+            float[] inputHiddenWeightsFlatten = Convert2DArrayTo1D(network.GetInputHiddenWeights());
+            float[] hiddenOutputWeightsFlatten = Convert2DArrayTo1D(network.GetHiddenOutputWeights());
+
+            propagationHandle = NativeMethods.CreateErrorPropagation(inputDataFlatten, outputDataFlatten,
+                inputHiddenWeightsFlatten, hiddenOutputWeightsFlatten,
+                network.NumInput, network.NumHidden, network.NumOutput, dataSet.NumSamples,
+                network.HiddenFunctionType, network.OutputFunctionType);
+
+            disposed = false;
+        }
+
         private IntPtr GetInputHiddenWeightsPtr()
         {
+            if (disposed)
+            {
+                InitializeNativeResources();
+            }
+
             return NativeMethods.GetInputHiddenWeights(propagationHandle);
         }
 
         private IntPtr GetHiddenOutputWeightsPtr()
         {
+            if (disposed)
+            {
+                InitializeNativeResources();
+            }
+
             return NativeMethods.GetHiddenOutputWeights(propagationHandle);
         }
 

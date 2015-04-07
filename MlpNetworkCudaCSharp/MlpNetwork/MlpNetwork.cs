@@ -26,6 +26,9 @@ namespace MlpNetwork
     [Serializable]
     public class MlpNetwork
     {
+        private int numInput;
+        private int numHidden;
+        private int numOutput;
         private ActivationFunctionType hiddenFunctionType;
         private ActivationFunctionType outputFunctionType;
         private Function hiddenFunction;
@@ -36,10 +39,6 @@ namespace MlpNetwork
         private float[] hiddenOutputs;
         private float[][] hiddenOutputWeights;
         private float[] outputs;
-
-        public int NumInput { get; private set; }
-        public int NumHidden { get; private set; }
-        public int NumOutput { get; private set; }
 
         public MlpNetwork(int numInput, int numHidden, int numOutput,
             ActivationFunctionType hiddenFunctionType = ActivationFunctionType.UnipolarSigmoid,
@@ -71,13 +70,64 @@ namespace MlpNetwork
             outputs = new float[numOutput];
         }
 
+        public int NumInput
+        {
+            get
+            {
+                return numInput;
+            }
+            private set
+            {
+                if(value < 1)
+                {
+                    throw new ArgumentOutOfRangeException("value", "Num input must be > 0");
+                }
+
+                numInput = value;
+            }
+        }
+
+        public int NumHidden
+        {
+            get
+            {
+                return numHidden;
+            }
+            private set
+            {
+                if (value < 1)
+                {
+                    throw new ArgumentOutOfRangeException("value", "Num hidden must be > 0");
+                }
+
+                numHidden = value;
+            }
+        }
+
+        public int NumOutput
+        {
+            get
+            {
+                return numOutput;
+            }
+            private set
+            {
+                if (value < 1)
+                {
+                    throw new ArgumentOutOfRangeException("value", "Num output must be > 0");
+                }
+
+                numOutput = value;
+            }
+        }
+
         public ActivationFunctionType HiddenFunctionType
         {
             get
             {
                 return hiddenFunctionType;
             }
-            set
+            private set
             {
                 SetLayerFunction(ref hiddenFunction, ref hiddenFunctionType, value);
             }
@@ -89,7 +139,7 @@ namespace MlpNetwork
             {
                 return outputFunctionType;
             }
-            set
+            private set
             {
                 SetLayerFunction(ref outputFunction, ref outputFunctionType, value);
             }

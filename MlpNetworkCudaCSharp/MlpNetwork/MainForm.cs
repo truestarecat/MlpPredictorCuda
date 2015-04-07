@@ -1,34 +1,19 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-using ZedGraph;
 
 namespace MlpNetwork
 {
     public partial class MainForm : Form
     {
-		private int numInput;
-		private int numHidden;
-		private int numOutput;
-        private float learningDataPercentage;
-        private float maxLearningRms;
-		private int maxNumEpoch;
-		private float learningRate;
-		private float momentum;
-        private ActivationFunctionType hiddenFunctionType;
-        private ActivationFunctionType outputFunctionType;
-        private ErrorPropagationType propagationType;
-
-        private MlpNetwork network;
-        private NetworkPrediction prediction;
-
-        private float[] rawInputData;
+        private NetworkPredictionManager predictionManager;
 
         public MainForm()
         {
             InitializeComponent();
+
+            predictionManager = new NetworkPredictionManager();
 
             this.hiddenFunctionComboBox.DataSource = typeof(ActivationFunctionType).ToList();
             this.outputFunctionComboBox.DataSource = typeof(ActivationFunctionType).ToList();
@@ -36,34 +21,23 @@ namespace MlpNetwork
             this.dataSeparatorComboBox.SelectedIndex = 0;
 
             this.dataFilePathTextBox.Text = Application.StartupPath + @"\InputData.txt";
-        }
 
-        private void MainForm_Load(object sender, EventArgs e)
-        {
-            GraphPane[] panes = { resultGraphControl.GraphPane,
-                                  learningRmsGraphControl.GraphPane,
-                                  testingRmsGraphControl.GraphPane };
-
-            for (int i = 0; i < panes.Length; i++)
-            {
-                panes[i].CurveList.Clear();
-                panes[i].XAxis.Title.Text = "";
-                panes[i].YAxis.Title.Text = "";
-                panes[i].Title.Text = "";
-            }
+            resultGraphControl.ClearGraph();
+            learningRmsGraphControl.ClearGraph();
+            testingRmsGraphControl.ClearGraph();
         }
 
         private void загрузитьToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if(LoadNetwork())
+            if(LoadPredictionManager())
             {
-                SetNetworkParamsToGui();
+                SetParamsToGui();
             }
         }
 
         private void сохранитьToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SaveNetwork();
+            SavePredictionManager();
         }
 
         private void выходToolStripMenuItem_Click(object sender, EventArgs e)
@@ -89,7 +63,7 @@ namespace MlpNetwork
             new AboutBox().ShowDialog();
         }
 
-        private bool LoadNetwork()
+        private bool LoadPredictionManager()
         {
             OpenFileDialog opd = new OpenFileDialog()
             {
@@ -101,7 +75,8 @@ namespace MlpNetwork
             {
                 try
                 {
-                    network = MlpNetwork.LoadFromFile(opd.FileName);
+                    predictionManager = NetworkPredictionManager.LoadFromFile(opd.FileName);
+
                     return true;
                 }
                 catch
@@ -109,10 +84,11 @@ namespace MlpNetwork
                     MessageBox.Show("Ошибка при открытии файла.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
+
             return false;
         }
 
-        private bool SaveNetwork()
+        private bool SavePredictionManager()
         {
             SaveFileDialog sfd = new SaveFileDialog()
             {
@@ -124,15 +100,16 @@ namespace MlpNetwork
             {
                 try
                 {
-                    network.SaveToFile(sfd.FileName);
+                    predictionManager.SaveToFile(sfd.FileName);
+
                     return true;
                 }
                 catch
                 {
-                    MessageBox.Show("Ошибка при сохранении файла.", "Ошибка",
-                                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Ошибка при сохранении файла.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
+
             return false;
         }
 
@@ -156,7 +133,7 @@ namespace MlpNetwork
             
             GetParamsFromGui();
             
-            LearnNetworkCuda();
+            LearnNetwork();
             
             learnNetworkButton.Enabled = true;
         }
@@ -168,37 +145,52 @@ namespace MlpNetwork
 
         private void GetParamsFromGui()
         {
-            this.numInput = (int)numInputNumericUpDown.Value;
-            this.numHidden = (int)numHiddenNumericUpDown.Value;
-            this.numOutput = (int)numOutputNumericUpDown.Value;
-            this.hiddenFunctionType = (ActivationFunctionType)hiddenFunctionComboBox.SelectedValue;
-            this.outputFunctionType = (ActivationFunctionType)outputFunctionComboBox.SelectedValue;
-            this.learningDataPercentage = (float)learningDataPercentageNumericUpDown.Value;
-            this.maxLearningRms = (float)maxLearningRmsNumericUpDown.Value;
-            this.maxNumEpoch = (int)maxNumEpochNumericUpDown.Value;
-            this.learningRate = (float)learningRateNumericUpDown.Value;
-            this.momentum = (float)momentumNumericUpDown.Value;
+            predictionManager.NetworkNumInput = (int)numInputNumericUpDown.Value;
+            predictionManager.NetworkNumHidden = (int)numHiddenNumericUpDown.Value;
+            predictionManager.NetworkNumOutput = (int)numOutputNumericUpDown.Value;
+            predictionManager.NetworkHiddenFunctionType = (ActivationFunctionType)hiddenFunctionComboBox.SelectedValue;
+            predictionManager.NetworkOutputFunctionType = (ActivationFunctionType)outputFunctionComboBox.SelectedValue;
+            predictionManager.LearningDataPercentage = (float)learningDataPercentageNumericUpDown.Value;
+            predictionManager.MaxLearningRms = (float)maxLearningRmsNumericUpDown.Value;
+            predictionManager.MaxNumEpoch = (int)maxNumEpochNumericUpDown.Value;
+            predictionManager.LearningRate = (float)learningRateNumericUpDown.Value;
+            predictionManager.Momentum = (float)momentumNumericUpDown.Value;
 
             if (backPropagationRadioButton.Checked)
             {
-                propagationType = ErrorPropagationType.BackPropagation;
+                predictionManager.LearningAlgorithmType = LearningAlgorithmType.BackPropagation;
             }
             else if (resilientPropagationRadioButton.Checked)
             {
-                propagationType = ErrorPropagationType.ResilientPropagation;
+                predictionManager.LearningAlgorithmType = LearningAlgorithmType.ResilientBackPropagation;
             }
         }
 
-        private void SetNetworkParamsToGui()
+        private void SetParamsToGui()
         {
-            numInputNumericUpDown.Value = network.NumInput;
-            numHiddenNumericUpDown.Value = network.NumHidden;
-            numOutputNumericUpDown.Value = network.NumOutput;
-            hiddenFunctionComboBox.SelectedValue = network.HiddenFunctionType;
-            outputFunctionComboBox.SelectedValue = network.OutputFunctionType;
+            numInputNumericUpDown.Value = predictionManager.NetworkNumInput;
+            numHiddenNumericUpDown.Value = predictionManager.NetworkNumHidden;
+            numOutputNumericUpDown.Value = predictionManager.NetworkNumOutput;
+            hiddenFunctionComboBox.SelectedValue = predictionManager.NetworkHiddenFunctionType;
+            outputFunctionComboBox.SelectedValue = predictionManager.NetworkOutputFunctionType;
+            learningDataPercentageNumericUpDown.Value = (decimal)predictionManager.LearningDataPercentage;
+            maxLearningRmsNumericUpDown.Value = (decimal)predictionManager.MaxLearningRms;
+            maxNumEpochNumericUpDown.Value = predictionManager.MaxNumEpoch;
+            learningRateNumericUpDown.Value = (decimal)predictionManager.LearningRate;
+            momentumNumericUpDown.Value = (decimal)predictionManager.Momentum;
+
+            switch(predictionManager.LearningAlgorithmType)
+            {
+                case LearningAlgorithmType.BackPropagation:
+                    backPropagationRadioButton.Checked = true;
+                    break;
+                case LearningAlgorithmType.ResilientBackPropagation:
+                    resilientPropagationRadioButton.Checked = true;
+                    break;
+            }
         }
 
-        private bool LoadData()
+        private bool SetPredictionDataParams()
         {
             string filePath = dataFilePathTextBox.Text;
 
@@ -210,7 +202,8 @@ namespace MlpNetwork
 
             if(!File.Exists(filePath))
             {
-                MessageBox.Show("Заданного файла не существует. Проверьте путь к файлу с данными.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Заданного файла не существует. Проверьте путь к файлу с данными.", "Ошибка",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
 
@@ -227,7 +220,9 @@ namespace MlpNetwork
                         break;
                 }
 
-                rawInputData = NetworkPrediction.LoadData(filePath, separator);
+                predictionManager.PredictionDataFilePath = filePath;
+                predictionManager.PredictionDataSeparator = separator;
+
                 return true;
             }
             catch (Exception ex)
@@ -237,71 +232,49 @@ namespace MlpNetwork
             }
         }
 
-        private void LearnNetworkCuda()
+        private void LearnNetwork()
         {
-            network = new MlpNetwork(numInput, numHidden, numOutput, hiddenFunctionType, outputFunctionType);
-
-            if (!LoadData())
+            if (!SetPredictionDataParams())
                 return;
 
-            prediction = new NetworkPrediction(rawInputData, numInput, numOutput, learningDataPercentage / 100.0f);
+            NetworkLearningForm learningForm = new NetworkLearningForm(predictionManager);
 
-            NetworkLearningForm learningForm = new NetworkLearningForm(propagationType, network,
-                prediction.LearningDataSet, maxNumEpoch, maxLearningRms, learningRate, momentum);
-
-            DialogResult result = learningForm.ShowDialog();
+            DialogResult result = DialogResult.Abort;
+            try
+            {
+                result = learningForm.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            
             if(result == DialogResult.Abort)
             {
                 return;
             }
 
-            float[] learningRms = learningForm.LearningRmsList.ToArray();
+            float[] learningRms = predictionManager.LearningRms;
 
-            DrawGraph(learningRmsGraphControl, new string[] { "" }, new string[] { "Red" }, new float[][] { learningRms });
+            learningRmsGraphControl.DrawGraph(new string[] { "" }, new string[] { "Red" }, new float[][] { learningRms });
         }
 
         private void TestNetwork()
         {
-            NetworkDataSet fullDataSet = prediction.FullDataSet;
-
-            float[][] predictedOutput = network.ComputeOutput(fullDataSet.GetInputData());
-            float[][] targetOutput = fullDataSet.GetOutputData();
-
-            float[] testingRms = MatrixHelper.Rms(targetOutput, predictedOutput);
-
-            float[] predictedOutputArray = MatrixHelper.Convert2DArrayTo1D(predictedOutput);
-            float[] targetOutputArray = MatrixHelper.Convert2DArrayTo1D(targetOutput);
-
-            DrawGraph(resultGraphControl, new string[] { "Исходный график", "Нейронная сеть" },
-                new string[] { "Red", "Blue" }, new float[][] { targetOutputArray, predictedOutputArray });
-         
-            DrawGraph(testingRmsGraphControl, new string[] { "" }, new string[] { "Red" }, new float[][] { testingRms });
-        }
-
-        private void DrawGraph(ZedGraphControl graph, string[] labels, string[] colors, float[][] data)
-        {
-            GraphPane pane = graph.GraphPane;
-
-            pane.CurveList.Clear();
-
-            PointPairList[] lists = new PointPairList[data.Length];
-            for (int i = 0; i < data.Length; i++)
+            try
             {
-                lists[i] = new PointPairList();
-                for (int j = 0; j < data[i].Length; j++)
-                {
-                    lists[i].Add(j, data[i][j]);
-                }
+                predictionManager.TestNetwork();
+            }
+            catch (NetworkNotTrainedException ex)
+            {
+                MessageBox.Show("Сеть не обучена. Обучите сеть, а затем выполните её тестирование.",
+                    "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
-            LineItem[] myCurves = new LineItem[data.Length];
-            for (int i = 0; i < data.Length; i++)
-            {
-                myCurves[i] = pane.AddCurve(labels[i], lists[i], Color.FromName(colors[i]), SymbolType.None);
-            }
+            resultGraphControl.DrawGraph(new string[] { "Исходный график", "Нейронная сеть" },
+                new string[] { "Red", "Blue" }, new float[][] { predictionManager.TargetOutput, predictionManager.PredictedOutput });
 
-            graph.AxisChange();
-            graph.Invalidate();
+            testingRmsGraphControl.DrawGraph(new string[] { "" }, new string[] { "Red" }, new float[][] { predictionManager.TestingRms });
         }
     }
 }

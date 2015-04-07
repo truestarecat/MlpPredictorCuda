@@ -2,14 +2,14 @@
 
 namespace MlpNetwork
 {
+    [Serializable]
     public class NetworkDataSet
     {
+        private int numInput;
+        private int numOutput;
+        private int numSamples;
         private float[][] inputData;
         private float[][] outputData;
-
-        public int NumInput { get; private set; }
-        public int NumOutput { get; private set; }
-        public int NumSamples { get; private set; }
 
         public NetworkDataSet(int numInput, int numOutput, int numSamples)
         {
@@ -33,6 +33,57 @@ namespace MlpNetwork
             {
                 Array.Copy(inputData[i], this.inputData[i], NumInput);
                 Array.Copy(outputData[i], this.outputData[i], NumOutput);
+            }
+        }
+
+        public int NumInput
+        {
+            get
+            {
+                return numInput;
+            }
+            private set
+            {
+                if (value < 1)
+                {
+                    throw new ArgumentOutOfRangeException("value", "Num input must be > 0");
+                }
+
+                numInput = value;
+            }
+        }
+
+        public int NumOutput
+        {
+            get
+            {
+                return numOutput;
+            }
+            private set
+            {
+                if (value < 1)
+                {
+                    throw new ArgumentOutOfRangeException("value", "Num output must be > 0");
+                }
+
+                numOutput = value;
+            }
+        }
+
+        public int NumSamples
+        {
+            get
+            {
+                return numSamples;
+            }
+            private set
+            {
+                if (value < 1)
+                {
+                    throw new ArgumentOutOfRangeException("value", "Num samples must be > 0");
+                }
+
+                numSamples = value;
             }
         }
 

@@ -77,9 +77,12 @@
     <Compile Include="MlpNetwork.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="NetworkDataSet.cs" />
-    <Compile Include="NetworkPrediction.cs" />
+    <Compile Include="NetworkNotTrainedException.cs" />
+    <Compile Include="NetworkPredictionData.cs" />
+    <Compile Include="NetworkPredictionManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ZedGraphExtensions.cs" />
     <EmbeddedResource Include="AboutBox.resx">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </EmbeddedResource>
