@@ -5,7 +5,7 @@ VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CudaLib", "CudaLib\CudaLib.vcxproj", "{A5C4DC77-3D91-4DB0-865E-C57979CF29DF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MlpNetwork", "MlpNetwork\MlpNetwork.csproj", "{D613267F-A8E8-42EA-939B-9697DE17A68B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MlpPredictor", "MlpPredictor\MlpPredictor.csproj", "{D613267F-A8E8-42EA-939B-9697DE17A68B}"
 	ProjectSection(ProjectDependencies) = postProject
 		{A5C4DC77-3D91-4DB0-865E-C57979CF29DF} = {A5C4DC77-3D91-4DB0-865E-C57979CF29DF}
 	EndProjectSection

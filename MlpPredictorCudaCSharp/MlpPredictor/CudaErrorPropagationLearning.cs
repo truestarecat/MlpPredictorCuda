@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Threading;
 
-namespace MlpNetwork
+namespace MlpPredictor
 {
     public enum LearningAlgorithmType
     {
@@ -10,23 +12,140 @@ namespace MlpNetwork
     }
 
     [Serializable]
-    public class CudaErrorPropagation : IDisposable
+    public abstract class CudaErrorPropagationLearning : INetworkLearning, IDisposable
     {
         private MlpNetwork network;
         private NetworkDataSet dataSet;
 
-        [NonSerialized]
-        private IntPtr propagationHandle;
+        protected float maxLearningRms;
+        protected int maxNumEpoch;
 
         [NonSerialized]
-        private bool disposed;
+        protected IntPtr propagationHandle;
 
-        public CudaErrorPropagation(MlpNetwork network, NetworkDataSet dataSet)
+        [NonSerialized]
+        protected bool disposed;
+
+        public CudaErrorPropagationLearning(MlpNetwork network, NetworkDataSet dataSet,
+            float maxLearningRms = 0.01f, int maxNumEpoch = 10000)
         {
+            if (network == null)
+                throw new ArgumentNullException("network");
+            if (dataSet == null)
+                throw new ArgumentNullException("dataSet");
+
             this.network = network;
             this.dataSet = dataSet;
+
+            MaxLearningRms = maxLearningRms;
+            MaxNumEpoch = maxNumEpoch;
+
             this.propagationHandle = IntPtr.Zero;
             this.disposed = true;
+        }
+
+        public float MaxLearningRms
+        {
+            get
+            {
+                return maxLearningRms;
+            }
+            set
+            {
+                if (value < 0.0f)
+                {
+                    throw new ArgumentOutOfRangeException("value", "Максимальное СКО ошибки обучения должно быть больше 0.");
+                }
+
+                maxLearningRms = value;
+            }
+        }
+
+        public int MaxNumEpoch
+        {
+            get
+            {
+                return maxNumEpoch;
+            }
+            set
+            {
+                if (value < 1)
+                {
+                    throw new ArgumentOutOfRangeException("value", "Максимальное число эпох обучения должно быть больше 1.");
+                }
+
+                maxNumEpoch = value;
+            }
+        }
+
+        public int NumEpoch { get; protected set; }
+
+        public float[] Rms { get; protected set; }
+
+        public abstract float PerformEpoch();
+
+        public void LearnNetwork()
+        {
+            if (disposed)
+            {
+                InitializeNativeResources();
+            }
+
+            NumEpoch = 0;
+            float error = Single.MaxValue;
+            List<float> learningRmsList = new List<float>();
+
+            while (NumEpoch < maxNumEpoch && error > maxLearningRms)
+            {
+                error = PerformEpoch();
+
+                learningRmsList.Add(error);
+
+                ++NumEpoch;
+            }
+
+            UpdateNetworkWeights();
+
+            Rms = learningRmsList.ToArray();
+        }
+
+        public void LearnNetwork(IProgress<float> progress, CancellationToken token)
+        {
+            if (progress == null)
+                throw new ArgumentNullException("progress");
+            if (token == null)
+                throw new ArgumentNullException("token");
+
+            if (disposed)
+            {
+                InitializeNativeResources();
+            }
+
+            NumEpoch = 0;
+            float error = Single.MaxValue;
+            List<float> learningRmsList = new List<float>();
+
+            while (NumEpoch < maxNumEpoch && error > maxLearningRms)
+            {
+                if (token.IsCancellationRequested)
+                {
+                    Dispose();
+                    Rms = learningRmsList.ToArray();
+                    return;
+                }
+
+                error = PerformEpoch();
+
+                learningRmsList.Add(error);
+
+                progress.Report(error);
+
+                ++NumEpoch;
+            }
+
+            UpdateNetworkWeights();
+
+            Rms = learningRmsList.ToArray();
         }
 
         public void RandomizeNetworkWeights()
@@ -37,26 +156,6 @@ namespace MlpNetwork
             }
 
             NativeMethods.RandomizeWeights(propagationHandle);
-        }
-
-        public float PerformBackPropEpoch(float learningRate, float momentum)
-        {
-            if (disposed)
-            {
-                InitializeNativeResources();
-            }
-
-            return NativeMethods.PerformBackPropEpoch(propagationHandle, learningRate, momentum);
-        }
-
-        public float PerformResilientPropEpoch()
-        {
-            if (disposed)
-            {
-                InitializeNativeResources();
-            }
-
-            return NativeMethods.PerformResilientPropEpoch(propagationHandle);
         }
 
         public void UpdateNetworkWeights()
@@ -100,10 +199,10 @@ namespace MlpNetwork
         {
             if(!disposed)
             {
-                //if(disposing)
-                //{
-
-                //}
+                if (disposing)
+                {
+                    // Dispose managed resources.
+                }
 
                 NativeMethods.DestroyErrorPropagation(propagationHandle);
 
@@ -112,7 +211,7 @@ namespace MlpNetwork
             }
         }
 
-        private void InitializeNativeResources()
+        protected void InitializeNativeResources()
         {
             float[] inputDataFlatten = Convert2DArrayTo1D(dataSet.GetInputData());
             float[] outputDataFlatten = Convert2DArrayTo1D(dataSet.GetOutputData());
@@ -122,7 +221,7 @@ namespace MlpNetwork
             propagationHandle = NativeMethods.CreateErrorPropagation(inputDataFlatten, outputDataFlatten,
                 inputHiddenWeightsFlatten, hiddenOutputWeightsFlatten,
                 network.NumInput, network.NumHidden, network.NumOutput, dataSet.NumSamples,
-                network.HiddenFunctionType, network.OutputFunctionType);
+                network.HiddenFunction.Type, network.OutputFunction.Type);
 
             disposed = false;
         }
@@ -181,7 +280,7 @@ namespace MlpNetwork
             return array2D;
         }
 
-        ~CudaErrorPropagation()
+        ~CudaErrorPropagationLearning()
         {
             Dispose(false);
         }

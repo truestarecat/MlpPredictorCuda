@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace MlpNetwork
+namespace MlpPredictor
 {
     internal static class NativeMethods
     {

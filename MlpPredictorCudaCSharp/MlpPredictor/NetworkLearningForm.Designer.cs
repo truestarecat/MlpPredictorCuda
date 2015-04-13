@@ -1,4 +1,4 @@
-﻿namespace MlpNetwork
+﻿namespace MlpPredictor
 {
     partial class NetworkLearningForm
     {

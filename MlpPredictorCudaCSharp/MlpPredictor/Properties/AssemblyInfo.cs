@@ -1,16 +1,16 @@
 ﻿using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // Управление общими сведениями о сборке осуществляется с помощью 
 // набора атрибутов. Измените значения этих атрибутов, чтобы изменить сведения,
 // связанные со сборкой.
-[assembly: AssemblyTitle("MlpNetwork")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("АС прогнозирования многослойным персептроном")]
+[assembly: AssemblyDescription(@"Программа выполнена студентом группы 6501 С245 Яковченко И. В. в рамках дипломного проектирования. " + 
+                                "Руководитель проекта: ассистент кафедры ИСТ Литвинов В. Г.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("MlpNetwork")]
-[assembly: AssemblyCopyright("Copyright ©  2015")]
+[assembly: AssemblyProduct("АС прогнозирования многослойным персептроном")]
+[assembly: AssemblyCopyright("© СГАУ (SSAU), 2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

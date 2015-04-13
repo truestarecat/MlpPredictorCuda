@@ -2,37 +2,16 @@
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
-namespace MlpNetwork
+namespace MlpPredictor
 {
-    [Serializable]
-    public enum ActivationFunctionType
-    {
-        [EnumDescription("Логистическая")]
-        UnipolarSigmoid = 0,
-
-        [EnumDescription("Гипертангенс")]
-        BipolarSigmoid = 1,
-
-        [EnumDescription("Синус")]
-        Sinusoid = 2,
-
-        [EnumDescription("Линейная")]
-        Linear = 3
-    }
-
-    [Serializable]
-    public delegate float Function(float x);
-
     [Serializable]
     public class MlpNetwork
     {
         private int numInput;
         private int numHidden;
         private int numOutput;
-        private ActivationFunctionType hiddenFunctionType;
-        private ActivationFunctionType outputFunctionType;
-        private Function hiddenFunction;
-        private Function outputFunction;
+        private ActivationFunction hiddenFunction;
+        private ActivationFunction outputFunction;
 
         private float[] inputs;
         private float[][] inputHiddenWeights;
@@ -40,16 +19,13 @@ namespace MlpNetwork
         private float[][] hiddenOutputWeights;
         private float[] outputs;
 
-        public MlpNetwork(int numInput, int numHidden, int numOutput,
-            ActivationFunctionType hiddenFunctionType = ActivationFunctionType.UnipolarSigmoid,
-            ActivationFunctionType outputFunctionType = ActivationFunctionType.UnipolarSigmoid)
+        public MlpNetwork(int numInput, int numHidden, int numOutput)
         {
             NumInput = numInput;
             NumHidden = numHidden;
             NumOutput = numOutput;
-
-            HiddenFunctionType = hiddenFunctionType;
-            OutputFunctionType = outputFunctionType;
+            HiddenFunction = new ActivationFunction(ActivationFunctionType.UnipolarSigmoid);
+            OutputFunction = new ActivationFunction(ActivationFunctionType.UnipolarSigmoid);
 
             inputs = new float[numInput];
 
@@ -58,9 +34,37 @@ namespace MlpNetwork
             {
                 inputHiddenWeights[i] = new float[numHidden];
             }
-            
+
             hiddenOutputs = new float[numHidden];
-            
+
+            hiddenOutputWeights = new float[numHidden + 1][];
+            for (int i = 0; i < hiddenOutputWeights.Length; i++)
+            {
+                hiddenOutputWeights[i] = new float[numOutput];
+            }
+
+            outputs = new float[numOutput];
+        }
+
+        public MlpNetwork(int numInput, int numHidden, int numOutput,
+            ActivationFunction hiddenFunction, ActivationFunction outputFunction)
+        {
+            NumInput = numInput;
+            NumHidden = numHidden;
+            NumOutput = numOutput;
+            HiddenFunction = hiddenFunction;
+            OutputFunction = outputFunction;
+
+            inputs = new float[numInput];
+
+            inputHiddenWeights = new float[numInput + 1][];
+            for (int i = 0; i < inputHiddenWeights.Length; i++)
+            {
+                inputHiddenWeights[i] = new float[numHidden];
+            }
+
+            hiddenOutputs = new float[numHidden];
+
             hiddenOutputWeights = new float[numHidden + 1][];
             for (int i = 0; i < hiddenOutputWeights.Length; i++)
             {
@@ -79,9 +83,7 @@ namespace MlpNetwork
             private set
             {
                 if(value < 1)
-                {
-                    throw new ArgumentOutOfRangeException("value", "Num input must be > 0");
-                }
+                    throw new ArgumentOutOfRangeException("value", "Число входов сети должно быть больше 0.");
 
                 numInput = value;
             }
@@ -96,9 +98,7 @@ namespace MlpNetwork
             private set
             {
                 if (value < 1)
-                {
-                    throw new ArgumentOutOfRangeException("value", "Num hidden must be > 0");
-                }
+                    throw new ArgumentOutOfRangeException("value", "Число нейронов в скрытом слое сети должно быть больше 0.");
 
                 numHidden = value;
             }
@@ -113,35 +113,39 @@ namespace MlpNetwork
             private set
             {
                 if (value < 1)
-                {
-                    throw new ArgumentOutOfRangeException("value", "Num output must be > 0");
-                }
+                    throw new ArgumentOutOfRangeException("value", "Число выходов сети должно быть больше 0.");
 
                 numOutput = value;
             }
         }
 
-        public ActivationFunctionType HiddenFunctionType
+        public ActivationFunction HiddenFunction
         {
             get
             {
-                return hiddenFunctionType;
+                return hiddenFunction;
             }
-            private set
+            set
             {
-                SetLayerFunction(ref hiddenFunction, ref hiddenFunctionType, value);
+                if(value == null)
+                    throw new ArgumentNullException("value");
+
+                hiddenFunction = value;
             }
         }
 
-        public ActivationFunctionType OutputFunctionType
+        public ActivationFunction OutputFunction
         {
             get
             {
-                return outputFunctionType;
+                return outputFunction;
             }
-            private set
+            set
             {
-                SetLayerFunction(ref outputFunction, ref outputFunctionType, value);
+                if (value == null)
+                    throw new ArgumentNullException("value");
+
+                outputFunction = value;
             }
         }
 
@@ -262,8 +266,8 @@ namespace MlpNetwork
             return outputsBatch;
         }
 
-        private static void ComputeLayerOutput(Function layerActivationFunction, float[][] layerWeights, float[] layerInputs, float[] layerOutputs,
-            int numLayerInput, int numLayerOutput)
+        private static void ComputeLayerOutput(ActivationFunction layerActivationFunction, float[][] layerWeights,
+            float[] layerInputs, float[] layerOutputs, int numLayerInput, int numLayerOutput)
         {
             for (int j = 0; j < numLayerOutput; j++)
             {
@@ -273,32 +277,8 @@ namespace MlpNetwork
                     sum += layerWeights[i + 1][j] * layerInputs[i];
                 }
 
-                layerOutputs[j] = layerActivationFunction(sum);
+                layerOutputs[j] = layerActivationFunction.Value(sum);
             }
-        }
-
-        private void SetLayerFunction(ref Function layerFunction, ref ActivationFunctionType layerFunctionType,
-            ActivationFunctionType type)
-        {
-            switch (type)
-            {
-                case ActivationFunctionType.UnipolarSigmoid:
-                    layerFunction = x => 1.0f / (1.0f + (float)Math.Exp(-x));
-                    break;
-                case ActivationFunctionType.BipolarSigmoid:
-                    layerFunction = x => (float)Math.Tanh(x);
-                    break;
-                case ActivationFunctionType.Sinusoid:
-                    layerFunction = x => (float)Math.Sin(x);
-                    break;
-                case ActivationFunctionType.Linear:
-                    layerFunction = x => x;
-                    break;
-                default:
-                    throw new ArgumentException("Illegal function type");
-            }
-
-            layerFunctionType = type;
         }
     }
 }

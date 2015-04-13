@@ -3,25 +3,25 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace MlpNetwork
+namespace MlpPredictor
 {
     public partial class NetworkLearningForm : Form
     {
         private CancellationTokenSource cancellationTokenSource;
 
-        public NetworkLearningForm(NetworkPredictionManager predictionManager)
+        public NetworkLearningForm(NetworkPrediction prediction)
         {
             InitializeComponent();
+
             learningProgressBar.Minimum = 0;
-            learningProgressBar.Maximum = predictionManager.MaxNumEpoch;
+            learningProgressBar.Maximum = prediction.MaxNumEpoch;
             learningProgressBar.Step = 1;
 
-            PredictionManager = predictionManager;
-
+            Prediction = prediction;
             cancellationTokenSource = new CancellationTokenSource();
         }
 
-        public NetworkPredictionManager PredictionManager { get; private set; }
+        public NetworkPrediction Prediction { get; private set; }
 
         private async void LearningProgressForm_Load(object sender, EventArgs e)
         {
@@ -32,7 +32,7 @@ namespace MlpNetwork
                 learningRmsLabel.Text = Convert.ToString(value);
             });
 
-            await Task.Factory.StartNew(() => PredictionManager.LearnNetwork(progress, cancellationTokenSource.Token),
+            await Task.Factory.StartNew(() => Prediction.LearnNetwork(progress, cancellationTokenSource.Token),
                 TaskCreationOptions.LongRunning);
 
             this.Close();

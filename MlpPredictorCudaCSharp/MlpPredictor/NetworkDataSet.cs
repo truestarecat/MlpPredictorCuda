@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MlpNetwork
+namespace MlpPredictor
 {
     [Serializable]
     public class NetworkDataSet
@@ -29,11 +29,8 @@ namespace MlpNetwork
         public NetworkDataSet(float[][] inputData, float[][] outputData)
             : this(inputData[0].Length, outputData[0].Length, inputData.Length)
         {
-            for (int i = 0; i < NumSamples; i++)
-            {
-                Array.Copy(inputData[i], this.inputData[i], NumInput);
-                Array.Copy(outputData[i], this.outputData[i], NumOutput);
-            }
+            SetInputData(inputData);
+            SetOutputData(outputData);
         }
 
         public int NumInput
@@ -46,7 +43,7 @@ namespace MlpNetwork
             {
                 if (value < 1)
                 {
-                    throw new ArgumentOutOfRangeException("value", "Num input must be > 0");
+                    throw new ArgumentOutOfRangeException("value", "Число входов должно быть больше 0.");
                 }
 
                 numInput = value;
@@ -63,7 +60,7 @@ namespace MlpNetwork
             {
                 if (value < 1)
                 {
-                    throw new ArgumentOutOfRangeException("value", "Num output must be > 0");
+                    throw new ArgumentOutOfRangeException("value", "Число выходов должно быть больше 0.");
                 }
 
                 numOutput = value;
@@ -80,7 +77,7 @@ namespace MlpNetwork
             {
                 if (value < 1)
                 {
-                    throw new ArgumentOutOfRangeException("value", "Num samples must be > 0");
+                    throw new ArgumentOutOfRangeException("value", "Число выборок в наборе должно быть больше 0.");
                 }
 
                 numSamples = value;
@@ -112,7 +109,7 @@ namespace MlpNetwork
         public void SetInputData(float[][] inputData)
 		{
 			if (inputData.Length != NumSamples || inputData[0].Length!= NumInput)
-				throw new ArgumentException("Bad number of inputData");
+                throw new ArgumentException("Неверная размерность входных данных.", "inputData");
 
             for (int i = 0; i < inputData.Length; i++)
             {
@@ -123,7 +120,7 @@ namespace MlpNetwork
 		public void SetOutputData(float[][] outputData)
 		{
 			if (outputData.Length != NumSamples || outputData[0].Length != NumOutput)
-                throw new ArgumentException("Bad number of outputData");
+                throw new ArgumentException("Неверная размерность выходных данных.", "outputData");
 
             for (int i = 0; i < outputData.Length; i++)
             {

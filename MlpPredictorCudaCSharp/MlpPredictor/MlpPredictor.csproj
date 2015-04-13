@@ -7,10 +7,25 @@
     <ProjectGuid>{D613267F-A8E8-42EA-939B-9697DE17A68B}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MlpNetwork</RootNamespace>
-    <AssemblyName>MlpNetwork</AssemblyName>
+    <RootNamespace>MlpPredictor</RootNamespace>
+    <AssemblyName>MlpPredictor</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -58,9 +73,11 @@
     <Compile Include="AboutBox.Designer.cs">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </Compile>
-    <Compile Include="CudaErrorPropagation.cs" />
-    <Compile Include="EnumDescriptionAttribute.cs" />
-    <Compile Include="EnumHelper.cs" />
+    <Compile Include="CudaBackPropagationLearning.cs" />
+    <Compile Include="CudaErrorPropagationLearning.cs" />
+    <Compile Include="CudaResilientPropagationLearning.cs" />
+    <Compile Include="ActivationFunction.cs" />
+    <Compile Include="INetworkLearning.cs" />
     <Compile Include="NetworkLearningForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -77,9 +94,9 @@
     <Compile Include="MlpNetwork.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="NetworkDataSet.cs" />
-    <Compile Include="NetworkNotTrainedException.cs" />
     <Compile Include="NetworkPredictionData.cs" />
-    <Compile Include="NetworkPredictionManager.cs" />
+    <Compile Include="NetworkPrediction.cs" />
+    <Compile Include="NetworkTesting.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ZedGraphExtensions.cs" />
@@ -100,6 +117,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -118,7 +136,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Networks\" />
+    <Folder Include="Predictions\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="InputData.txt">
@@ -126,6 +144,23 @@
     </Content>
     <Content Include="Libraries\ZedGraph.dll" />
     <Content Include="Libraries\ZedGraph.Web.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.5">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.5 %28x86 и x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>Клиентский профиль .NET Framework 3.5 с пакетом обновления 1 %28SP1%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

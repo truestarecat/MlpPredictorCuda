@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using ZedGraph;
 
-namespace MlpNetwork
+namespace MlpPredictor
 {
     public static class ZedGraphExtensions
     {
