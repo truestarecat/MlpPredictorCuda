@@ -3,7 +3,7 @@ using System.Threading;
 
 namespace MlpPredictor
 {
-    public interface INetworkLearning
+    public interface INetworkLearning : IDisposable
     {
         float MaxLearningRms { get; set; }
 

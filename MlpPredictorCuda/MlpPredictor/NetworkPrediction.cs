@@ -8,305 +8,88 @@ namespace MlpPredictor
     [Serializable]
     public class NetworkPrediction
     {
-        private int networkNumInput;
-        private int networkNumHidden;
-        private int networkNumOutput;
-        private ActivationFunctionType networkHiddenFunctionType;
-        private ActivationFunctionType networkOutputFunctionType;
-        private string predictionDataFilePath;
-        private float learningDataPercentage;
-        private float maxLearningRms;
-        private int maxNumEpoch;
-        private float learningRate;
-        private float momentum;
-        private LearningAlgorithmType learningAlgorithmType;
+        public NetworkPrediction()
+        {
+        }
 
-        private MlpNetwork network;
-        private NetworkPredictionData predictionData;
-        private INetworkLearning learning;
-        private NetworkTesting testing;
+        public MlpNetwork Network { get; private set; }
 
-        public NetworkPrediction(int networkNumInput,
-                                 int networkNumHidden,
-                                 int networkNumOutput,
-                                 ActivationFunctionType networkHiddenFunctionType,
-                                 ActivationFunctionType networkOutputFunctionType,
-                                 string predictionDataFilePath,
-                                 float learningDataPercentage,
+        public NetworkPredictionData PredictionData { get; private set; }
+
+        public INetworkLearning Learning { get; private set; }
+
+        public NetworkTesting Testing { get; private set; }
+
+        public void CreateNetwork(int networkNumInput,
+                                  int networkNumHidden,
+                                  int networkNumOutput,
+                                  ActivationFunctionType networkHiddenFunctionType,
+                                  ActivationFunctionType networkOutputFunctionType)
+        {
+            Network = new MlpNetwork(networkNumInput, networkNumHidden, networkNumOutput,
+                new ActivationFunction(networkHiddenFunctionType), new ActivationFunction(networkOutputFunctionType));
+        }
+
+        public void LoadPredictionData(string filePath, int inputWindowSize, int outputWindowSize, float learningDataPercentage)
+        {
+            PredictionData = new NetworkPredictionData(filePath, inputWindowSize, outputWindowSize, learningDataPercentage);
+        }
+
+        public void LearnNetwork(float maxLearningRms,
+                                 int maxNumEpoch,
+                                 float learningRate,
+                                 float momentum,
+                                 LearningAlgorithmType learningAlgorithmType)
+        {
+            if (Network == null)
+                throw new InvalidOperationException("Сеть не создана.");
+            if (PredictionData == null)
+                throw new InvalidOperationException("Данные для прогноза не загружены.");
+
+            Learning = CreateLearning(learningAlgorithmType, learningRate, momentum);
+            Learning.MaxLearningRms = maxLearningRms;
+            Learning.MaxNumEpoch = maxNumEpoch;
+
+            Learning.LearnNetwork();
+            Learning.Dispose();
+        }
+
+        public void LearnNetwork(IProgress<float> progress, CancellationToken token,
                                  float maxLearningRms,
                                  int maxNumEpoch,
                                  float learningRate,
                                  float momentum,
                                  LearningAlgorithmType learningAlgorithmType)
         {
-            NetworkNumInput = networkNumInput;
-            NetworkNumHidden = networkNumHidden;
-            NetworkNumOutput = networkNumOutput;
-            NetworkHiddenFunctionType = networkHiddenFunctionType;
-            NetworkOutputFunctionType = networkOutputFunctionType;
-            PredictionDataFilePath = predictionDataFilePath;
-            LearningDataPercentage = learningDataPercentage;
-            MaxLearningRms = maxLearningRms;
-            MaxNumEpoch = maxNumEpoch;
-            LearningRate = learningRate;
-            Momentum = momentum;
-            LearningAlgorithmType = learningAlgorithmType;
-        }
-
-        public int NetworkNumInput
-        {
-            get
-            {
-                return networkNumInput;
-            }
-            private set
-            {
-                if (value < 1)
-                    throw new ArgumentOutOfRangeException("value", "Число входов сети должно быть больше 0.");
-
-                networkNumInput = value;
-            }
-        }
-
-        public int NetworkNumHidden
-        {
-            get
-            {
-                return networkNumHidden;
-            }
-            private set
-            {
-                if (value < 1)
-                    throw new ArgumentOutOfRangeException("value", "Число нейронов в скрытом слое сети должно быть больше 0.");
-
-                networkNumHidden = value;
-            }
-        }
-
-        public int NetworkNumOutput
-        {
-            get
-            {
-                return networkNumOutput;
-            }
-            private set
-            {
-                if (value < 1)
-                    throw new ArgumentOutOfRangeException("value", "Число выходов сети должно быть больше 0.");
-
-                networkNumOutput = value;
-            }
-        }
-
-        public ActivationFunctionType NetworkHiddenFunctionType
-        {
-            get
-            {
-                return networkHiddenFunctionType;
-            }
-            set
-            {
-                networkHiddenFunctionType = value;
-            }
-        }
-
-        public ActivationFunctionType NetworkOutputFunctionType
-        {
-            get
-            {
-                return networkOutputFunctionType;
-            }
-            set
-            {
-                networkOutputFunctionType = value;
-            }
-        }
-
-        public string PredictionDataFilePath
-        {
-            get
-            {
-                return predictionDataFilePath;
-            }
-            private set
-            {
-                if (value == null)
-                    throw new ArgumentNullException("value");
-                if (value.Length == 0)
-                    throw new ArgumentException("Пустой путь к файлу.", "value");
-
-                predictionDataFilePath = value;
-            }
-        }
-
-        public float LearningDataPercentage
-        {
-            get
-            {
-                return learningDataPercentage;
-            }
-            set
-            {
-                if (value < 1.0f || value > 99.0f)
-                {
-                    throw new ArgumentOutOfRangeException("value", "Процент обучающих данных в выборке должен быть от 1% до 99%.");
-                }
-
-                learningDataPercentage = value;
-            }
-        }
-
-        public float MaxLearningRms
-        {
-            get
-            {
-                return maxLearningRms;
-            }
-            set
-            {
-                if (value < 0.0f)
-                {
-                    throw new ArgumentOutOfRangeException("value", "Максимальное СКО ошибки обучения должно быть больше 0.");
-                }
-
-                maxLearningRms = value;
-            }
-        }
-
-        public int MaxNumEpoch
-        {
-            get
-            {
-                return maxNumEpoch;
-            }
-            set
-            {
-                if (value < 1)
-                {
-                    throw new ArgumentOutOfRangeException("value", "Максимальное число эпох обучения должно быть больше 1.");
-                }
-
-                maxNumEpoch = value;
-            }
-        }
-
-        public float LearningRate
-        {
-            get
-            {
-                return learningRate;
-            }
-            set
-            {
-                if (value < 0.0f || value > 1.0f)
-                {
-                    throw new ArgumentOutOfRangeException("value", "Коэффициент обучения должен лежать в диапазоне [0; 1].");
-                }
-
-                learningRate = value;
-            }
-        }
-
-        public float Momentum
-        {
-            get
-            {
-                return momentum;
-            }
-            set
-            {
-                if (value < 0.0f || value > 1.0f)
-                {
-                    throw new ArgumentOutOfRangeException("value", "Момент должен лежать в диапазоне [0; 1].");
-                }
-
-                momentum = value;
-            }
-        }
-
-        public LearningAlgorithmType LearningAlgorithmType
-        {
-            get
-            {
-                return learningAlgorithmType;
-            }
-            set
-            {
-                learningAlgorithmType = value;
-            }
-        }
-
-        public int LearningNumEpoch { get; private set; }
-
-        public float[] LearningRms { get; private set; }
-
-        public float[] TestingRms { get; private set; }
-
-        public float[] TestingPredictedOutput { get; private set; }
-
-        public float[] TestingTargetOutput { get; private set; }
-
-        public void CreateNetwork()
-        {
-            network = new MlpNetwork(NetworkNumInput, NetworkNumHidden, NetworkNumOutput,
-                new ActivationFunction(NetworkHiddenFunctionType), new ActivationFunction(NetworkOutputFunctionType));
-        }
-
-        public void LoadPredictionData()
-        {
-            predictionData = new NetworkPredictionData(PredictionDataFilePath, NetworkNumInput, NetworkNumOutput, LearningDataPercentage);
-        }
-
-        public void LearnNetwork()
-        {
-            if (network == null)
-                throw new InvalidOperationException("Сеть не создана.");
-            if (predictionData == null)
-                throw new InvalidOperationException("Данные для прогноза не загружены.");
-
-            learning = CreateLearning(LearningAlgorithmType);
-
-            learning.LearnNetwork();
-
-            LearningNumEpoch = learning.NumEpoch;
-            LearningRms = learning.Rms;
-        }
-
-        public void LearnNetwork(IProgress<float> progress, CancellationToken token)
-        {
             if (progress == null)
                 throw new ArgumentNullException("progress");
             if (token == null)
                 throw new ArgumentNullException("token");
-            if (network == null)
+            if (Network == null)
                 throw new InvalidOperationException("Сеть не создана.");
-            if (predictionData == null)
+            if (PredictionData == null)
                 throw new InvalidOperationException("Данные для прогноза не загружены.");
 
-            learning = CreateLearning(LearningAlgorithmType);
+            Learning = CreateLearning(learningAlgorithmType, learningRate, momentum);
+            Learning.MaxLearningRms = maxLearningRms;
+            Learning.MaxNumEpoch = maxNumEpoch;
 
-            learning.LearnNetwork(progress, token);
-
-            LearningNumEpoch = learning.NumEpoch;
-            LearningRms = learning.Rms;
+            Learning.LearnNetwork(progress, token);
+            Learning.Dispose();
         }
 
         public void TestNetwork()
         {
-            if (network == null)
+            if (Network == null)
                 throw new InvalidOperationException("Сеть не создана.");
-            if (predictionData == null)
+            if (PredictionData == null)
                 throw new InvalidOperationException("Данные для прогноза не загружены.");
-            if (learning == null)
+            if (Learning == null)
                 throw new InvalidOperationException("Сеть не обучена.");
 
-            testing = new NetworkTesting(network, predictionData.TestingDataSet);
+            Testing = new NetworkTesting(Network, PredictionData.TestingDataSet);
 
-            testing.TestNetwork();
-
-            TestingRms = testing.Rms;
-            TestingPredictedOutput = testing.PredictedOutput;
-            TestingTargetOutput = testing.TargetOutput;
+            Testing.TestNetwork();
         }
 
         public static NetworkPrediction LoadFromFile(string fileName)
@@ -333,14 +116,14 @@ namespace MlpPredictor
             SaveToFile(fileName, this);
         }
 
-        private INetworkLearning CreateLearning(LearningAlgorithmType learningAlgorithmType)
+        private INetworkLearning CreateLearning(LearningAlgorithmType learningAlgorithmType, float learningRate, float momentum)
         {
             switch (learningAlgorithmType)
             {
                 case LearningAlgorithmType.BackPropagation:
-                    return new CudaBackPropagationLearning(network, predictionData.LearningDataSet, LearningRate, Momentum);
+                    return new CudaBackPropagationLearning(Network, PredictionData.LearningDataSet, learningRate, momentum);
                 case LearningAlgorithmType.ResilientBackPropagation:
-                    return new CudaResilientPropagationLearning(network, predictionData.LearningDataSet);
+                    return new CudaResilientPropagationLearning(Network, PredictionData.LearningDataSet);
                 default:
                     throw new ArgumentException("Неизвестный алгоритм обучения.", "learningAlgorithmType");
             }

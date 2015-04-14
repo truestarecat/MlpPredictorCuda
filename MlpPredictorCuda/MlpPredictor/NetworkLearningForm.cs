@@ -7,21 +7,31 @@ namespace MlpPredictor
 {
     public partial class NetworkLearningForm : Form
     {
+        private NetworkPrediction prediction;
+        private float maxLearningRms;
+        private int maxNumEpoch;
+        private float learningRate;
+        private float momentum;
+        private LearningAlgorithmType learningAlgorithmType;
         private CancellationTokenSource cancellationTokenSource;
 
-        public NetworkLearningForm(NetworkPrediction prediction)
+        public NetworkLearningForm(NetworkPrediction prediction, float maxLearningRms, int maxNumEpoch,
+                                 float learningRate, float momentum, LearningAlgorithmType learningAlgorithmType)
         {
             InitializeComponent();
 
             learningProgressBar.Minimum = 0;
-            learningProgressBar.Maximum = prediction.MaxNumEpoch;
+            learningProgressBar.Maximum = maxNumEpoch;
             learningProgressBar.Step = 1;
 
-            Prediction = prediction;
+            this.prediction = prediction;
+            this.maxLearningRms = maxLearningRms;
+            this.maxNumEpoch = maxNumEpoch;
+            this.learningRate = learningRate;
+            this.momentum = momentum;
+            this.learningAlgorithmType = learningAlgorithmType;
             cancellationTokenSource = new CancellationTokenSource();
         }
-
-        public NetworkPrediction Prediction { get; private set; }
 
         private async void LearningProgressForm_Load(object sender, EventArgs e)
         {
@@ -32,8 +42,8 @@ namespace MlpPredictor
                 learningRmsLabel.Text = Convert.ToString(value);
             });
 
-            await Task.Factory.StartNew(() => Prediction.LearnNetwork(progress, cancellationTokenSource.Token),
-                TaskCreationOptions.LongRunning);
+            await Task.Factory.StartNew(() => prediction.LearnNetwork(progress, cancellationTokenSource.Token,
+                maxLearningRms, maxNumEpoch, learningRate, momentum, learningAlgorithmType), TaskCreationOptions.LongRunning);
 
             this.Close();
         }
