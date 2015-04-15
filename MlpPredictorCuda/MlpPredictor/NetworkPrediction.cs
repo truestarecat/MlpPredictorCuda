@@ -47,7 +47,7 @@ namespace MlpPredictor
                 throw new InvalidOperationException("Данные для прогноза не загружены.");
 
             Learning = CreateLearning(learningAlgorithmType, learningRate, momentum);
-            Learning.MaxLearningRms = maxLearningRms;
+            Learning.MaxRms = maxLearningRms;
             Learning.MaxNumEpoch = maxNumEpoch;
 
             Learning.LearnNetwork();
@@ -71,7 +71,7 @@ namespace MlpPredictor
                 throw new InvalidOperationException("Данные для прогноза не загружены.");
 
             Learning = CreateLearning(learningAlgorithmType, learningRate, momentum);
-            Learning.MaxLearningRms = maxLearningRms;
+            Learning.MaxRms = maxLearningRms;
             Learning.MaxNumEpoch = maxNumEpoch;
 
             Learning.LearnNetwork(progress, token);

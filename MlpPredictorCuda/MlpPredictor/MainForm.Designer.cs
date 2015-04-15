@@ -36,7 +36,6 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
@@ -46,16 +45,16 @@
             this.hiddenFunctionComboBox = new System.Windows.Forms.ComboBox();
             this.outputFunctionComboBox = new System.Windows.Forms.ComboBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.backPropagationRadioButton = new System.Windows.Forms.RadioButton();
-            this.label9 = new System.Windows.Forms.Label();
-            this.learningRateNumericUpDown = new System.Windows.Forms.NumericUpDown();
-            this.momentumNumericUpDown = new System.Windows.Forms.NumericUpDown();
-            this.label10 = new System.Windows.Forms.Label();
-            this.resilientPropagationRadioButton = new System.Windows.Forms.RadioButton();
             this.tableLayoutPanel12 = new System.Windows.Forms.TableLayoutPanel();
-            this.label17 = new System.Windows.Forms.Label();
+            this.resilientPropagationRadioButton = new System.Windows.Forms.RadioButton();
+            this.momentumNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.learningRateNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.backPropagationRadioButton = new System.Windows.Forms.RadioButton();
             this.label18 = new System.Windows.Forms.Label();
             this.maxLearningRmsNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.label17 = new System.Windows.Forms.Label();
             this.maxNumEpochNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.label14 = new System.Windows.Forms.Label();
             this.learningDataPercentageNumericUpDown = new System.Windows.Forms.NumericUpDown();
@@ -66,8 +65,10 @@
             this.browseDataFileButton = new System.Windows.Forms.Button();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.файлToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.загрузитьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.создатьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.открытьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.сохранитьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.сохранитьКакToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.выходToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.помощьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -77,14 +78,15 @@
             this.learningRmsGraphControl = new ZedGraph.ZedGraphControl();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.testingRmsTabPage = new System.Windows.Forms.TabPage();
-            this.testingRmsGraphControl = new ZedGraph.ZedGraphControl();
             this.predictionResultTabPage = new System.Windows.Forms.TabPage();
             this.resultGraphControl = new ZedGraph.ZedGraphControl();
+            this.learningRmsTabPage = new System.Windows.Forms.TabPage();
+            this.testingRmsTabPage = new System.Windows.Forms.TabPage();
+            this.testingRmsGraphControl = new ZedGraph.ZedGraphControl();
             this.tableLayoutPanel9 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel10 = new System.Windows.Forms.TableLayoutPanel();
-            this.learningRmsTabPage = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.numHiddenCheckBox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.testingDataPercentageNumericUpDown)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -92,9 +94,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.numHiddenNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numOutputNumericUpDown)).BeginInit();
             this.groupBox2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.learningRateNumericUpDown)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.momentumNumericUpDown)).BeginInit();
             this.tableLayoutPanel12.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.momentumNumericUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.learningRateNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.maxLearningRmsNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.maxNumEpochNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.learningDataPercentageNumericUpDown)).BeginInit();
@@ -103,11 +105,11 @@
             this.menuStrip1.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.tabControl1.SuspendLayout();
-            this.testingRmsTabPage.SuspendLayout();
             this.predictionResultTabPage.SuspendLayout();
+            this.learningRmsTabPage.SuspendLayout();
+            this.testingRmsTabPage.SuspendLayout();
             this.tableLayoutPanel9.SuspendLayout();
             this.tableLayoutPanel10.SuspendLayout();
-            this.learningRmsTabPage.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -185,8 +187,8 @@
             this.tableLayoutPanel2.ColumnCount = 2;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 65F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 35F));
+            this.tableLayoutPanel2.Controls.Add(this.numHiddenCheckBox, 0, 1);
             this.tableLayoutPanel2.Controls.Add(this.label1, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.label2, 0, 1);
             this.tableLayoutPanel2.Controls.Add(this.label3, 0, 2);
             this.tableLayoutPanel2.Controls.Add(this.label4, 0, 3);
             this.tableLayoutPanel2.Controls.Add(this.label5, 0, 4);
@@ -217,17 +219,6 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "Число входов:";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // label2
-            // 
-            this.label2.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(72, 38);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(140, 13);
-            this.label2.TabIndex = 1;
-            this.label2.Text = "Число скрытых нейронов:";
-            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // label3
             // 
@@ -279,6 +270,7 @@
             0,
             0,
             0});
+            this.numInputNumericUpDown.ValueChanged += new System.EventHandler(this.numInputNumericUpDown_ValueChanged);
             // 
             // numHiddenNumericUpDown
             // 
@@ -315,6 +307,7 @@
             0,
             0,
             0});
+            this.numOutputNumericUpDown.ValueChanged += new System.EventHandler(this.numOutputNumericUpDown_ValueChanged);
             // 
             // hiddenFunctionComboBox
             // 
@@ -354,104 +347,10 @@
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox2.Location = new System.Drawing.Point(3, 323);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(338, 208);
+            this.groupBox2.Size = new System.Drawing.Size(338, 207);
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Параметры обучения";
-            // 
-            // backPropagationRadioButton
-            // 
-            this.backPropagationRadioButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.backPropagationRadioButton.AutoSize = true;
-            this.backPropagationRadioButton.Checked = true;
-            this.backPropagationRadioButton.Location = new System.Drawing.Point(3, 69);
-            this.backPropagationRadioButton.Name = "backPropagationRadioButton";
-            this.backPropagationRadioButton.Size = new System.Drawing.Size(194, 17);
-            this.backPropagationRadioButton.TabIndex = 11;
-            this.backPropagationRadioButton.TabStop = true;
-            this.backPropagationRadioButton.Text = "Алгоритм наискорейшего спуска";
-            this.backPropagationRadioButton.UseVisualStyleBackColor = true;
-            // 
-            // label9
-            // 
-            this.label9.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(83, 102);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(129, 13);
-            this.label9.TabIndex = 4;
-            this.label9.Text = "Коэффициент обучения:";
-            this.label9.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // learningRateNumericUpDown
-            // 
-            this.learningRateNumericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.learningRateNumericUpDown.DecimalPlaces = 3;
-            this.learningRateNumericUpDown.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            196608});
-            this.learningRateNumericUpDown.Location = new System.Drawing.Point(218, 98);
-            this.learningRateNumericUpDown.Maximum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.learningRateNumericUpDown.Name = "learningRateNumericUpDown";
-            this.learningRateNumericUpDown.Size = new System.Drawing.Size(111, 20);
-            this.learningRateNumericUpDown.TabIndex = 12;
-            this.learningRateNumericUpDown.Value = new decimal(new int[] {
-            5,
-            0,
-            0,
-            131072});
-            // 
-            // momentumNumericUpDown
-            // 
-            this.momentumNumericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.momentumNumericUpDown.DecimalPlaces = 3;
-            this.momentumNumericUpDown.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            131072});
-            this.momentumNumericUpDown.Location = new System.Drawing.Point(218, 129);
-            this.momentumNumericUpDown.Maximum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.momentumNumericUpDown.Name = "momentumNumericUpDown";
-            this.momentumNumericUpDown.Size = new System.Drawing.Size(111, 20);
-            this.momentumNumericUpDown.TabIndex = 13;
-            this.momentumNumericUpDown.Value = new decimal(new int[] {
-            5,
-            0,
-            0,
-            65536});
-            // 
-            // label10
-            // 
-            this.label10.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(162, 133);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(50, 13);
-            this.label10.TabIndex = 5;
-            this.label10.Text = "Момент:";
-            this.label10.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // resilientPropagationRadioButton
-            // 
-            this.resilientPropagationRadioButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.resilientPropagationRadioButton.AutoSize = true;
-            this.resilientPropagationRadioButton.Location = new System.Drawing.Point(3, 163);
-            this.resilientPropagationRadioButton.Name = "resilientPropagationRadioButton";
-            this.resilientPropagationRadioButton.Size = new System.Drawing.Size(115, 17);
-            this.resilientPropagationRadioButton.TabIndex = 14;
-            this.resilientPropagationRadioButton.Text = "Алгоритм RPROP";
-            this.resilientPropagationRadioButton.UseVisualStyleBackColor = true;
             // 
             // tableLayoutPanel12
             // 
@@ -480,19 +379,102 @@
             this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
             this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel12.Size = new System.Drawing.Size(332, 189);
+            this.tableLayoutPanel12.Size = new System.Drawing.Size(332, 188);
             this.tableLayoutPanel12.TabIndex = 0;
             // 
-            // label17
+            // resilientPropagationRadioButton
             // 
-            this.label17.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(18, 40);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(194, 13);
-            this.label17.TabIndex = 2;
-            this.label17.Text = "Максимальное число эпох обучения:";
-            this.label17.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.resilientPropagationRadioButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.resilientPropagationRadioButton.AutoSize = true;
+            this.resilientPropagationRadioButton.Location = new System.Drawing.Point(3, 163);
+            this.resilientPropagationRadioButton.Name = "resilientPropagationRadioButton";
+            this.resilientPropagationRadioButton.Size = new System.Drawing.Size(115, 17);
+            this.resilientPropagationRadioButton.TabIndex = 14;
+            this.resilientPropagationRadioButton.Text = "Алгоритм RPROP";
+            this.resilientPropagationRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // momentumNumericUpDown
+            // 
+            this.momentumNumericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.momentumNumericUpDown.DecimalPlaces = 3;
+            this.momentumNumericUpDown.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            131072});
+            this.momentumNumericUpDown.Location = new System.Drawing.Point(218, 129);
+            this.momentumNumericUpDown.Maximum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.momentumNumericUpDown.Name = "momentumNumericUpDown";
+            this.momentumNumericUpDown.Size = new System.Drawing.Size(111, 20);
+            this.momentumNumericUpDown.TabIndex = 13;
+            this.momentumNumericUpDown.Value = new decimal(new int[] {
+            5,
+            0,
+            0,
+            65536});
+            // 
+            // learningRateNumericUpDown
+            // 
+            this.learningRateNumericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.learningRateNumericUpDown.DecimalPlaces = 3;
+            this.learningRateNumericUpDown.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            196608});
+            this.learningRateNumericUpDown.Location = new System.Drawing.Point(218, 98);
+            this.learningRateNumericUpDown.Maximum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.learningRateNumericUpDown.Name = "learningRateNumericUpDown";
+            this.learningRateNumericUpDown.Size = new System.Drawing.Size(111, 20);
+            this.learningRateNumericUpDown.TabIndex = 12;
+            this.learningRateNumericUpDown.Value = new decimal(new int[] {
+            5,
+            0,
+            0,
+            131072});
+            // 
+            // label10
+            // 
+            this.label10.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(162, 133);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(50, 13);
+            this.label10.TabIndex = 5;
+            this.label10.Text = "Момент:";
+            this.label10.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // label9
+            // 
+            this.label9.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(83, 102);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(129, 13);
+            this.label9.TabIndex = 4;
+            this.label9.Text = "Коэффициент обучения:";
+            this.label9.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // backPropagationRadioButton
+            // 
+            this.backPropagationRadioButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.backPropagationRadioButton.AutoSize = true;
+            this.backPropagationRadioButton.Checked = true;
+            this.backPropagationRadioButton.Location = new System.Drawing.Point(3, 69);
+            this.backPropagationRadioButton.Name = "backPropagationRadioButton";
+            this.backPropagationRadioButton.Size = new System.Drawing.Size(194, 17);
+            this.backPropagationRadioButton.TabIndex = 11;
+            this.backPropagationRadioButton.TabStop = true;
+            this.backPropagationRadioButton.Text = "Алгоритм наискорейшего спуска";
+            this.backPropagationRadioButton.UseVisualStyleBackColor = true;
             // 
             // label18
             // 
@@ -528,6 +510,17 @@
             0,
             0,
             131072});
+            // 
+            // label17
+            // 
+            this.label17.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(18, 40);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(194, 13);
+            this.label17.TabIndex = 2;
+            this.label17.Text = "Максимальное число эпох обучения:";
+            this.label17.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // maxNumEpochNumericUpDown
             // 
@@ -666,37 +659,53 @@
             // файлToolStripMenuItem
             // 
             this.файлToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.загрузитьToolStripMenuItem,
+            this.создатьToolStripMenuItem,
+            this.открытьToolStripMenuItem,
             this.сохранитьToolStripMenuItem,
+            this.сохранитьКакToolStripMenuItem,
             this.toolStripSeparator1,
             this.выходToolStripMenuItem});
             this.файлToolStripMenuItem.Name = "файлToolStripMenuItem";
             this.файлToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
             this.файлToolStripMenuItem.Text = "Файл";
             // 
-            // загрузитьToolStripMenuItem
+            // создатьToolStripMenuItem
             // 
-            this.загрузитьToolStripMenuItem.Name = "загрузитьToolStripMenuItem";
-            this.загрузитьToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
-            this.загрузитьToolStripMenuItem.Text = "Загрузить...";
-            this.загрузитьToolStripMenuItem.Click += new System.EventHandler(this.загрузитьToolStripMenuItem_Click);
+            this.создатьToolStripMenuItem.Name = "создатьToolStripMenuItem";
+            this.создатьToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.создатьToolStripMenuItem.Text = "Создать";
+            this.создатьToolStripMenuItem.Click += new System.EventHandler(this.создатьToolStripMenuItem_Click);
+            // 
+            // открытьToolStripMenuItem
+            // 
+            this.открытьToolStripMenuItem.Name = "открытьToolStripMenuItem";
+            this.открытьToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.открытьToolStripMenuItem.Text = "Открыть...";
+            this.открытьToolStripMenuItem.Click += new System.EventHandler(this.открытьToolStripMenuItem_Click);
             // 
             // сохранитьToolStripMenuItem
             // 
             this.сохранитьToolStripMenuItem.Name = "сохранитьToolStripMenuItem";
-            this.сохранитьToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
-            this.сохранитьToolStripMenuItem.Text = "Сохранить...";
+            this.сохранитьToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.сохранитьToolStripMenuItem.Text = "Сохранить";
             this.сохранитьToolStripMenuItem.Click += new System.EventHandler(this.сохранитьToolStripMenuItem_Click);
+            // 
+            // сохранитьКакToolStripMenuItem
+            // 
+            this.сохранитьКакToolStripMenuItem.Name = "сохранитьКакToolStripMenuItem";
+            this.сохранитьКакToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.сохранитьКакToolStripMenuItem.Text = "Сохранить как...";
+            this.сохранитьКакToolStripMenuItem.Click += new System.EventHandler(this.сохранитьКакToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(138, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(159, 6);
             // 
             // выходToolStripMenuItem
             // 
             this.выходToolStripMenuItem.Name = "выходToolStripMenuItem";
-            this.выходToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
+            this.выходToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.выходToolStripMenuItem.Text = "Выход";
             this.выходToolStripMenuItem.Click += new System.EventHandler(this.выходToolStripMenuItem_Click);
             // 
@@ -743,7 +752,7 @@
             this.learningRmsGraphControl.ScrollMinX = 0D;
             this.learningRmsGraphControl.ScrollMinY = 0D;
             this.learningRmsGraphControl.ScrollMinY2 = 0D;
-            this.learningRmsGraphControl.Size = new System.Drawing.Size(619, 98);
+            this.learningRmsGraphControl.Size = new System.Drawing.Size(588, 534);
             this.learningRmsGraphControl.TabIndex = 0;
             // 
             // groupBox4
@@ -768,32 +777,6 @@
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(602, 566);
             this.tabControl1.TabIndex = 17;
-            // 
-            // testingRmsTabPage
-            // 
-            this.testingRmsTabPage.Controls.Add(this.testingRmsGraphControl);
-            this.testingRmsTabPage.Location = new System.Drawing.Point(4, 22);
-            this.testingRmsTabPage.Name = "testingRmsTabPage";
-            this.testingRmsTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.testingRmsTabPage.Size = new System.Drawing.Size(625, 104);
-            this.testingRmsTabPage.TabIndex = 2;
-            this.testingRmsTabPage.Text = "СКО ошибки тестирования";
-            this.testingRmsTabPage.UseVisualStyleBackColor = true;
-            // 
-            // testingRmsGraphControl
-            // 
-            this.testingRmsGraphControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.testingRmsGraphControl.Location = new System.Drawing.Point(3, 3);
-            this.testingRmsGraphControl.Name = "testingRmsGraphControl";
-            this.testingRmsGraphControl.ScrollGrace = 0D;
-            this.testingRmsGraphControl.ScrollMaxX = 0D;
-            this.testingRmsGraphControl.ScrollMaxY = 0D;
-            this.testingRmsGraphControl.ScrollMaxY2 = 0D;
-            this.testingRmsGraphControl.ScrollMinX = 0D;
-            this.testingRmsGraphControl.ScrollMinY = 0D;
-            this.testingRmsGraphControl.ScrollMinY2 = 0D;
-            this.testingRmsGraphControl.Size = new System.Drawing.Size(619, 98);
-            this.testingRmsGraphControl.TabIndex = 0;
             // 
             // predictionResultTabPage
             // 
@@ -820,6 +803,43 @@
             this.resultGraphControl.ScrollMinY2 = 0D;
             this.resultGraphControl.Size = new System.Drawing.Size(588, 534);
             this.resultGraphControl.TabIndex = 0;
+            // 
+            // learningRmsTabPage
+            // 
+            this.learningRmsTabPage.Controls.Add(this.learningRmsGraphControl);
+            this.learningRmsTabPage.Location = new System.Drawing.Point(4, 22);
+            this.learningRmsTabPage.Name = "learningRmsTabPage";
+            this.learningRmsTabPage.Padding = new System.Windows.Forms.Padding(3);
+            this.learningRmsTabPage.Size = new System.Drawing.Size(594, 540);
+            this.learningRmsTabPage.TabIndex = 3;
+            this.learningRmsTabPage.Text = "СКО ошибки обучения";
+            this.learningRmsTabPage.UseVisualStyleBackColor = true;
+            // 
+            // testingRmsTabPage
+            // 
+            this.testingRmsTabPage.Controls.Add(this.testingRmsGraphControl);
+            this.testingRmsTabPage.Location = new System.Drawing.Point(4, 22);
+            this.testingRmsTabPage.Name = "testingRmsTabPage";
+            this.testingRmsTabPage.Padding = new System.Windows.Forms.Padding(3);
+            this.testingRmsTabPage.Size = new System.Drawing.Size(594, 540);
+            this.testingRmsTabPage.TabIndex = 2;
+            this.testingRmsTabPage.Text = "СКО ошибки тестирования";
+            this.testingRmsTabPage.UseVisualStyleBackColor = true;
+            // 
+            // testingRmsGraphControl
+            // 
+            this.testingRmsGraphControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.testingRmsGraphControl.Location = new System.Drawing.Point(3, 3);
+            this.testingRmsGraphControl.Name = "testingRmsGraphControl";
+            this.testingRmsGraphControl.ScrollGrace = 0D;
+            this.testingRmsGraphControl.ScrollMaxX = 0D;
+            this.testingRmsGraphControl.ScrollMaxY = 0D;
+            this.testingRmsGraphControl.ScrollMaxY2 = 0D;
+            this.testingRmsGraphControl.ScrollMinX = 0D;
+            this.testingRmsGraphControl.ScrollMinY = 0D;
+            this.testingRmsGraphControl.ScrollMinY2 = 0D;
+            this.testingRmsGraphControl.Size = new System.Drawing.Size(588, 534);
+            this.testingRmsGraphControl.TabIndex = 0;
             // 
             // tableLayoutPanel9
             // 
@@ -857,17 +877,6 @@
             this.tableLayoutPanel10.Size = new System.Drawing.Size(344, 585);
             this.tableLayoutPanel10.TabIndex = 0;
             // 
-            // learningRmsTabPage
-            // 
-            this.learningRmsTabPage.Controls.Add(this.learningRmsGraphControl);
-            this.learningRmsTabPage.Location = new System.Drawing.Point(4, 22);
-            this.learningRmsTabPage.Name = "learningRmsTabPage";
-            this.learningRmsTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.learningRmsTabPage.Size = new System.Drawing.Size(625, 104);
-            this.learningRmsTabPage.TabIndex = 3;
-            this.learningRmsTabPage.Text = "СКО ошибки обучения";
-            this.learningRmsTabPage.UseVisualStyleBackColor = true;
-            // 
             // tableLayoutPanel1
             // 
             this.tableLayoutPanel1.ColumnCount = 2;
@@ -876,12 +885,26 @@
             this.tableLayoutPanel1.Controls.Add(this.learnNetworkButton, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.testNetworkButton, 1, 0);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 537);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 536);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(338, 45);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(338, 46);
             this.tableLayoutPanel1.TabIndex = 1;
+            // 
+            // numHiddenCheckBox
+            // 
+            this.numHiddenCheckBox.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.numHiddenCheckBox.AutoSize = true;
+            this.numHiddenCheckBox.Checked = true;
+            this.numHiddenCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.numHiddenCheckBox.Location = new System.Drawing.Point(16, 36);
+            this.numHiddenCheckBox.Name = "numHiddenCheckBox";
+            this.numHiddenCheckBox.Size = new System.Drawing.Size(196, 17);
+            this.numHiddenCheckBox.TabIndex = 1;
+            this.numHiddenCheckBox.Text = "Число нейронов в скрытом слое:";
+            this.numHiddenCheckBox.UseVisualStyleBackColor = true;
+            this.numHiddenCheckBox.CheckedChanged += new System.EventHandler(this.numHiddenCheckBox_CheckedChanged);
             // 
             // MainForm
             // 
@@ -903,10 +926,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.numHiddenNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numOutputNumericUpDown)).EndInit();
             this.groupBox2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.learningRateNumericUpDown)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.momentumNumericUpDown)).EndInit();
             this.tableLayoutPanel12.ResumeLayout(false);
             this.tableLayoutPanel12.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.momentumNumericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.learningRateNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.maxLearningRmsNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.maxNumEpochNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.learningDataPercentageNumericUpDown)).EndInit();
@@ -917,11 +940,11 @@
             this.menuStrip1.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             this.tabControl1.ResumeLayout(false);
-            this.testingRmsTabPage.ResumeLayout(false);
             this.predictionResultTabPage.ResumeLayout(false);
+            this.learningRmsTabPage.ResumeLayout(false);
+            this.testingRmsTabPage.ResumeLayout(false);
             this.tableLayoutPanel9.ResumeLayout(false);
             this.tableLayoutPanel10.ResumeLayout(false);
-            this.learningRmsTabPage.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -934,7 +957,6 @@
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
@@ -960,7 +982,7 @@
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripMenuItem файлToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem загрузитьToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem открытьToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem сохранитьToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem выходToolStripMenuItem;
@@ -986,6 +1008,9 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel10;
         private System.Windows.Forms.TabPage learningRmsTabPage;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.ToolStripMenuItem создатьToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem сохранитьКакToolStripMenuItem;
+        private System.Windows.Forms.CheckBox numHiddenCheckBox;
     }
 }
 

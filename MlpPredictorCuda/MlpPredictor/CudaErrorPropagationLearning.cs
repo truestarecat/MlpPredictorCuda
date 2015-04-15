@@ -17,7 +17,7 @@ namespace MlpPredictor
         private MlpNetwork network;
         private NetworkDataSet dataSet;
 
-        protected float maxLearningRms;
+        protected float maxRms;
         protected int maxNumEpoch;
 
         [NonSerialized]
@@ -27,7 +27,7 @@ namespace MlpPredictor
         protected bool disposed;
 
         public CudaErrorPropagationLearning(MlpNetwork network, NetworkDataSet dataSet,
-            float maxLearningRms = 0.01f, int maxNumEpoch = 10000)
+            float maxRms = 0.01f, int maxNumEpoch = 10000)
         {
             if (network == null)
                 throw new ArgumentNullException("network");
@@ -37,18 +37,18 @@ namespace MlpPredictor
             this.network = network;
             this.dataSet = dataSet;
 
-            MaxLearningRms = maxLearningRms;
+            MaxRms = maxRms;
             MaxNumEpoch = maxNumEpoch;
 
             this.propagationHandle = IntPtr.Zero;
             this.disposed = true;
         }
 
-        public float MaxLearningRms
+        public float MaxRms
         {
             get
             {
-                return maxLearningRms;
+                return maxRms;
             }
             set
             {
@@ -57,7 +57,7 @@ namespace MlpPredictor
                     throw new ArgumentOutOfRangeException("value", "Максимальное СКО ошибки обучения должно быть больше 0.");
                 }
 
-                maxLearningRms = value;
+                maxRms = value;
             }
         }
 
@@ -95,7 +95,7 @@ namespace MlpPredictor
             float error = Single.MaxValue;
             List<float> learningRmsList = new List<float>();
 
-            while (NumEpoch < maxNumEpoch && error > maxLearningRms)
+            while (NumEpoch < maxNumEpoch && error > maxRms)
             {
                 error = PerformEpoch();
 
@@ -125,7 +125,7 @@ namespace MlpPredictor
             float error = Single.MaxValue;
             List<float> learningRmsList = new List<float>();
 
-            while (NumEpoch < maxNumEpoch && error > maxLearningRms)
+            while (NumEpoch < maxNumEpoch && error > maxRms)
             {
                 if (token.IsCancellationRequested)
                 {

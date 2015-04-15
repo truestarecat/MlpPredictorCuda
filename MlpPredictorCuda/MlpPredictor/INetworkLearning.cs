@@ -5,7 +5,7 @@ namespace MlpPredictor
 {
     public interface INetworkLearning : IDisposable
     {
-        float MaxLearningRms { get; set; }
+        float MaxRms { get; set; }
 
         int MaxNumEpoch { get; set; }
 

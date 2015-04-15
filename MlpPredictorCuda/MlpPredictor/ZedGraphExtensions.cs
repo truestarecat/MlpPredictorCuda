@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using ZedGraph;
 
 namespace MlpPredictor
@@ -7,21 +8,29 @@ namespace MlpPredictor
     {
         public static void ClearGraph(this ZedGraphControl graph)
         {
-            SetGraphTitles(graph, "", "", "");
+            graph.GraphPane.CurveList.Clear();
         }
 
         public static void SetGraphTitles(this ZedGraphControl graph, string xAxisTitle, string yAxisTitle, string graphTitle)
         {
             GraphPane pane = graph.GraphPane;
 
-            pane.CurveList.Clear();
-            pane.XAxis.Title.Text = "";
-            pane.YAxis.Title.Text = "";
-            pane.Title.Text = "";
+            pane.XAxis.Title.Text = xAxisTitle;
+            pane.YAxis.Title.Text = yAxisTitle;
+            pane.Title.Text = graphTitle;
         }
 
         public static void DrawGraph(this ZedGraphControl graph, string[] labels, string[] colors, float[][] data)
         {
+            if (labels == null)
+                throw new ArgumentNullException("labels");
+            if (colors == null)
+                throw new ArgumentNullException("colors");
+            if (data == null)
+                throw new ArgumentNullException("data");
+            if (data[0] == null)
+                throw new ArgumentNullException("data[0]");
+
             GraphPane pane = graph.GraphPane;
 
             pane.CurveList.Clear();
