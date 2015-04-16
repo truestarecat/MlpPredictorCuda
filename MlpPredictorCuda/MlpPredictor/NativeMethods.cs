@@ -5,6 +5,10 @@ namespace MlpPredictor
 {
     internal static class NativeMethods
     {
+        [DllImport(@"CudaLib.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "checkCudaSupport")]
+        [return: MarshalAs(UnmanagedType.U1)]
+        internal static extern bool CheckCudaSupport();
+
         [DllImport(@"CudaLib.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "createErrorPropagation")]
         internal static extern IntPtr CreateErrorPropagation(
             [In, MarshalAs(UnmanagedType.LPArray)] float[] inputDataFlatten,

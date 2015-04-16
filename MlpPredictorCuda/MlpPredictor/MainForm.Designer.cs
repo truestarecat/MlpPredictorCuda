@@ -119,7 +119,7 @@
             this.testNetworkButton.Location = new System.Drawing.Point(172, 11);
             this.testNetworkButton.Name = "testNetworkButton";
             this.testNetworkButton.Size = new System.Drawing.Size(163, 23);
-            this.testNetworkButton.TabIndex = 3;
+            this.testNetworkButton.TabIndex = 1;
             this.testNetworkButton.Text = "Тестировать сеть";
             this.testNetworkButton.UseVisualStyleBackColor = true;
             this.testNetworkButton.Click += new System.EventHandler(this.testNetworkButton_Click);
@@ -141,7 +141,7 @@
             0});
             this.testingDataPercentageNumericUpDown.Name = "testingDataPercentageNumericUpDown";
             this.testingDataPercentageNumericUpDown.Size = new System.Drawing.Size(111, 20);
-            this.testingDataPercentageNumericUpDown.TabIndex = 9;
+            this.testingDataPercentageNumericUpDown.TabIndex = 8;
             this.testingDataPercentageNumericUpDown.Value = new decimal(new int[] {
             30,
             0,
@@ -166,7 +166,7 @@
             this.learnNetworkButton.Location = new System.Drawing.Point(3, 11);
             this.learnNetworkButton.Name = "learnNetworkButton";
             this.learnNetworkButton.Size = new System.Drawing.Size(163, 23);
-            this.learnNetworkButton.TabIndex = 2;
+            this.learnNetworkButton.TabIndex = 0;
             this.learnNetworkButton.Text = "Обучить сеть";
             this.learnNetworkButton.UseVisualStyleBackColor = true;
             this.learnNetworkButton.Click += new System.EventHandler(this.learnNetworkButton_Click);
@@ -582,7 +582,7 @@
             0});
             this.learningDataPercentageNumericUpDown.Name = "learningDataPercentageNumericUpDown";
             this.learningDataPercentageNumericUpDown.Size = new System.Drawing.Size(111, 20);
-            this.learningDataPercentageNumericUpDown.TabIndex = 8;
+            this.learningDataPercentageNumericUpDown.TabIndex = 7;
             this.learningDataPercentageNumericUpDown.Value = new decimal(new int[] {
             70,
             0,
@@ -899,7 +899,7 @@
             this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(338, 46);
-            this.tableLayoutPanel1.TabIndex = 1;
+            this.tableLayoutPanel1.TabIndex = 0;
             // 
             // MainForm
             // 

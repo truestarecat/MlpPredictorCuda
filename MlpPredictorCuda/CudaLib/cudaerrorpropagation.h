@@ -76,6 +76,8 @@ struct CudaErrorPropagation
 extern "C" {
 #endif
 
+	CULIBAPI bool checkCudaSupport();
+
 	CULIBAPI CudaErrorPropagation* createErrorPropagation(float *h_inputData /*2d*/, float *h_outputData /*2d*/,
 		float *h_inputHiddenWeights /*2d*/, float *h_hiddenOutputWeights /*2d*/,
 		int numInput, int numHidden, int numOutput, int numSamples,
