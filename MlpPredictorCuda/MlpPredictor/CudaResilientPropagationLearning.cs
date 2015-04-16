@@ -5,12 +5,12 @@ namespace MlpPredictor
     [Serializable]
     public class CudaResilientPropagationLearning : CudaErrorPropagationLearning
     {
-        public CudaResilientPropagationLearning(MlpNetwork network, NetworkDataSet dataSet)
-            : base(network, dataSet)
+        public CudaResilientPropagationLearning(MlpNetwork network, NetworkDataSet dataSet,
+            float maxRms, int maxNumEpoch) : base(network, dataSet, maxRms, maxNumEpoch)
         {
         }
 
-        public override float PerformEpoch()
+        protected override float PerformEpoch()
         {
             if (disposed)
             {

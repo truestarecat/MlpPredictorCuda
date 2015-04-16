@@ -35,6 +35,7 @@
             this.learnNetworkButton = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.numHiddenCheckBox = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
@@ -86,7 +87,6 @@
             this.tableLayoutPanel9 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel10 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.numHiddenCheckBox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.testingDataPercentageNumericUpDown)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -208,6 +208,20 @@
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
             this.tableLayoutPanel2.Size = new System.Drawing.Size(332, 153);
             this.tableLayoutPanel2.TabIndex = 0;
+            // 
+            // numHiddenCheckBox
+            // 
+            this.numHiddenCheckBox.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.numHiddenCheckBox.AutoSize = true;
+            this.numHiddenCheckBox.Checked = true;
+            this.numHiddenCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.numHiddenCheckBox.Location = new System.Drawing.Point(16, 36);
+            this.numHiddenCheckBox.Name = "numHiddenCheckBox";
+            this.numHiddenCheckBox.Size = new System.Drawing.Size(196, 17);
+            this.numHiddenCheckBox.TabIndex = 1;
+            this.numHiddenCheckBox.Text = "Число нейронов в скрытом слое:";
+            this.numHiddenCheckBox.UseVisualStyleBackColor = true;
+            this.numHiddenCheckBox.CheckedChanged += new System.EventHandler(this.numHiddenCheckBox_CheckedChanged);
             // 
             // label1
             // 
@@ -411,11 +425,6 @@
             this.momentumNumericUpDown.Name = "momentumNumericUpDown";
             this.momentumNumericUpDown.Size = new System.Drawing.Size(111, 20);
             this.momentumNumericUpDown.TabIndex = 13;
-            this.momentumNumericUpDown.Value = new decimal(new int[] {
-            5,
-            0,
-            0,
-            65536});
             // 
             // learningRateNumericUpDown
             // 
@@ -652,7 +661,7 @@
             this.помощьToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(965, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1024, 24);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -736,7 +745,7 @@
             // 
             this.statusStrip1.Location = new System.Drawing.Point(0, 621);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(965, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(1024, 22);
             this.statusStrip1.TabIndex = 2;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -752,7 +761,7 @@
             this.learningRmsGraphControl.ScrollMinX = 0D;
             this.learningRmsGraphControl.ScrollMinY = 0D;
             this.learningRmsGraphControl.ScrollMinY2 = 0D;
-            this.learningRmsGraphControl.Size = new System.Drawing.Size(588, 534);
+            this.learningRmsGraphControl.Size = new System.Drawing.Size(647, 534);
             this.learningRmsGraphControl.TabIndex = 0;
             // 
             // groupBox4
@@ -761,7 +770,7 @@
             this.groupBox4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox4.Location = new System.Drawing.Point(353, 3);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(608, 585);
+            this.groupBox4.Size = new System.Drawing.Size(667, 585);
             this.groupBox4.TabIndex = 7;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Графики";
@@ -775,7 +784,7 @@
             this.tabControl1.Location = new System.Drawing.Point(3, 16);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(602, 566);
+            this.tabControl1.Size = new System.Drawing.Size(661, 566);
             this.tabControl1.TabIndex = 17;
             // 
             // predictionResultTabPage
@@ -784,7 +793,7 @@
             this.predictionResultTabPage.Location = new System.Drawing.Point(4, 22);
             this.predictionResultTabPage.Name = "predictionResultTabPage";
             this.predictionResultTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.predictionResultTabPage.Size = new System.Drawing.Size(594, 540);
+            this.predictionResultTabPage.Size = new System.Drawing.Size(653, 540);
             this.predictionResultTabPage.TabIndex = 0;
             this.predictionResultTabPage.Text = "Результат прогноза";
             this.predictionResultTabPage.UseVisualStyleBackColor = true;
@@ -801,7 +810,7 @@
             this.resultGraphControl.ScrollMinX = 0D;
             this.resultGraphControl.ScrollMinY = 0D;
             this.resultGraphControl.ScrollMinY2 = 0D;
-            this.resultGraphControl.Size = new System.Drawing.Size(588, 534);
+            this.resultGraphControl.Size = new System.Drawing.Size(647, 534);
             this.resultGraphControl.TabIndex = 0;
             // 
             // learningRmsTabPage
@@ -810,7 +819,7 @@
             this.learningRmsTabPage.Location = new System.Drawing.Point(4, 22);
             this.learningRmsTabPage.Name = "learningRmsTabPage";
             this.learningRmsTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.learningRmsTabPage.Size = new System.Drawing.Size(594, 540);
+            this.learningRmsTabPage.Size = new System.Drawing.Size(653, 540);
             this.learningRmsTabPage.TabIndex = 3;
             this.learningRmsTabPage.Text = "СКО ошибки обучения";
             this.learningRmsTabPage.UseVisualStyleBackColor = true;
@@ -821,7 +830,7 @@
             this.testingRmsTabPage.Location = new System.Drawing.Point(4, 22);
             this.testingRmsTabPage.Name = "testingRmsTabPage";
             this.testingRmsTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.testingRmsTabPage.Size = new System.Drawing.Size(594, 540);
+            this.testingRmsTabPage.Size = new System.Drawing.Size(653, 540);
             this.testingRmsTabPage.TabIndex = 2;
             this.testingRmsTabPage.Text = "СКО ошибки тестирования";
             this.testingRmsTabPage.UseVisualStyleBackColor = true;
@@ -838,7 +847,7 @@
             this.testingRmsGraphControl.ScrollMinX = 0D;
             this.testingRmsGraphControl.ScrollMinY = 0D;
             this.testingRmsGraphControl.ScrollMinY2 = 0D;
-            this.testingRmsGraphControl.Size = new System.Drawing.Size(588, 534);
+            this.testingRmsGraphControl.Size = new System.Drawing.Size(647, 534);
             this.testingRmsGraphControl.TabIndex = 0;
             // 
             // tableLayoutPanel9
@@ -855,7 +864,7 @@
             this.tableLayoutPanel9.Name = "tableLayoutPanel9";
             this.tableLayoutPanel9.RowCount = 1;
             this.tableLayoutPanel9.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel9.Size = new System.Drawing.Size(964, 591);
+            this.tableLayoutPanel9.Size = new System.Drawing.Size(1023, 591);
             this.tableLayoutPanel9.TabIndex = 5;
             // 
             // tableLayoutPanel10
@@ -892,25 +901,11 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(338, 46);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
-            // numHiddenCheckBox
-            // 
-            this.numHiddenCheckBox.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.numHiddenCheckBox.AutoSize = true;
-            this.numHiddenCheckBox.Checked = true;
-            this.numHiddenCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.numHiddenCheckBox.Location = new System.Drawing.Point(16, 36);
-            this.numHiddenCheckBox.Name = "numHiddenCheckBox";
-            this.numHiddenCheckBox.Size = new System.Drawing.Size(196, 17);
-            this.numHiddenCheckBox.TabIndex = 1;
-            this.numHiddenCheckBox.Text = "Число нейронов в скрытом слое:";
-            this.numHiddenCheckBox.UseVisualStyleBackColor = true;
-            this.numHiddenCheckBox.CheckedChanged += new System.EventHandler(this.numHiddenCheckBox_CheckedChanged);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(965, 643);
+            this.ClientSize = new System.Drawing.Size(1024, 643);
             this.Controls.Add(this.tableLayoutPanel9);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.menuStrip1);

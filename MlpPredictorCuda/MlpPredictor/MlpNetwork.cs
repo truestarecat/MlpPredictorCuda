@@ -216,6 +216,11 @@ namespace MlpPredictor
             }
         }
 
+        public void RandomizeWeights()
+        {
+            throw new NotImplementedException();
+        }
+
         public static MlpNetwork LoadFromFile(string fileName)
         {
             MlpNetwork network = null;

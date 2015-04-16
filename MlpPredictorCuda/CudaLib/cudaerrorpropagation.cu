@@ -273,7 +273,7 @@ dim3 getGridDim2D(int dataSizeX, int threadsPerBlockX, int dataSizeY, int thread
 
 void generateRandomFloatArrays(float *array1 /*2d*/, float *array2 /*2d*/, int array1Size, int array2Size)
 {
-	long seed = time(NULL);
+	unsigned long long seed = (unsigned long long)time(NULL);
 
 	curandGenerator_t gen;
 
@@ -552,6 +552,9 @@ float performBackPropEpoch(CudaErrorPropagation *propagation, float learningRate
 	float h_error = FLT_MAX;
 	cudaError_t status = cudaMemcpy(&h_error, propagation->d_error, sizeof(float), cudaMemcpyKind::cudaMemcpyDeviceToHost);
 
+	if (status != cudaError::cudaSuccess)
+		return 1.0f;
+
 	//return h_error * 0.5f;
 	return sqrtf((1.0f / propagation->numSamples) * (1.0f / propagation->numOutput) * h_error);
 }
@@ -564,6 +567,9 @@ float performResilientPropEpoch(CudaErrorPropagation *propagation)
 
 	float h_error = FLT_MAX;
 	cudaError_t status = cudaMemcpy(&h_error, propagation->d_error, sizeof(float), cudaMemcpyKind::cudaMemcpyDeviceToHost);
+
+	if (status != cudaError::cudaSuccess)
+		return 1.0f;
 
 	//return h_error * 0.5f;
 	return sqrtf((1.0f / propagation->numSamples) * (1.0f / propagation->numOutput) * h_error);

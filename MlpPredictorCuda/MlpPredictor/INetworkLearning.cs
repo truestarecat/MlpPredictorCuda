@@ -3,7 +3,7 @@ using System.Threading;
 
 namespace MlpPredictor
 {
-    public interface INetworkLearning : IDisposable
+    public interface INetworkLearning
     {
         float MaxRms { get; set; }
 
@@ -13,8 +13,8 @@ namespace MlpPredictor
 
         float[] Rms { get; }
 
-        void LearnNetwork();
+        void Start();
 
-        void LearnNetwork(IProgress<float> progress, CancellationToken token);
+        void Start(IProgress<float> progress, CancellationToken token);
     }
 }

@@ -27,7 +27,7 @@ namespace MlpPredictor
         protected bool disposed;
 
         public CudaErrorPropagationLearning(MlpNetwork network, NetworkDataSet dataSet,
-            float maxRms = 0.01f, int maxNumEpoch = 10000)
+            float maxRms, int maxNumEpoch)
         {
             if (network == null)
                 throw new ArgumentNullException("network");
@@ -82,9 +82,7 @@ namespace MlpPredictor
 
         public float[] Rms { get; protected set; }
 
-        public abstract float PerformEpoch();
-
-        public void LearnNetwork()
+        public void Start()
         {
             if (disposed)
             {
@@ -94,6 +92,8 @@ namespace MlpPredictor
             NumEpoch = 0;
             float error = Single.MaxValue;
             List<float> learningRmsList = new List<float>();
+
+            RandomizeNetworkWeights(); // Временно, лучше делать при создании сети.
 
             while (NumEpoch < maxNumEpoch && error > maxRms)
             {
@@ -107,9 +107,11 @@ namespace MlpPredictor
             UpdateNetworkWeights();
 
             Rms = learningRmsList.ToArray();
+
+            Dispose();
         }
 
-        public void LearnNetwork(IProgress<float> progress, CancellationToken token)
+        public void Start(IProgress<float> progress, CancellationToken token)
         {
             if (progress == null)
                 throw new ArgumentNullException("progress");
@@ -125,12 +127,14 @@ namespace MlpPredictor
             float error = Single.MaxValue;
             List<float> learningRmsList = new List<float>();
 
+            RandomizeNetworkWeights(); // Временно, лучше делать при создании сети.
+
             while (NumEpoch < maxNumEpoch && error > maxRms)
             {
                 if (token.IsCancellationRequested)
                 {
-                    Dispose();
                     Rms = learningRmsList.ToArray();
+                    Dispose();
                     return;
                 }
 
@@ -146,11 +150,34 @@ namespace MlpPredictor
             UpdateNetworkWeights();
 
             Rms = learningRmsList.ToArray();
+
+            Dispose();
         }
 
-        public void RandomizeNetworkWeights()
+        public void Dispose()
         {
-            if(disposed)
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected void InitializeNativeResources()
+        {
+            float[] inputDataFlatten = Convert2DArrayTo1D(dataSet.GetInputData());
+            float[] outputDataFlatten = Convert2DArrayTo1D(dataSet.GetOutputData());
+            float[] inputHiddenWeightsFlatten = Convert2DArrayTo1D(network.GetInputHiddenWeights());
+            float[] hiddenOutputWeightsFlatten = Convert2DArrayTo1D(network.GetHiddenOutputWeights());
+
+            propagationHandle = NativeMethods.CreateErrorPropagation(inputDataFlatten, outputDataFlatten,
+                inputHiddenWeightsFlatten, hiddenOutputWeightsFlatten,
+                network.NumInput, network.NumHidden, network.NumOutput, dataSet.NumSamples,
+                network.HiddenFunction.Type, network.OutputFunction.Type);
+
+            disposed = false;
+        }
+
+        protected void RandomizeNetworkWeights()
+        {
+            if (disposed)
             {
                 InitializeNativeResources();
             }
@@ -158,7 +185,9 @@ namespace MlpPredictor
             NativeMethods.RandomizeWeights(propagationHandle);
         }
 
-        public void UpdateNetworkWeights()
+        protected abstract float PerformEpoch();
+
+        protected void UpdateNetworkWeights()
         {
             if (disposed)
             {
@@ -189,12 +218,6 @@ namespace MlpPredictor
             network.SetHiddenOutputWeights(hoWeights);
         }
 
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
         protected virtual void Dispose(bool disposing)
         {
             if(!disposed)
@@ -209,21 +232,6 @@ namespace MlpPredictor
                 propagationHandle = IntPtr.Zero;
                 disposed = true;
             }
-        }
-
-        protected void InitializeNativeResources()
-        {
-            float[] inputDataFlatten = Convert2DArrayTo1D(dataSet.GetInputData());
-            float[] outputDataFlatten = Convert2DArrayTo1D(dataSet.GetOutputData());
-            float[] inputHiddenWeightsFlatten = Convert2DArrayTo1D(network.GetInputHiddenWeights());
-            float[] hiddenOutputWeightsFlatten = Convert2DArrayTo1D(network.GetHiddenOutputWeights());
-
-            propagationHandle = NativeMethods.CreateErrorPropagation(inputDataFlatten, outputDataFlatten,
-                inputHiddenWeightsFlatten, hiddenOutputWeightsFlatten,
-                network.NumInput, network.NumHidden, network.NumOutput, dataSet.NumSamples,
-                network.HiddenFunction.Type, network.OutputFunction.Type);
-
-            disposed = false;
         }
 
         private IntPtr GetInputHiddenWeightsPtr()

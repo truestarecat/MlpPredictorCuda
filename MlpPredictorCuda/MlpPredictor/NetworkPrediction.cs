@@ -46,12 +46,9 @@ namespace MlpPredictor
             if (PredictionData == null)
                 throw new InvalidOperationException("Данные для прогноза не загружены.");
 
-            Learning = CreateLearning(learningAlgorithmType, learningRate, momentum);
-            Learning.MaxRms = maxLearningRms;
-            Learning.MaxNumEpoch = maxNumEpoch;
+            Learning = CreateLearning(learningAlgorithmType, maxLearningRms, maxNumEpoch, learningRate, momentum);
 
-            Learning.LearnNetwork();
-            Learning.Dispose();
+            Learning.Start();
         }
 
         public void LearnNetwork(IProgress<float> progress, CancellationToken token,
@@ -70,12 +67,9 @@ namespace MlpPredictor
             if (PredictionData == null)
                 throw new InvalidOperationException("Данные для прогноза не загружены.");
 
-            Learning = CreateLearning(learningAlgorithmType, learningRate, momentum);
-            Learning.MaxRms = maxLearningRms;
-            Learning.MaxNumEpoch = maxNumEpoch;
+            Learning = CreateLearning(learningAlgorithmType, maxLearningRms, maxNumEpoch, learningRate, momentum);
 
-            Learning.LearnNetwork(progress, token);
-            Learning.Dispose();
+            Learning.Start(progress, token);
         }
 
         public void TestNetwork()
@@ -116,14 +110,17 @@ namespace MlpPredictor
             SaveToFile(fileName, this);
         }
 
-        private INetworkLearning CreateLearning(LearningAlgorithmType learningAlgorithmType, float learningRate, float momentum)
+        private INetworkLearning CreateLearning(LearningAlgorithmType learningAlgorithmType,
+            float maxLearningRms, int maxNumEpoch, float learningRate, float momentum)
         {
             switch (learningAlgorithmType)
             {
                 case LearningAlgorithmType.BackPropagation:
-                    return new CudaBackPropagationLearning(Network, PredictionData.LearningDataSet, learningRate, momentum);
+                    return new CudaBackPropagationLearning(Network, PredictionData.LearningDataSet,
+                        maxLearningRms, maxNumEpoch, learningRate, momentum);
                 case LearningAlgorithmType.ResilientBackPropagation:
-                    return new CudaResilientPropagationLearning(Network, PredictionData.LearningDataSet);
+                    return new CudaResilientPropagationLearning(Network, PredictionData.LearningDataSet,
+                        maxLearningRms, maxNumEpoch);
                 default:
                     throw new ArgumentException("Неизвестный алгоритм обучения.", "learningAlgorithmType");
             }
