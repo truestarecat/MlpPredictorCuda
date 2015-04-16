@@ -356,7 +356,7 @@ CudaErrorPropagation* createErrorPropagation(float *h_inputData /*2d*/, float *h
 {
 	CudaErrorPropagation *propagation = (CudaErrorPropagation *) malloc(sizeof(CudaErrorPropagation));
 
-	// Network and data
+	// Initialize network and data params 
 	propagation->numInput = numInput;
 	propagation->numHidden = numHidden;
 	propagation->numOutput = numOutput;
@@ -395,13 +395,19 @@ CudaErrorPropagation* createErrorPropagation(float *h_inputData /*2d*/, float *h
 	propagation->h_inputHiddenWeights = (float *) malloc((numInput + 1) * numHidden * sizeof(float));
 	propagation->h_hiddenOutputWeights = (float *) malloc((numHidden + 1) * numOutput * sizeof(float));
 
-	// Initialization
+	// Copy initial network weights
 	memcpy(propagation->h_inputHiddenWeights, h_inputHiddenWeights, (numInput + 1) * numHidden * sizeof(float));
 	memcpy(propagation->h_hiddenOutputWeights, h_hiddenOutputWeights, (numHidden + 1) * numOutput * sizeof(float));
+	cudaMemcpy(propagation->d_inputHiddenWeights, propagation->h_inputHiddenWeights,
+		(propagation->numInput + 1) * propagation->numHidden * sizeof(float), cudaMemcpyKind::cudaMemcpyHostToDevice);
+	cudaMemcpy(propagation->d_hiddenOutputWeights, propagation->h_hiddenOutputWeights,
+		(propagation->numHidden + 1) * propagation->numOutput * sizeof(float), cudaMemcpyKind::cudaMemcpyHostToDevice);
 
+	// Copy input and output learning data
 	cudaMemcpy(propagation->d_inputsBatch, h_inputData, numSamples * numInput * sizeof(float), cudaMemcpyKind::cudaMemcpyHostToDevice);
 	cudaMemcpy(propagation->d_targetOutputsBatch, h_outputData, numSamples * numOutput * sizeof(float), cudaMemcpyKind::cudaMemcpyHostToDevice);
 
+	// Reset previous params to 0
 	cudaMemset(propagation->d_previousInputHiddenWeightDeltas, 0, (numInput + 1) * numHidden * sizeof(float));
 	cudaMemset(propagation->d_previousHiddenOutputWeightDeltas, 0, (numHidden + 1) * numOutput * sizeof(float));
 	cudaMemset(propagation->d_previousInputHiddenGradients, 0, (numInput + 1) * numHidden * sizeof(float));

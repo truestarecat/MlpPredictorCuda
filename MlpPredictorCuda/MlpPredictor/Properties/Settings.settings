@@ -1,5 +1,42 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)">
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="MlpPredictor.Properties" GeneratedClassName="Settings">
   <Profiles />
-  <Settings />
+  <Settings>
+    <Setting Name="NetworkNumInput" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">5</Value>
+    </Setting>
+    <Setting Name="NetworkNumHidden" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">11</Value>
+    </Setting>
+    <Setting Name="NetworkNumOutput" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+    <Setting Name="NetworkHiddenFunctionType" Type="MlpPredictor.ActivationFunctionType" Scope="Application">
+      <Value Profile="(Default)">UnipolarSigmoid</Value>
+    </Setting>
+    <Setting Name="NetworkOutputFunctionType" Type="MlpPredictor.ActivationFunctionType" Scope="Application">
+      <Value Profile="(Default)">UnipolarSigmoid</Value>
+    </Setting>
+    <Setting Name="PredictionDataFilePathEnd" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">\PredictionData\PredictionData.csv</Value>
+    </Setting>
+    <Setting Name="LearningDataPercentage" Type="System.Single" Scope="Application">
+      <Value Profile="(Default)">70</Value>
+    </Setting>
+    <Setting Name="MaxLearningRms" Type="System.Single" Scope="Application">
+      <Value Profile="(Default)">0.01</Value>
+    </Setting>
+    <Setting Name="MaxNumEpoch" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">10000</Value>
+    </Setting>
+    <Setting Name="LearningRate" Type="System.Single" Scope="Application">
+      <Value Profile="(Default)">0.05</Value>
+    </Setting>
+    <Setting Name="Momentum" Type="System.Single" Scope="Application">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="LearningAlgorithmType" Type="MlpPredictor.LearningAlgorithmType" Scope="Application">
+      <Value Profile="(Default)">BackPropagation</Value>
+    </Setting>
+  </Settings>
 </SettingsFile>

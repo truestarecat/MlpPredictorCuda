@@ -93,8 +93,6 @@ namespace MlpPredictor
             float error = Single.MaxValue;
             List<float> learningRmsList = new List<float>();
 
-            RandomizeNetworkWeights(); // Временно, лучше делать при создании сети.
-
             while (NumEpoch < maxNumEpoch && error > maxRms)
             {
                 error = PerformEpoch();
@@ -126,8 +124,6 @@ namespace MlpPredictor
             NumEpoch = 0;
             float error = Single.MaxValue;
             List<float> learningRmsList = new List<float>();
-
-            RandomizeNetworkWeights(); // Временно, лучше делать при создании сети.
 
             while (NumEpoch < maxNumEpoch && error > maxRms)
             {

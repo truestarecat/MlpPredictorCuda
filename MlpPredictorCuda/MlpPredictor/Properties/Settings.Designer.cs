@@ -22,5 +22,113 @@ namespace MlpPredictor.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("5")]
+        public int NetworkNumInput {
+            get {
+                return ((int)(this["NetworkNumInput"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("11")]
+        public int NetworkNumHidden {
+            get {
+                return ((int)(this["NetworkNumHidden"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public int NetworkNumOutput {
+            get {
+                return ((int)(this["NetworkNumOutput"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("UnipolarSigmoid")]
+        public global::MlpPredictor.ActivationFunctionType NetworkHiddenFunctionType {
+            get {
+                return ((global::MlpPredictor.ActivationFunctionType)(this["NetworkHiddenFunctionType"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("UnipolarSigmoid")]
+        public global::MlpPredictor.ActivationFunctionType NetworkOutputFunctionType {
+            get {
+                return ((global::MlpPredictor.ActivationFunctionType)(this["NetworkOutputFunctionType"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("\\PredictionData\\PredictionData.csv")]
+        public string PredictionDataFilePathEnd {
+            get {
+                return ((string)(this["PredictionDataFilePathEnd"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("70")]
+        public float LearningDataPercentage {
+            get {
+                return ((float)(this["LearningDataPercentage"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.01")]
+        public float MaxLearningRms {
+            get {
+                return ((float)(this["MaxLearningRms"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("10000")]
+        public int MaxNumEpoch {
+            get {
+                return ((int)(this["MaxNumEpoch"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.05")]
+        public float LearningRate {
+            get {
+                return ((float)(this["LearningRate"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public float Momentum {
+            get {
+                return ((float)(this["Momentum"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("BackPropagation")]
+        public global::MlpPredictor.LearningAlgorithmType LearningAlgorithmType {
+            get {
+                return ((global::MlpPredictor.LearningAlgorithmType)(this["LearningAlgorithmType"]));
+            }
+        }
     }
 }

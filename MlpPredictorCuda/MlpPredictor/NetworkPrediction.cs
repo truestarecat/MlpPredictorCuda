@@ -86,7 +86,7 @@ namespace MlpPredictor
             Testing.TestNetwork();
         }
 
-        public static NetworkPrediction LoadFromFile(string fileName)
+        public static NetworkPrediction LoadFromBinaryFile(string fileName)
         {
             NetworkPrediction predictionManager = null;
             using (var loader = new FileStream(fileName, FileMode.Open))
@@ -97,7 +97,7 @@ namespace MlpPredictor
             return predictionManager;
         }
 
-        public static void SaveToFile(string fileName, NetworkPrediction predictionManager)
+        public static void SaveToBinaryFile(string fileName, NetworkPrediction predictionManager)
         {
             using (var saver = new FileStream(fileName, FileMode.Create))
             {
@@ -105,9 +105,9 @@ namespace MlpPredictor
             }
         }
 
-        public void SaveToFile(string fileName)
+        public void SaveToBinaryFile(string fileName)
         {
-            SaveToFile(fileName, this);
+            SaveToBinaryFile(fileName, this);
         }
 
         private INetworkLearning CreateLearning(LearningAlgorithmType learningAlgorithmType,

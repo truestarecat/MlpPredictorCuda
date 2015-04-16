@@ -44,6 +44,8 @@ namespace MlpPredictor
             }
 
             outputs = new float[numOutput];
+
+            RandomizeWeights();
         }
 
         public MlpNetwork(int numInput, int numHidden, int numOutput,
@@ -72,6 +74,8 @@ namespace MlpPredictor
             }
 
             outputs = new float[numOutput];
+
+            RandomizeWeights();
         }
 
         public int NumInput
@@ -218,10 +222,11 @@ namespace MlpPredictor
 
         public void RandomizeWeights()
         {
-            throw new NotImplementedException();
+            RandomizeLayerWeights(inputHiddenWeights, -0.5f, 0.5f);
+            RandomizeLayerWeights(hiddenOutputWeights, -0.5f, 0.5f);
         }
 
-        public static MlpNetwork LoadFromFile(string fileName)
+        public static MlpNetwork LoadFromBinaryFile(string fileName)
         {
             MlpNetwork network = null;
             using(var loader = new FileStream(fileName, FileMode.Open))
@@ -232,7 +237,7 @@ namespace MlpPredictor
             return network;
         }
 
-        public static void SaveToFile(string fileName, MlpNetwork network)
+        public static void SaveToBinaryFile(string fileName, MlpNetwork network)
         {
             using (var saver = new FileStream(fileName, FileMode.Create))
             {
@@ -240,9 +245,9 @@ namespace MlpPredictor
             }
         }
 
-        public void SaveToFile(string fileName)
+        public void SaveToBinaryFile(string fileName)
         {
-            SaveToFile(fileName, this);
+            SaveToBinaryFile(fileName, this);
         }
 
         public void ComputeOutput()
@@ -271,6 +276,18 @@ namespace MlpPredictor
             return outputsBatch;
         }
 
+        private void RandomizeLayerWeights(float[][] layerWeights, float minimum, float maximum)
+        {
+            Random random = new Random();
+            for (int i = 0; i < layerWeights.Length; i++)
+            {
+                for (int j = 0; j < layerWeights[i].Length; j++)
+                {
+                    layerWeights[i][j] = GetRandomNumberFromRange(random, minimum, maximum);
+                }
+            }
+        }
+
         private static void ComputeLayerOutput(ActivationFunction layerActivationFunction, float[][] layerWeights,
             float[] layerInputs, float[] layerOutputs, int numLayerInput, int numLayerOutput)
         {
@@ -284,6 +301,11 @@ namespace MlpPredictor
 
                 layerOutputs[j] = layerActivationFunction.Value(sum);
             }
+        }
+
+        private static float GetRandomNumberFromRange(Random random, float minimum, float maximum)
+        {
+            return (float)random.NextDouble() * (maximum - minimum) + minimum;
         }
     }
 }
