@@ -77,6 +77,12 @@
     <Compile Include="CudaErrorPropagationLearning.cs" />
     <Compile Include="CudaResilientPropagationLearning.cs" />
     <Compile Include="ActivationFunction.cs" />
+    <Compile Include="DataNormalizationForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DataNormalizationForm.Designer.cs">
+      <DependentUpon>DataNormalizationForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="INetworkLearning.cs" />
     <Compile Include="NetworkLearningForm.cs">
       <SubType>Form</SubType>
@@ -97,17 +103,29 @@
     <Compile Include="NetworkPredictionData.cs" />
     <Compile Include="NetworkPrediction.cs" />
     <Compile Include="NetworkTesting.cs" />
+    <Compile Include="PredictionDataWorkForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PredictionDataWorkForm.Designer.cs">
+      <DependentUpon>PredictionDataWorkForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ZedGraphExtensions.cs" />
     <EmbeddedResource Include="AboutBox.resx">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="DataNormalizationForm.resx">
+      <DependentUpon>DataNormalizationForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="NetworkLearningForm.resx">
       <DependentUpon>NetworkLearningForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PredictionDataWorkForm.resx">
+      <DependentUpon>PredictionDataWorkForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

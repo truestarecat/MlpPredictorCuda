@@ -81,7 +81,8 @@ namespace MlpPredictor
             if (Learning == null)
                 throw new InvalidOperationException("Сеть не обучена.");
 
-            Testing = new NetworkTesting(Network, PredictionData.TestingDataSet);
+            //Testing = new NetworkTesting(Network, PredictionData.TestingDataSet);
+            Testing = new NetworkTesting(Network, PredictionData.FullDataSet);
 
             Testing.TestNetwork();
         }
