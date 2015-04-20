@@ -4,6 +4,7 @@
 #include <string.h>
 #include <time.h>
 #include <math.h>
+#include <float.h>
 
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
@@ -272,7 +273,7 @@ dim3 getGridDim2D(int dataSizeX, int threadsPerBlockX, int dataSizeY, int thread
 
 void generateRandomFloatArrays(float *array1 /*2d*/, float *array2 /*2d*/, int array1Size, int array2Size)
 {
-	long seed = time(NULL);
+	unsigned long long seed = (unsigned long long)time(NULL);
 
 	curandGenerator_t gen;
 
@@ -348,6 +349,30 @@ void setLayerFunctionAndDerivative(func_ptr *function, func_ptr *derivative, Act
 	}
 }
 
+bool checkCudaSupport()
+{
+	int deviceCount, device;
+	int gpuDeviceCount = 0;
+	struct cudaDeviceProp properties;
+	cudaError_t cudaResultCode = cudaGetDeviceCount(&deviceCount);
+	if (cudaResultCode != cudaSuccess)
+		deviceCount = 0;
+	/* machines with no GPUs can still report one emulation device */
+	for (device = 0; device < deviceCount; ++device)
+	{
+		cudaGetDeviceProperties(&properties, device);
+		if (properties.major != 9999) /* 9999 means emulation only */
+			++gpuDeviceCount;
+	}
+
+	/* don't just return the number of gpus, because other runtime cuda
+	errors can also yield non-zero return values */
+	if (gpuDeviceCount > 0)
+		return true; /* success */
+	else
+		return false; /* failure */
+}
+
 CudaErrorPropagation* createErrorPropagation(float *h_inputData /*2d*/, float *h_outputData /*2d*/,
 	float *h_inputHiddenWeights /*2d*/, float *h_hiddenOutputWeights /*2d*/,
 	int numInput, int numHidden, int numOutput, int numSamples,
@@ -355,7 +380,7 @@ CudaErrorPropagation* createErrorPropagation(float *h_inputData /*2d*/, float *h
 {
 	CudaErrorPropagation *propagation = (CudaErrorPropagation *) malloc(sizeof(CudaErrorPropagation));
 
-	// Network and data
+	// Initialize network and data params 
 	propagation->numInput = numInput;
 	propagation->numHidden = numHidden;
 	propagation->numOutput = numOutput;
@@ -394,13 +419,19 @@ CudaErrorPropagation* createErrorPropagation(float *h_inputData /*2d*/, float *h
 	propagation->h_inputHiddenWeights = (float *) malloc((numInput + 1) * numHidden * sizeof(float));
 	propagation->h_hiddenOutputWeights = (float *) malloc((numHidden + 1) * numOutput * sizeof(float));
 
-	// Initialization
+	// Copy initial network weights
 	memcpy(propagation->h_inputHiddenWeights, h_inputHiddenWeights, (numInput + 1) * numHidden * sizeof(float));
 	memcpy(propagation->h_hiddenOutputWeights, h_hiddenOutputWeights, (numHidden + 1) * numOutput * sizeof(float));
+	cudaMemcpy(propagation->d_inputHiddenWeights, propagation->h_inputHiddenWeights,
+		(propagation->numInput + 1) * propagation->numHidden * sizeof(float), cudaMemcpyKind::cudaMemcpyHostToDevice);
+	cudaMemcpy(propagation->d_hiddenOutputWeights, propagation->h_hiddenOutputWeights,
+		(propagation->numHidden + 1) * propagation->numOutput * sizeof(float), cudaMemcpyKind::cudaMemcpyHostToDevice);
 
+	// Copy input and output learning data
 	cudaMemcpy(propagation->d_inputsBatch, h_inputData, numSamples * numInput * sizeof(float), cudaMemcpyKind::cudaMemcpyHostToDevice);
 	cudaMemcpy(propagation->d_targetOutputsBatch, h_outputData, numSamples * numOutput * sizeof(float), cudaMemcpyKind::cudaMemcpyHostToDevice);
 
+	// Reset previous params to 0
 	cudaMemset(propagation->d_previousInputHiddenWeightDeltas, 0, (numInput + 1) * numHidden * sizeof(float));
 	cudaMemset(propagation->d_previousHiddenOutputWeightDeltas, 0, (numHidden + 1) * numOutput * sizeof(float));
 	cudaMemset(propagation->d_previousInputHiddenGradients, 0, (numInput + 1) * numHidden * sizeof(float));
@@ -532,12 +563,12 @@ void updateWeightsResilientProp(CudaErrorPropagation *propagation)
 	dim3 blockDim = getBlockDim2D();
 
 	dim3 gridDim1 = getGridDim2D(propagation->numInput + 1 /* bias */, blockDim.x, propagation->numHidden, blockDim.y);
-	updateLayerWeightsResilientPropKernel << <gridDim1, blockDim >> >(propagation->d_inputHiddenGradients,
+	updateLayerWeightsResilientPropKernel<<<gridDim1, blockDim>>>(propagation->d_inputHiddenGradients,
 		propagation->d_previousInputHiddenGradients, propagation->d_inputHiddenWeights, propagation->d_inputHiddenLearningRates,
 		propagation->numInput, propagation->numHidden);
 
 	dim3 gridDim2 = getGridDim2D(propagation->numHidden + 1 /* bias */, blockDim.x, propagation->numOutput, blockDim.y);
-	updateLayerWeightsResilientPropKernel << <gridDim2, blockDim >> >(propagation->d_hiddenOutputGradients,
+	updateLayerWeightsResilientPropKernel<<<gridDim2, blockDim>>>(propagation->d_hiddenOutputGradients,
 		propagation->d_previousHiddenOutputGradients, propagation->d_hiddenOutputWeights, propagation->d_hiddenOutputLearningRates,
 		propagation->numHidden, propagation->numOutput);
 }
@@ -548,12 +579,14 @@ float performBackPropEpoch(CudaErrorPropagation *propagation, float learningRate
 	computeGradients(propagation);
 	updateWeightsBackProp(propagation, learningRate, momentum);
 
-	float h_error = 100.0f;
+	float h_error = FLT_MAX;
 	cudaError_t status = cudaMemcpy(&h_error, propagation->d_error, sizeof(float), cudaMemcpyKind::cudaMemcpyDeviceToHost);
 
+	if (status != cudaError::cudaSuccess)
+		return 1.0f;
+
 	//return h_error * 0.5f;
-	//return sqrtf(h_error / propagation->numSamples);
-	return h_error;
+	return (1.0f / 2.0f) * (1.0f / propagation->numSamples) * (1.0f / propagation->numOutput) * h_error;
 }
 
 float performResilientPropEpoch(CudaErrorPropagation *propagation)
@@ -562,10 +595,13 @@ float performResilientPropEpoch(CudaErrorPropagation *propagation)
 	computeGradients(propagation);
 	updateWeightsResilientProp(propagation);
 
-	float h_error = 100.0f;
+	float h_error = FLT_MAX;
 	cudaError_t status = cudaMemcpy(&h_error, propagation->d_error, sizeof(float), cudaMemcpyKind::cudaMemcpyDeviceToHost);
 
+	if (status != cudaError::cudaSuccess)
+		return 1.0f;
+
 	//return h_error * 0.5f;
-	//return sqrtf(h_error / propagation->numSamples);
-	return h_error;
+	//return sqrtf((1.0f / propagation->numSamples) * (1.0f / propagation->numOutput) * h_error);
+	return (1.0f / 2.0f) * (1.0f / propagation->numSamples) * (1.0f / propagation->numOutput) * h_error;
 }

@@ -40,15 +40,12 @@ struct CudaErrorPropagation
 	float *d_outputsBatch /*2d*/;
 
 	// Propagation
-	float *d_targetOutputsBatch /*2d*/;
-	float *d_outputDeltasBatch /*2d*/;
-	float *d_hiddenOutputGradients /*2d*/;
-	float *d_hiddenDeltasBatch /*2d*/;
-	float *d_inputHiddenGradients /*2d*/;
 	float *d_errorsOutputsBatch /*2d*/;
-	float *d_errorsBatch;
 	float *d_error; /* Single value */
 
+	float *d_targetOutputsBatch /*2d*/;
+	float *d_outputDeltasBatch /*2d*/;
+	float *d_hiddenDeltasBatch /*2d*/;
 	float *d_hiddenOutputGradientsBatch /*3d*/;
 	float *d_inputHiddenGradientsBatch /*3d*/;
 	
@@ -57,10 +54,10 @@ struct CudaErrorPropagation
 	float *d_previousHiddenOutputWeightDeltas /*2d*/;
 
 	// ResilientPropagation
-	float *d_previousInputHiddenGradients /*2d*/;
-	float *d_previousHiddenOutputGradients /*2d*/;
-	float *d_inputHiddenLearningRates /*2d*/;
-	float *d_hiddenOutputLearningRates /*2d*/;
+	float *d_previousInputHiddenGradientsBatch /*3d*/;
+	float *d_previousHiddenOutputGradientsBatch /*3d*/;
+	float *d_inputHiddenLearningRates /*2d*/; // Тоже сделать пакетными.
+	float *d_hiddenOutputLearningRates /*2d*/; // Тоже сделать пакетными.
 
 	// Computed weights
 	float *h_inputHiddenWeights /*2d*/;

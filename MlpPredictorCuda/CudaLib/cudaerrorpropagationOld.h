@@ -19,6 +19,12 @@ enum ActivationFuncType
 	LINEAR = 3
 };
 
+enum ErrorPropagationType
+{
+	BACK_PROPAGATION = 0,
+	RESILIENT_PROPAGATION = 1
+};
+
 struct CudaErrorPropagation
 {
 	// Network and data
@@ -69,6 +75,8 @@ struct CudaErrorPropagation
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+	CULIBAPI bool checkCudaSupport();
 
 	CULIBAPI CudaErrorPropagation* createErrorPropagation(float *h_inputData /*2d*/, float *h_outputData /*2d*/,
 		float *h_inputHiddenWeights /*2d*/, float *h_hiddenOutputWeights /*2d*/,
