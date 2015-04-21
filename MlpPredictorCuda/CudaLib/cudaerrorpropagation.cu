@@ -205,7 +205,7 @@ __global__ void updateLayerWeightsBackPropKernel(float *layerGradsBatch /*3d*/, 
 }
 
 __global__ void updateLayerWeightsResilientPropKernel(const float *layerGradsBatch /*3d*/,
-	const float *prevLayerGradsBatch /*3d*/, float *layerWeights /*2d*/, float *layerLearningRatesBatch /*3d*/,
+	float *prevLayerGradsBatch /*3d*/, float *layerWeights /*2d*/, float *layerLearningRatesBatch /*3d*/,
 	int numLayerInput, int numLayerOutput, int numSamples)
 {
 	int i = blockIdx.x * blockDim.x + threadIdx.x;
@@ -233,6 +233,7 @@ __global__ void updateLayerWeightsResilientPropKernel(const float *layerGradsBat
 		}
 
 		weightUpdatesSum += -layerLearningRatesBatch[index3D(k, i, j, (numLayerInput + 1), numLayerOutput)] * sign(currentGradient);
+		prevLayerGradsBatch[index3D(k, i, j, (numLayerInput + 1), numLayerOutput)] = currentGradient;
 	}
 
 	layerWeights[index2D(i, j, numLayerOutput)] += weightUpdatesSum;
@@ -304,10 +305,10 @@ void normalizeWeights(float *d_inputHiddenWeights /*2d*/, float *d_hiddenOutputW
 	dim3 blockDim = getBlockDim1D();
 
 	dim3 gridDim1 = getGridDim1D(numInputHiddenWeights, blockDim.x);
-	normalizeLayerWeightsKernel<<<gridDim1, blockDim>>>(d_inputHiddenWeights, 1.0f, numInputHiddenWeights);
+	normalizeLayerWeightsKernel<<<gridDim1, blockDim>>>(d_inputHiddenWeights, 0.5f, numInputHiddenWeights);
 
 	dim3 gridDim2 = getGridDim1D(numHiddenOutputWeights, blockDim.x);
-	normalizeLayerWeightsKernel<<<gridDim2, blockDim>>>(d_hiddenOutputWeights, 1.0f, numHiddenOutputWeights);
+	normalizeLayerWeightsKernel<<<gridDim2, blockDim>>>(d_hiddenOutputWeights, 0.5f, numHiddenOutputWeights);
 }
 
 void randomizeWeights(CudaErrorPropagation *propagation)
