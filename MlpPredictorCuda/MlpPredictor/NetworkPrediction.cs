@@ -114,6 +114,8 @@ namespace MlpPredictor
         private INetworkLearning CreateLearning(LearningAlgorithmType learningAlgorithmType,
             float maxLearningRms, int maxNumEpoch, float learningRate, float momentum)
         {
+            //bool cudaSupported = NativeMethods.CheckCudaSupport();
+
             switch (learningAlgorithmType)
             {
                 case LearningAlgorithmType.BackPropagation:
