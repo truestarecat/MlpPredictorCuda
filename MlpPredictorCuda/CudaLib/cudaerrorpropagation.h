@@ -56,8 +56,8 @@ struct CudaErrorPropagation
 	// ResilientPropagation
 	float *d_previousInputHiddenGradientsBatch /*3d*/;
 	float *d_previousHiddenOutputGradientsBatch /*3d*/;
-	float *d_inputHiddenLearningRates /*2d*/; // Тоже сделать пакетными.
-	float *d_hiddenOutputLearningRates /*2d*/; // Тоже сделать пакетными.
+	float *d_inputHiddenLearningRatesBatch /*3d*/;
+	float *d_hiddenOutputLearningRatesBatch /*3d*/;
 
 	// Computed weights
 	float *h_inputHiddenWeights /*2d*/;

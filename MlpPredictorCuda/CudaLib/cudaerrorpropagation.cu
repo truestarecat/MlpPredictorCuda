@@ -12,6 +12,7 @@
 
 #define A 1.2f
 #define B 0.5f
+//#define MIN_LEARNING_RATE FLT_MIN
 #define MIN_LEARNING_RATE 0.000001f
 #define MAX_LEARNING_RATE 50.0f
 
@@ -204,7 +205,7 @@ __global__ void updateLayerWeightsBackPropKernel(float *layerGradsBatch /*3d*/, 
 }
 
 __global__ void updateLayerWeightsResilientPropKernel(const float *layerGradsBatch /*3d*/,
-	const float *prevLayerGradsBatch /*3d*/, float *layerWeights /*2d*/, float *layerLearningRates /*2d*/,
+	const float *prevLayerGradsBatch /*3d*/, float *layerWeights /*2d*/, float *layerLearningRatesBatch /*3d*/,
 	int numLayerInput, int numLayerOutput, int numSamples)
 {
 	int i = blockIdx.x * blockDim.x + threadIdx.x;
@@ -220,16 +221,18 @@ __global__ void updateLayerWeightsResilientPropKernel(const float *layerGradsBat
 		float currentGradient = layerGradsBatch[index3D(k, i, j, (numLayerInput + 1), numLayerOutput)];
 		float change = previousGradient * currentGradient;
 
-		if (change > 0)
+		if (change > 0.0f)
 		{
-			layerLearningRates[index2D(i, j, numLayerOutput)] = fminf(A * layerLearningRates[index2D(i, j, numLayerOutput)], MAX_LEARNING_RATE);
+			layerLearningRatesBatch[index3D(k, i, j, (numLayerInput + 1), numLayerOutput)] =
+				fminf(A * layerLearningRatesBatch[index3D(k, i, j, (numLayerInput + 1), numLayerOutput)], MAX_LEARNING_RATE);
 		}
-		else if (change < 0)
+		else if (change < 0.0f)
 		{
-			layerLearningRates[index2D(i, j, numLayerOutput)] = fmaxf(B * layerLearningRates[index2D(i, j, numLayerOutput)], MIN_LEARNING_RATE);
+			layerLearningRatesBatch[index3D(k, i, j, (numLayerInput + 1), numLayerOutput)] =
+				fmaxf(B * layerLearningRatesBatch[index3D(k, i, j, (numLayerInput + 1), numLayerOutput)], MIN_LEARNING_RATE);
 		}
 
-		weightUpdatesSum += -layerLearningRates[index2D(i, j, numLayerOutput)] * sign(currentGradient);
+		weightUpdatesSum += -layerLearningRatesBatch[index3D(k, i, j, (numLayerInput + 1), numLayerOutput)] * sign(currentGradient);
 	}
 
 	layerWeights[index2D(i, j, numLayerOutput)] += weightUpdatesSum;
@@ -320,13 +323,13 @@ void randomizeWeights(CudaErrorPropagation *propagation)
 
 void randomizeLearningRates(CudaErrorPropagation *propagation)
 {
-	float *d_inputHiddenLearningRates = propagation->d_inputHiddenLearningRates;
-	float *d_hiddenOutputLearningRates = propagation->d_hiddenOutputLearningRates;
-	int numInputHiddenLearningRates = (propagation->numInput + 1) * propagation->numHidden;
-	int numHiddenOutputLearningRates = (propagation->numHidden + 1) * propagation->numOutput;
+	float *d_inputHiddenLearningRatesBatch = propagation->d_inputHiddenLearningRatesBatch;
+	float *d_hiddenOutputLearningRatesBatch = propagation->d_hiddenOutputLearningRatesBatch;
+	int numInputHiddenLearningRatesBatch = propagation->numSamples * (propagation->numInput + 1) * propagation->numHidden;
+	int numHiddenOutputLearningRatesBatch = propagation->numSamples * (propagation->numHidden + 1) * propagation->numOutput;
 
-	generateRandomFloatArrays(d_inputHiddenLearningRates, d_hiddenOutputLearningRates, numInputHiddenLearningRates,
-		numHiddenOutputLearningRates);
+	generateRandomFloatArrays(d_inputHiddenLearningRatesBatch, d_hiddenOutputLearningRatesBatch,
+		numInputHiddenLearningRatesBatch, numHiddenOutputLearningRatesBatch);
 }
 
 void setLayerFunctionAndDerivative(func_ptr *function, func_ptr *derivative, ActivationFuncType type)
@@ -416,8 +419,8 @@ CudaErrorPropagation* createErrorPropagation(float *h_inputData /*2d*/, float *h
 	// ResilientPropagation
 	cudaMalloc((void**) &(propagation->d_previousInputHiddenGradientsBatch), numSamples * (numInput + 1) * numHidden * sizeof(float));
 	cudaMalloc((void**) &(propagation->d_previousHiddenOutputGradientsBatch), numSamples * (numHidden + 1) * numOutput * sizeof(float));
-	cudaMalloc((void**) &(propagation->d_inputHiddenLearningRates), (numInput + 1) * numHidden * sizeof(float));
-	cudaMalloc((void**) &(propagation->d_hiddenOutputLearningRates), (numHidden + 1) * numOutput * sizeof(float));
+	cudaMalloc((void**) &(propagation->d_inputHiddenLearningRatesBatch), numSamples * (numInput + 1) * numHidden * sizeof(float));
+	cudaMalloc((void**) &(propagation->d_hiddenOutputLearningRatesBatch), numSamples * (numHidden + 1) * numOutput * sizeof(float));
 
 	// Computed weights
 	propagation->h_inputHiddenWeights = (float *) malloc((numInput + 1) * numHidden * sizeof(float));
@@ -478,8 +481,8 @@ void destroyErrorPropagation(CudaErrorPropagation *propagation)
 	// ResilientPropagation
 	cudaFree(propagation->d_previousInputHiddenGradientsBatch);
 	cudaFree(propagation->d_previousHiddenOutputGradientsBatch);
-	cudaFree(propagation->d_inputHiddenLearningRates);
-	cudaFree(propagation->d_hiddenOutputLearningRates);
+	cudaFree(propagation->d_inputHiddenLearningRatesBatch);
+	cudaFree(propagation->d_hiddenOutputLearningRatesBatch);
 
 	// Computed weights
 	free(propagation->h_inputHiddenWeights);
@@ -578,12 +581,12 @@ void updateWeightsResilientProp(CudaErrorPropagation *propagation)
 
 	dim3 gridDim1 = getGridDim2D(propagation->numInput + 1 /* bias */, blockDim.x, propagation->numHidden, blockDim.y);
 	updateLayerWeightsResilientPropKernel<<<gridDim1, blockDim>>>(propagation->d_inputHiddenGradientsBatch,
-		propagation->d_previousInputHiddenGradientsBatch, propagation->d_inputHiddenWeights, propagation->d_inputHiddenLearningRates,
+		propagation->d_previousInputHiddenGradientsBatch, propagation->d_inputHiddenWeights, propagation->d_inputHiddenLearningRatesBatch,
 		propagation->numInput, propagation->numHidden, propagation->numSamples);
 
 	dim3 gridDim2 = getGridDim2D(propagation->numHidden + 1 /* bias */, blockDim.x, propagation->numOutput, blockDim.y);
 	updateLayerWeightsResilientPropKernel<<<gridDim2, blockDim>>>(propagation->d_hiddenOutputGradientsBatch,
-		propagation->d_previousHiddenOutputGradientsBatch, propagation->d_hiddenOutputWeights, propagation->d_hiddenOutputLearningRates,
+		propagation->d_previousHiddenOutputGradientsBatch, propagation->d_hiddenOutputWeights, propagation->d_hiddenOutputLearningRatesBatch,
 		propagation->numHidden, propagation->numOutput, propagation->numSamples);
 }
 
