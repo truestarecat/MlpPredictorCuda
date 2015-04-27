@@ -12,8 +12,8 @@
 
 #define A 1.2f
 #define B 0.5f
-//#define MIN_LEARNING_RATE FLT_MIN
-#define MIN_LEARNING_RATE 0.000001f
+#define MIN_LEARNING_RATE FLT_MIN
+//#define MIN_LEARNING_RATE 0.000001f
 #define MAX_LEARNING_RATE 50.0f
 
 // Device functions
@@ -72,8 +72,8 @@ __device__ float linearDerivative(float fX)
 
 __device__ int sign(float x)
 {
-	if (x > 0) return 1;
-	if (x < 0) return -1;
+	if (x > 0.0f) return 1;
+	if (x < 0.0f) return -1;
 	return 0;
 }
 
@@ -250,6 +250,16 @@ __global__ void normalizeLayerWeightsKernel(float *layerWeights /*2d*/, float ma
 	layerWeights[i] = ((layerWeights[i] - 0.5f) / 0.5f) * maxAbs;
 }
 
+__global__ void fillArray(float *array, float value, int arrayLength)
+{
+	int i = blockIdx.x * blockDim.x + threadIdx.x;
+
+	if (i >= arrayLength)
+		return;
+
+	array[i] = value;
+}
+
 int computeNumBlocks(int dataSize, int threadsPerBlock)
 {
 	int numBlocks = dataSize / threadsPerBlock;
@@ -331,6 +341,22 @@ void randomizeLearningRates(CudaErrorPropagation *propagation)
 
 	generateRandomFloatArrays(d_inputHiddenLearningRatesBatch, d_hiddenOutputLearningRatesBatch,
 		numInputHiddenLearningRatesBatch, numHiddenOutputLearningRatesBatch);
+}
+
+void fillLearningRates(CudaErrorPropagation *propagation, float value)
+{
+	float *d_inputHiddenLearningRatesBatch = propagation->d_inputHiddenLearningRatesBatch;
+	float *d_hiddenOutputLearningRatesBatch = propagation->d_hiddenOutputLearningRatesBatch;
+	int numInputHiddenLearningRatesBatch = propagation->numSamples * (propagation->numInput + 1) * propagation->numHidden;
+	int numHiddenOutputLearningRatesBatch = propagation->numSamples * (propagation->numHidden + 1) * propagation->numOutput;
+
+	dim3 blockDim = getBlockDim1D();
+
+	dim3 gridDim1 = getGridDim1D(numInputHiddenLearningRatesBatch, blockDim.x);
+	fillArray<<<gridDim1, blockDim>>>(d_inputHiddenLearningRatesBatch, value, numInputHiddenLearningRatesBatch);
+
+	dim3 gridDim2 = getGridDim1D(numHiddenOutputLearningRatesBatch, blockDim.x);
+	fillArray<<<gridDim2, blockDim>>>(d_hiddenOutputLearningRatesBatch, value, numHiddenOutputLearningRatesBatch);
 }
 
 void setLayerFunctionAndDerivative(func_ptr *function, func_ptr *derivative, ActivationFuncType type)
@@ -445,7 +471,8 @@ CudaErrorPropagation* createErrorPropagation(float *h_inputData /*2d*/, float *h
 	cudaMemset(propagation->d_previousInputHiddenGradientsBatch, 0, numSamples * (numInput + 1) * numHidden * sizeof(float));
 	cudaMemset(propagation->d_previousHiddenOutputGradientsBatch, 0, numSamples * (numHidden + 1) * numOutput * sizeof(float));
 
-	randomizeLearningRates(propagation);
+	//randomizeLearningRates(propagation);
+	fillLearningRates(propagation, MIN_LEARNING_RATE);
 
 	// Set layers activation functions and derivatives
 	setLayerFunctionAndDerivative(&(propagation->h_pHiddenFunction), &(propagation->h_pHiddenDerivative), hiddenFunc);

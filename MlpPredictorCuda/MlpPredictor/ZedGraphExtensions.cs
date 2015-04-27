@@ -9,6 +9,7 @@ namespace MlpPredictor
         public static void ClearGraph(this ZedGraphControl graph)
         {
             graph.GraphPane.CurveList.Clear();
+            graph.Invalidate();
         }
 
         public static void SetGraphTitles(this ZedGraphControl graph, string xAxisTitle, string yAxisTitle, string graphTitle)

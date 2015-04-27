@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace MlpPredictor
 {
@@ -7,30 +8,12 @@ namespace MlpPredictor
     {
         private int numInput;
         private int numOutput;
-        private int numSamples;
-        private float[][] inputData;
-        private float[][] outputData;
 
-        public NetworkDataSet(int numInput, int numOutput, int numSamples)
+        public NetworkDataSet(int numInput, int numOutput)
         {
             NumInput = numInput;
             NumOutput = numOutput;
-            NumSamples = numSamples;
-
-            inputData = new float[numSamples][];
-            outputData = new float[numSamples][];
-            for (int i = 0; i < numSamples; i++)
-			{
-                inputData[i] = new float[numInput];
-                outputData[i] = new float[numOutput];
-			}
-        }
-
-        public NetworkDataSet(float[][] inputData, float[][] outputData)
-            : this(inputData[0].Length, outputData[0].Length, inputData.Length)
-        {
-            SetInputData(inputData);
-            SetOutputData(outputData);
+            Samples = new List<DataSample>();
         }
 
         public int NumInput
@@ -43,7 +26,7 @@ namespace MlpPredictor
             {
                 if (value < 1)
                 {
-                    throw new ArgumentOutOfRangeException("value", "Число входов должно быть больше 0.");
+                    throw new ArgumentOutOfRangeException("value", "Число входов набора данных должно быть больше 0.");
                 }
 
                 numInput = value;
@@ -60,7 +43,7 @@ namespace MlpPredictor
             {
                 if (value < 1)
                 {
-                    throw new ArgumentOutOfRangeException("value", "Число выходов должно быть больше 0.");
+                    throw new ArgumentOutOfRangeException("value", "Число выходов набора данных должно быть больше 0.");
                 }
 
                 numOutput = value;
@@ -71,61 +54,64 @@ namespace MlpPredictor
         {
             get
             {
-                return numSamples;
+                return Samples.Count;
             }
-            private set
-            {
-                if (value < 1)
-                {
-                    throw new ArgumentOutOfRangeException("value", "Число выборок в наборе должно быть больше 0.");
-                }
+        }
 
-                numSamples = value;
-            }
+        public List<DataSample> Samples { get; private set; }
+
+        public void AddSample(DataSample sample)
+        {
+            if (sample == null)
+                throw new ArgumentNullException("sample");
+            if (sample.NumInput != this.NumInput || sample.NumOutput != this.NumOutput)
+                throw new ArgumentException("Неверное число входов или выходов выборки.");
+
+            Samples.Add(sample);
         }
 
         public float[][] GetInputData()
         {
-            float[][] inputDataCopy = new float[NumSamples][];
-            for (int i = 0; i < inputDataCopy.Length; i++)
+            float[][] inputData = new float[NumSamples][];
+            for (int i = 0; i <  inputData.Length; i++)
             {
-                inputDataCopy[i] = (float[])this.inputData[i].Clone();
+                inputData[i] = Samples[i].Inputs;
             }
 
-            return inputDataCopy;
+            return inputData;
         }
 
         public float[][] GetOutputData()
         {
-            float[][] outputDataCopy = new float[NumSamples][];
-            for (int i = 0; i < outputDataCopy.Length; i++)
-            {
-                outputDataCopy[i] = (float[])this.outputData[i].Clone();
-            }
-
-            return outputDataCopy;
-        }
-
-        public void SetInputData(float[][] inputData)
-		{
-			if (inputData.Length != NumSamples || inputData[0].Length!= NumInput)
-                throw new ArgumentException("Неверная размерность входных данных.", "inputData");
-
-            for (int i = 0; i < inputData.Length; i++)
-            {
-                Array.Copy(inputData[i], this.inputData[i], NumInput);
-            }
-		}
-
-		public void SetOutputData(float[][] outputData)
-		{
-			if (outputData.Length != NumSamples || outputData[0].Length != NumOutput)
-                throw new ArgumentException("Неверная размерность выходных данных.", "outputData");
-
+            float[][] outputData = new float[NumSamples][];
             for (int i = 0; i < outputData.Length; i++)
             {
-                Array.Copy(outputData[i], this.outputData[i], NumOutput);
+                outputData[i] = Samples[i].Outputs;
             }
-		}
+
+            return outputData;
+        }
+
+        //public void SetInputData(float[][] inputData)
+        //{
+        //    if (inputData.Length != NumSamples || (inputData.Length != 0 && inputData[0].Length != NumInput))
+        //        throw new ArgumentException("Неверная размерность входных данных.", "inputData");
+
+        //    for (int i = 0; i < inputData.Length; i++)
+        //    {
+        //        Array.Copy(inputData[i], this.inputData[i], NumInput);
+        //    }
+        //}
+
+        //public void SetOutputData(float[][] outputData)
+        //{
+        //    if (outputData.Length != NumSamples || (outputData.Length != 0 && outputData[0].Length != NumOutput))
+        //        throw new ArgumentException("Неверная размерность выходных данных.", "outputData");
+
+        //    for (int i = 0; i < outputData.Length; i++)
+        //    {
+        //        Array.Copy(outputData[i], this.outputData[i], NumOutput);
+        //    }
+        //}
     }
 }
