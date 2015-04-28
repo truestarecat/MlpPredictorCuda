@@ -464,6 +464,11 @@
             this.momentumNumericUpDown.Name = "momentumNumericUpDown";
             this.momentumNumericUpDown.Size = new System.Drawing.Size(111, 20);
             this.momentumNumericUpDown.TabIndex = 13;
+            this.momentumNumericUpDown.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             // 
             // label14
             // 
@@ -654,10 +659,6 @@
             // 
             // menuStrip1
             // 
-            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.файлToolStripMenuItem,
-            this.работаСДаннымиToolStripMenuItem,
-            this.помощьToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1024, 24);

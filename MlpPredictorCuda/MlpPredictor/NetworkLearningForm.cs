@@ -7,18 +7,30 @@ namespace MlpPredictor
 {
     public partial class NetworkLearningForm : Form
     {
-        private INetworkLearning learning;
+        private NetworkPredictionManager manager;
+        private float learningDataPercentage;
+        private LearningAlgorithmType algorithmType;
+        private float maxLearningRms;
+        private int maxNumEpoch;
+        private float learningRate;
+        private float momentum;
         private CancellationTokenSource cancellationTokenSource;
 
-        public NetworkLearningForm(INetworkLearning learning)
+        public NetworkLearningForm(NetworkPredictionManager manager, float learningDataPercentage,
+            LearningAlgorithmType algorithmType, float maxLearningRms, int maxNumEpoch, float learningRate, float momentum)
         {
             InitializeComponent();
 
-            learningProgressBar.Minimum = 0;
-            learningProgressBar.Maximum = learning.MaxNumEpoch;
+            learningProgressBar.Maximum = maxNumEpoch;
             learningProgressBar.Step = 1;
 
-            this.learning = learning;
+            this.manager = manager;
+            this.learningDataPercentage = learningDataPercentage;
+            this.algorithmType = algorithmType;
+            this.maxLearningRms = maxLearningRms;
+            this.maxNumEpoch = maxNumEpoch;
+            this.learningRate = learningRate;
+            this.momentum = momentum;
             cancellationTokenSource = new CancellationTokenSource();
         }
 
@@ -31,7 +43,8 @@ namespace MlpPredictor
                 learningRmsLabel.Text = Convert.ToString(value);
             });
 
-            await Task.Factory.StartNew(() => learning.Start(progress, cancellationTokenSource.Token), TaskCreationOptions.LongRunning);
+            await Task.Factory.StartNew(() => manager.LearnNetwork(progress, cancellationTokenSource.Token, learningDataPercentage,
+                algorithmType, maxLearningRms, maxNumEpoch, learningRate, momentum), TaskCreationOptions.LongRunning);
 
             this.Close();
         }

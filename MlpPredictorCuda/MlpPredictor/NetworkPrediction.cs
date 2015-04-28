@@ -9,7 +9,7 @@ namespace MlpPredictor
     {
         public MlpNetwork Network { get; set; }
 
-        public NetworkPredictionData PredictionData { get; set; }
+        public NetworkPredictionData Data { get; set; }
 
         public INetworkLearning Learning { get; set; }
 
