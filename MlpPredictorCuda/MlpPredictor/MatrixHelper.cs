@@ -4,8 +4,8 @@ namespace MlpPredictor
 {
     public static class MatrixHelper
     {
-		public static float Rms(float[] a, float[] b)
-		{
+        public static float Rms(float[] a, float[] b)
+        {
             if (a == null)
                 throw new ArgumentNullException("a");
             if (b == null)
@@ -15,17 +15,17 @@ namespace MlpPredictor
             if (b.Length == 0)
                 throw new ArgumentException("Пустой массив.", "b");
 
-			float sum = 0.0f;
-			for (int i = 0; i < a.Length; i++)
-			{
-				sum += (a[i] - b[i]) * (a[i] - b[i]);
-			}
+            float sum = 0.0f;
+            for (int i = 0; i < a.Length; i++)
+            {
+                sum += (a[i] - b[i]) * (a[i] - b[i]);
+            }
 
-			return (float)Math.Sqrt(sum / a.Length);
-		}
+            return (float)Math.Sqrt(sum / a.Length);
+        }
 
-		public static float[] Rms(float[][] a, float[][] b)
-		{
+        public static float[] Rms(float[][] a, float[][] b)
+        {
             if (a == null)
                 throw new ArgumentNullException("a");
             if (b == null)
@@ -35,14 +35,14 @@ namespace MlpPredictor
             if (b.Length == 0)
                 throw new ArgumentException("Пустой массив.", "b");
 
-			float[] rmsArray = new float[a.Length];
-			for (int i = 0; i < rmsArray.Length; i++)
-			{
-				rmsArray[i] = Rms(a[i], b[i]);
-			}
+            float[] rmsArray = new float[a.Length];
+            for (int i = 0; i < rmsArray.Length; i++)
+            {
+                rmsArray[i] = Rms(a[i], b[i]);
+            }
 
-			return rmsArray;
-		}
+            return rmsArray;
+        }
 
         public static T[] Convert2DArrayTo1D<T>(T[][] array2D)
         {
