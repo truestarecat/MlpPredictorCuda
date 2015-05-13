@@ -139,7 +139,19 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <None Include="PredictionData\PredictionData.csv">
+    <None Include="PredictionData\micex_stock_index_2014_10-01-2015_05-12.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="PredictionData\micex_stock_index_2014_10-01-2015_05-12_normalized%28-0.9, 0.9%29.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="PredictionData\micex_stock_index_2014_10-01-2015_05-12_normalized%280.1, 0.9%29.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Predictions\test_hypertan.prediction">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Predictions\test_sigmoid.prediction">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Properties\Settings.settings">
@@ -158,9 +170,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Predictions\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="Libraries\ZedGraph.dll" />
     <Content Include="Libraries\ZedGraph.Web.dll" />
