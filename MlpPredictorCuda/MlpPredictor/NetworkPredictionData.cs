@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -133,15 +134,28 @@ namespace MlpPredictor
             if (filePath.Length == 0)
                 throw new ArgumentException("Пустой путь к файлу.", "filePath");
 
-            float[] data = File.ReadAllLines(filePath)
-                .Select(value => Single.Parse(value, CultureInfo.InvariantCulture))
-                .ToArray();
-            if (data == null || data.Length < 1)
-                throw new Exception("Слишком мало данных для прогноза. В файле должно находиться как минимум 1 значение.");
-            if (data.Length > 10000)
-                throw new Exception("Слишком много данных для прогноза. В файле должно находиться не более 10000 значений.");
+            int lineCount = 0;
+            string line;
 
-            return data;
+            List<float> values = new List<float>();
+            using (StreamReader reader = new StreamReader(filePath))
+            {
+                while ((line = reader.ReadLine()) != null)
+                {
+                    if (lineCount > 10000)
+                        throw new Exception("Слишком много данных для прогноза. В файле должно находиться не более 10000 значений.");
+
+                    float value = Single.Parse(line, CultureInfo.InvariantCulture);
+                    values.Add(value);
+
+                    lineCount++;
+                }
+            }
+
+            if (values.Count < 100)
+                throw new Exception("Слишком мало данных для прогноза. В файле должно находиться как минимум 100 значений.");
+
+            return values.ToArray();
         }
 
         public static void SaveDataToCsvFile(string filePath, float[] predictionData)
