@@ -365,11 +365,17 @@ namespace MlpPredictor
                 if (LearningDataPercentage == 0.0f)
                     return;
 
-                // Убрать эти строчки, если удастся обработать асинхронное исключение.
-                if (predictionManager.Prediction.Network == null)
-                    throw new InvalidOperationException("Сеть не создана.");
+                if (predictionManager.Prediction.Network == null || recreateNetworkCheckBox.Checked)
+                {
+                    predictionManager.CreateNetwork(NetworkNumInput, NetworkNumHidden, NetworkNumOutput,
+                        NetworkHiddenFunctionType, NetworkOutputFunctionType);
+                    toolStripStatusLabel.Text = "Сеть успешно создана.";
+                }
                 if (predictionManager.Prediction.Data == null)
-                    throw new InvalidOperationException("Данные для прогноза не загружены.");
+                {
+                    predictionManager.LoadPredictionData(PredictionDataFilePath);
+                    toolStripStatusLabel.Text = "Данные для прогноза успешно выбраны.";
+                }
 
                 CheckNetworkUpdate();
 
@@ -386,6 +392,11 @@ namespace MlpPredictor
                     "Последнее СКО ошибки обучения: {1}.", numEpoch, lastLearningRms);                
 
                 learningRmsGraphControl.DrawGraph(new string[] { "" }, new string[] { "Red" }, new float[][] { learningRms });
+
+                if (automatedTestingCheckBox.Checked)
+                {
+                    testNetworkButton_Click(this, null);
+                }
 
                 paramsChanged = true;
             }
@@ -498,7 +509,7 @@ namespace MlpPredictor
 
         private void InitializeLearningParams()
         {
-            MaxLearningRms = 0.01f;
+            MaxLearningRms = 0.045f;
             MaxNumEpoch = 10000;
             LearningRate = 0.05f;
             Momentum = 0.0f;
@@ -691,23 +702,23 @@ namespace MlpPredictor
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (paramsChanged)
-            {
-                DialogResult result = MessageBox.Show("Параметры прогноза были изменены. Хотите сохранить изменения?",
-                    "Выход", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+            //if (paramsChanged)
+            //{
+            //    DialogResult result = MessageBox.Show("Параметры прогноза были изменены. Хотите сохранить изменения?",
+            //        "Выход", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
 
-                switch (result)
-                {
-                    case DialogResult.Yes:
-                        сохранитьToolStripMenuItem_Click(this, null);
-                        break;
-                    case DialogResult.Cancel:
-                        e.Cancel = true;
-                        break;
-                    default:
-                        return;
-                }
-            }
+            //    switch (result)
+            //    {
+            //        case DialogResult.Yes:
+            //            сохранитьToolStripMenuItem_Click(this, null);
+            //            break;
+            //        case DialogResult.Cancel:
+            //            break;
+            //            e.Cancel = true;
+            //        default:
+            //            return;
+            //    }
+            //}
         }
     }
 }

@@ -91,6 +91,8 @@
             this.tableLayoutPanel10 = new System.Windows.Forms.TableLayoutPanel();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.recreateNetworkCheckBox = new System.Windows.Forms.CheckBox();
+            this.automatedTestingCheckBox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.testingDataPercentageNumericUpDown)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -194,6 +196,7 @@
             this.tableLayoutPanel2.Controls.Add(this.hiddenFunctionComboBox, 1, 3);
             this.tableLayoutPanel2.Controls.Add(this.outputFunctionComboBox, 1, 4);
             this.tableLayoutPanel2.Controls.Add(this.createNetworkButton, 1, 5);
+            this.tableLayoutPanel2.Controls.Add(this.recreateNetworkCheckBox, 0, 5);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 16);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
@@ -392,6 +395,7 @@
             this.tableLayoutPanel12.Controls.Add(this.maxNumEpochNumericUpDown, 1, 2);
             this.tableLayoutPanel12.Controls.Add(this.maxLearningRmsNumericUpDown, 1, 1);
             this.tableLayoutPanel12.Controls.Add(this.label18, 0, 1);
+            this.tableLayoutPanel12.Controls.Add(this.automatedTestingCheckBox, 0, 7);
             this.tableLayoutPanel12.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel12.Location = new System.Drawing.Point(3, 16);
             this.tableLayoutPanel12.Name = "tableLayoutPanel12";
@@ -934,6 +938,32 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(332, 54);
             this.tableLayoutPanel1.TabIndex = 19;
             // 
+            // recreateNetworkCheckBox
+            // 
+            this.recreateNetworkCheckBox.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.recreateNetworkCheckBox.AutoSize = true;
+            this.recreateNetworkCheckBox.Checked = true;
+            this.recreateNetworkCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.recreateNetworkCheckBox.Location = new System.Drawing.Point(37, 148);
+            this.recreateNetworkCheckBox.Name = "recreateNetworkCheckBox";
+            this.recreateNetworkCheckBox.Size = new System.Drawing.Size(175, 17);
+            this.recreateNetworkCheckBox.TabIndex = 15;
+            this.recreateNetworkCheckBox.Text = "Пересоздавать при обучении";
+            this.recreateNetworkCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // automatedTestingCheckBox
+            // 
+            this.automatedTestingCheckBox.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.automatedTestingCheckBox.AutoSize = true;
+            this.automatedTestingCheckBox.Checked = true;
+            this.automatedTestingCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.automatedTestingCheckBox.Location = new System.Drawing.Point(42, 190);
+            this.automatedTestingCheckBox.Name = "automatedTestingCheckBox";
+            this.automatedTestingCheckBox.Size = new System.Drawing.Size(170, 17);
+            this.automatedTestingCheckBox.TabIndex = 15;
+            this.automatedTestingCheckBox.Text = "Автоматически тестировать";
+            this.automatedTestingCheckBox.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1048,6 +1078,8 @@
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;      
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel;
+        private System.Windows.Forms.CheckBox recreateNetworkCheckBox;
+        private System.Windows.Forms.CheckBox automatedTestingCheckBox;
     }
 }
 
