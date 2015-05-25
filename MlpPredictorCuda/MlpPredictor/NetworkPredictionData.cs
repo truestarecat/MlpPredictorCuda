@@ -142,8 +142,8 @@ namespace MlpPredictor
             {
                 while ((line = reader.ReadLine()) != null)
                 {
-                    if (lineCount > 10000)
-                        throw new Exception("Слишком много данных для прогноза. В файле должно находиться не более 10000 значений.");
+                    if (lineCount > 1000)
+                        throw new Exception("Слишком много данных для прогноза. В файле должно находиться не более 1000 значений.");
 
                     float value = Single.Parse(line, CultureInfo.InvariantCulture);
                     values.Add(value);
