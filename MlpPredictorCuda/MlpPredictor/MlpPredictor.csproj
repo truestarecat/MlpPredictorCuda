@@ -62,10 +62,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libraries\ZedGraph.dll</HintPath>
     </Reference>
-    <Reference Include="ZedGraph.Web, Version=5.1.5.29221, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libraries\ZedGraph.Web.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AboutBox.cs">
@@ -174,7 +170,6 @@
   <ItemGroup />
   <ItemGroup>
     <Content Include="Libraries\ZedGraph.dll" />
-    <Content Include="Libraries\ZedGraph.Web.dll" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">

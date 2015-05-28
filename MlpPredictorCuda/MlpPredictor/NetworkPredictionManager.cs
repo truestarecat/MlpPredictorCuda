@@ -35,7 +35,7 @@ namespace MlpPredictor
             if (Prediction.Network == null)
                 throw new InvalidOperationException("Сеть не создана.");
             if (Prediction.Data == null)
-                throw new InvalidOperationException("Данные для прогноза не загружены.");
+                throw new InvalidOperationException("Данные для прогноза не выбраны.");
 
             if (NeedDataResampling())
             {
@@ -80,7 +80,7 @@ namespace MlpPredictor
             if (Prediction.Network == null)
                 throw new InvalidOperationException("Сеть не создана.");
             if (Prediction.Data == null)
-                throw new InvalidOperationException("Данные для прогноза не загружены.");
+                throw new InvalidOperationException("Данные для прогноза не выбраны.");
             if (Prediction.Learning == null)
                 throw new InvalidOperationException("Сеть не обучена.");
 
