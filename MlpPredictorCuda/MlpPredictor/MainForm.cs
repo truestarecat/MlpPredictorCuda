@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Windows.Forms;
 using System.Linq;
+using System.Windows.Forms;
 
 namespace MlpPredictor
 {
@@ -248,6 +248,7 @@ namespace MlpPredictor
 
                 if (!String.IsNullOrWhiteSpace(filePath))
                 {
+                    //CreateFullPrediction();
                     predictionManager.SavePredictionToBinaryFile(filePath);
                     toolStripStatusLabel.Text = "Прогноз успешно сохранён.";
                     paramsChanged = false;                    
@@ -276,6 +277,7 @@ namespace MlpPredictor
 
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
+                    //CreateFullPrediction();
                     predictionManager.SavePredictionToBinaryFile(sfd.FileName);
                     PredictionFilePath = sfd.FileName;
                     toolStripStatusLabel.Text = "Прогноз успешно сохранён.";
@@ -547,6 +549,9 @@ namespace MlpPredictor
         {
             MlpNetwork network = predictionManager.Prediction.Network;
 
+            if (network == null)
+                return;
+
             NetworkNumInput = network.NumInput;
             NetworkNumHidden = network.NumHidden;
             NetworkNumOutput = network.NumOutput;
@@ -558,6 +563,9 @@ namespace MlpPredictor
         {
             NetworkPredictionData predictionData = predictionManager.Prediction.Data;
 
+            if (predictionData == null)
+                return;
+
             PredictionDataFilePath = predictionData.FilePath;
             LearningDataPercentage = predictionData.LearningDataPercentage;
         }
@@ -565,6 +573,9 @@ namespace MlpPredictor
         private void SetLearningParamsToFrom()
         {
             INetworkLearning learning = predictionManager.Prediction.Learning;
+
+            if (learning == null)
+                return;
 
             MaxLearningRms = learning.MaxRms;
             MaxNumEpoch = learning.MaxNumEpoch;
@@ -582,17 +593,29 @@ namespace MlpPredictor
                 LearningAlgorithmType = LearningAlgorithmType.ResilientBackPropagation;
             }
 
-            learningRmsGraphControl.DrawGraph(new string[] { "" }, new string[] { "Red" }, new float[][] { learning.Rms });
+            float[] learningRms = learning.Rms;
+            if (learningRms != null)
+                learningRmsGraphControl.DrawGraph(new string[] { "" }, new string[] { "Red" }, new float[][] { learningRms });
         }
 
         private void SetTestingParamsToFrom()
         {
             NetworkTesting testing = predictionManager.Prediction.Testing;
 
-            resultGraphControl.DrawGraph(new string[] { "Исходный график", "Нейронная сеть" }, new string[] { "Red", "Blue" },
-                new float[][] { testing.TargetOutput, testing.PredictedOutput });
+            if (testing == null)
+                return;
 
-            testingRmsGraphControl.DrawGraph(new string[] { "" }, new string[] { "Red" }, new float[][] { testing.Rms });
+            float[] testingTargetOutput = testing.TargetOutput;
+            float[] testingPredictedOutput = testing.PredictedOutput;
+            if (testingTargetOutput != null && testingPredictedOutput != null)
+            {
+                resultGraphControl.DrawGraph(new string[] { "Исходный график", "Нейронная сеть" }, new string[] { "Red", "Blue" },
+                    new float[][] { testingTargetOutput, testingPredictedOutput });
+            }
+
+            float[] testingRms = testing.Rms;
+            if (testingRms != null)
+                testingRmsGraphControl.DrawGraph(new string[] { "" }, new string[] { "Red" }, new float[][] { testingRms });
         }
 
         private bool NetworkParamsChanged()
@@ -635,6 +658,20 @@ namespace MlpPredictor
                     //    return;
                 }
             }
+        }
+
+        private void CreateFullPrediction()
+        {
+            if (predictionManager.Prediction.Network == null || NetworkParamsChanged())
+            {
+                predictionManager.CreateNetwork(NetworkNumInput, NetworkNumHidden, NetworkNumOutput,
+                    NetworkHiddenFunctionType, NetworkOutputFunctionType);
+            }
+
+            predictionManager.LoadPredictionData(PredictionDataFilePath);
+            predictionManager.CreateLearning(LearningDataPercentage, LearningAlgorithmType,
+                MaxLearningRms, MaxNumEpoch, LearningRate, Momentum);
+            predictionManager.CreateTesting(TestingDataPercentage);
         }
 
         private void numHiddenCheckBox_CheckedChanged(object sender, EventArgs e)

@@ -29,34 +29,9 @@ namespace MlpPredictor
             Prediction.Data = new NetworkPredictionData(predictionDataFilePath);
         }
 
-        public void LearnNetwork(float learningDataPercentage, LearningAlgorithmType algorithmType,
+        public void CreateLearning(float learningDataPercentage, LearningAlgorithmType algorithmType,
             float maxLearningRms, int maxNumEpoch, float learningRate, float momentum)
         {
-            if (Prediction.Network == null)
-                throw new InvalidOperationException("Сеть не создана.");
-            if (Prediction.Data == null)
-                throw new InvalidOperationException("Данные для прогноза не выбраны.");
-
-            if (NeedDataResampling())
-            {
-                Prediction.Data.ResampleAll(Prediction.Network.NumInput, Prediction.Network.NumOutput, learningDataPercentage);
-            }
-            else if (NeedDataRedividing(learningDataPercentage))
-            {
-                Prediction.Data.RedivideSamples(learningDataPercentage);
-            }
-
-            Prediction.Learning = CreateNetworkLearning(algorithmType, maxLearningRms, maxNumEpoch, learningRate, momentum);
-            Prediction.Learning.Start();
-        }
-
-        public void LearnNetwork(IProgress<float> progress, CancellationToken token, float learningDataPercentage,
-            LearningAlgorithmType algorithmType, float maxLearningRms, int maxNumEpoch, float learningRate, float momentum)
-        {
-            if (progress == null)
-                throw new ArgumentNullException("progress");
-            if (token == null)
-                throw new ArgumentNullException("token");
             if (Prediction.Network == null)
                 throw new InvalidOperationException("Сеть не создана.");
             if (Prediction.Data == null)
@@ -72,10 +47,30 @@ namespace MlpPredictor
             }
 
             Prediction.Learning = CreateNetworkLearning(algorithmType, maxLearningRms, maxNumEpoch, learningRate, momentum);
+        }
+
+        public void LearnNetwork(float learningDataPercentage, LearningAlgorithmType algorithmType,
+            float maxLearningRms, int maxNumEpoch, float learningRate, float momentum)
+        {
+            CreateLearning(learningDataPercentage, algorithmType, maxLearningRms,
+                maxNumEpoch, learningRate, momentum);
+            Prediction.Learning.Start();
+        }
+
+        public void LearnNetwork(IProgress<float> progress, CancellationToken token, float learningDataPercentage,
+            LearningAlgorithmType algorithmType, float maxLearningRms, int maxNumEpoch, float learningRate, float momentum)
+        {
+            if (progress == null)
+                throw new ArgumentNullException("progress");
+            if (token == null)
+                throw new ArgumentNullException("token");
+
+            CreateLearning(learningDataPercentage, algorithmType, maxLearningRms,
+                maxNumEpoch, learningRate, momentum);
             Prediction.Learning.Start(progress, token);
         }
 
-        public void TestNetwork(float testingDataPercentage)
+        public void CreateTesting(float testingDataPercentage)
         {
             if (Prediction.Network == null)
                 throw new InvalidOperationException("Сеть не создана.");
@@ -96,6 +91,11 @@ namespace MlpPredictor
 
             //prediction.Testing = new NetworkTesting(Network, PredictionData.TestingDataSet);
             Prediction.Testing = new NetworkTesting(Prediction.Network, Prediction.Data.FullDataSet);
+        }
+
+        public void TestNetwork(float testingDataPercentage)
+        {
+            CreateTesting(testingDataPercentage);
             Prediction.Testing.Start();
         }
 
