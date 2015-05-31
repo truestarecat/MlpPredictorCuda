@@ -206,7 +206,7 @@ namespace MlpPredictor
             {
                 PredictionDataFilePath = "";
             }
-            
+
             toolStripStatusLabel.Text = "Начат новый прогноз.";
             paramsChanged = false;            
         }
@@ -511,7 +511,7 @@ namespace MlpPredictor
 
         private void InitializeLearningParams()
         {
-            MaxLearningRms = 0.045f;
+            MaxLearningRms = 0.04f;
             MaxNumEpoch = 10000;
             LearningRate = 0.05f;
             Momentum = 0.0f;
@@ -756,6 +756,14 @@ namespace MlpPredictor
             //            return;
             //    }
             //}
+        }
+
+        private void saveDataButton_Click(object sender, EventArgs e)
+        {
+            NetworkPredictionData.SaveDataToCsvFile("Predicted output.csv", predictionManager.Prediction.Testing.PredictedOutput);
+            NetworkPredictionData.SaveDataToCsvFile("Target output.csv", predictionManager.Prediction.Testing.TargetOutput);
+            //NetworkPredictionData.SaveDataToCsvFile("Learning.csv", predictionManager.Prediction.Learning.Rms);
+            //NetworkPredictionData.SaveDataToCsvFile("Testing.csv", predictionManager.Prediction.Testing.Rms);
         }
     }
 }

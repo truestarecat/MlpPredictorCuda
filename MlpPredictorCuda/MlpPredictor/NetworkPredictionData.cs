@@ -145,7 +145,7 @@ namespace MlpPredictor
                     if (lineCount > 1000)
                         throw new Exception("Слишком много данных для прогноза. В файле должно находиться не более 1000 значений.");
 
-                    float value = Single.Parse(line, CultureInfo.InvariantCulture);
+                    float value = Single.Parse(line/*, CultureInfo.InvariantCulture*/);
                     values.Add(value);
 
                     lineCount++;
@@ -169,7 +169,7 @@ namespace MlpPredictor
             if (predictionData.Length == 0)
                 throw new ArgumentException("Пустой массив данных для прогноза.", "predictionData");
 
-            File.WriteAllLines(filePath, predictionData.Select(value => Convert.ToString(value, CultureInfo.InvariantCulture)));
+            File.WriteAllLines(filePath, predictionData.Select(value => Convert.ToString(value/*, CultureInfo.InvariantCulture*/)));
         }
 
         public static NetworkDataSet Sample(float[] predictionData, int inputWindowSize, int outputWindowSize)
