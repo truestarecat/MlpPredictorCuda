@@ -282,7 +282,7 @@
             this.numInputNumericUpDown.Size = new System.Drawing.Size(111, 20);
             this.numInputNumericUpDown.TabIndex = 0;
             this.numInputNumericUpDown.Value = new decimal(new int[] {
-            30,
+            4,
             0,
             0,
             0});
@@ -301,7 +301,7 @@
             this.numHiddenNumericUpDown.Size = new System.Drawing.Size(111, 20);
             this.numHiddenNumericUpDown.TabIndex = 1;
             this.numHiddenNumericUpDown.Value = new decimal(new int[] {
-            15,
+            11,
             0,
             0,
             0});

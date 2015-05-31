@@ -496,7 +496,7 @@ namespace MlpPredictor
 
         private void InitializeNetworkParams()
         {
-            NetworkNumInput = 5;
+            NetworkNumInput = 4;
             NetworkNumHidden = 11;
             NetworkNumOutput = 1;
             NetworkHiddenFunctionType = ActivationFunctionType.UnipolarSigmoid;
@@ -762,8 +762,8 @@ namespace MlpPredictor
         {
             NetworkPredictionData.SaveDataToCsvFile("Predicted output.csv", predictionManager.Prediction.Testing.PredictedOutput);
             NetworkPredictionData.SaveDataToCsvFile("Target output.csv", predictionManager.Prediction.Testing.TargetOutput);
-            //NetworkPredictionData.SaveDataToCsvFile("Learning.csv", predictionManager.Prediction.Learning.Rms);
-            //NetworkPredictionData.SaveDataToCsvFile("Testing.csv", predictionManager.Prediction.Testing.Rms);
+            NetworkPredictionData.SaveDataToCsvFile("Learning.csv", predictionManager.Prediction.Learning.Rms);
+            NetworkPredictionData.SaveDataToCsvFile("Testing.csv", predictionManager.Prediction.Testing.Rms);
         }
     }
 }
