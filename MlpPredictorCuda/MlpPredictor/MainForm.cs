@@ -496,7 +496,7 @@ namespace MlpPredictor
 
         private void InitializeNetworkParams()
         {
-            NetworkNumInput = 4;
+            NetworkNumInput = 5;
             NetworkNumHidden = 11;
             NetworkNumOutput = 1;
             NetworkHiddenFunctionType = ActivationFunctionType.UnipolarSigmoid;
@@ -511,10 +511,10 @@ namespace MlpPredictor
 
         private void InitializeLearningParams()
         {
-            MaxLearningRms = 0.04f;
-            MaxNumEpoch = 10000;
-            LearningRate = 0.05f;
-            Momentum = 0.0f;
+            MaxLearningRms = 0.001f;
+            MaxNumEpoch = 50000;
+            LearningRate = 0.2f;
+            Momentum = 0.5f;
             LearningAlgorithmType = LearningAlgorithmType.BackPropagation;
         }
 

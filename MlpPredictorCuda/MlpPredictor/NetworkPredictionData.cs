@@ -198,7 +198,7 @@ namespace MlpPredictor
                 float[] outputData = new float[outputWindowSize];
                 for (int k = 0; k < outputWindowSize; k++)
                 {
-                    outputData[k] = predictionData[step + inputWindowSize + k];
+                    outputData[k] = predictionData[step + (inputWindowSize - 1) + k];
                 }
 
                 fullDataSet.AddSample(new DataSample(inputData, outputData));
