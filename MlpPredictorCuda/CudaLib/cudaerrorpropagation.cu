@@ -143,7 +143,8 @@ __global__ void computeIHGradsBatchKernel(func_ptr hiddenFuncDerivative, float *
 	if (i >= (numInput + 1 /* bias */) || k >= numSamples)
 		return;
 
-	float input = ((k % numInput == 0) && (i == 0)) ? 1.0f : netInsBatch[index2D(k, i - 1, numInput)]; // bias?
+	//float input = ((k % numInput == 0) && (i == 0)) ? 1.0f : netInsBatch[index2D(k, i - 1, numInput)]; // bias?
+	float input = (i == 0) ? 1.0f : netInsBatch[index2D(k, i - 1, numInput)]; // bias?
 	for (int j = 0; j < numHidden; ++j)
 	{
 		float sum = 0.0f;

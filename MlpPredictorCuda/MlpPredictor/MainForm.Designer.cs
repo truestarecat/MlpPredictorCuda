@@ -773,7 +773,7 @@
             this.predictionResultTabPage.Padding = new System.Windows.Forms.Padding(3);
             this.predictionResultTabPage.Size = new System.Drawing.Size(653, 550);
             this.predictionResultTabPage.TabIndex = 0;
-            this.predictionResultTabPage.Text = "Результат прогноза";
+            this.predictionResultTabPage.Text = "Результаты прогноза";
             this.predictionResultTabPage.UseVisualStyleBackColor = true;
             // 
             // resultGraphControl
