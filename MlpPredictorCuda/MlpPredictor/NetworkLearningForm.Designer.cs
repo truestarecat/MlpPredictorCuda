@@ -138,7 +138,7 @@
             this.learningRmsLabel.TabIndex = 4;
             this.learningRmsLabel.Text = "0";
             // 
-            // LearningProgressForm
+            // NetworkLearningForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -148,7 +148,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "LearningProgressForm";
+            this.Name = "NetworkLearningForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Обучение сети";
             this.Load += new System.EventHandler(this.LearningProgressForm_Load);

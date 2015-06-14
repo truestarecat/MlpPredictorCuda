@@ -34,6 +34,17 @@ namespace MlpPredictor
             cancellationTokenSource = new CancellationTokenSource();
         }
 
+        private const int CP_NOCLOSE_BUTTON = 0x200;
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                CreateParams myCp = base.CreateParams;
+                myCp.ClassStyle = myCp.ClassStyle | CP_NOCLOSE_BUTTON;
+                return myCp;
+            }
+        } 
+
         private async void LearningProgressForm_Load(object sender, EventArgs e)
         {
             var progress = new Progress<float>(value =>
@@ -53,7 +64,7 @@ namespace MlpPredictor
         {
             if(cancellationTokenSource != null)
             {
-                cancellationTokenSource.Cancel();
+                cancellationTokenSource.Cancel();                
             }
         }
     }

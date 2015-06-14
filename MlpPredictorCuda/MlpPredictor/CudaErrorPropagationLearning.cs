@@ -127,11 +127,12 @@ namespace MlpPredictor
 
             while (NumEpoch < maxNumEpoch && error > maxRms)
             {
+                if (NumEpoch % 25 == 0)
+                    Thread.Sleep(1);
+
                 if (token.IsCancellationRequested)
                 {
-                    Rms = learningRmsList.ToArray();
-                    Dispose();
-                    return;
+                    break;
                 }
 
                 error = PerformEpoch();
