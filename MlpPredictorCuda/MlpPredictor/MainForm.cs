@@ -15,6 +15,8 @@ namespace MlpPredictor
             InitializeComponent();
             InitializeGraphs();
 
+            //saveDataButton.Visible = true;
+
             создатьToolStripMenuItem_Click(this, null);
         }
 
