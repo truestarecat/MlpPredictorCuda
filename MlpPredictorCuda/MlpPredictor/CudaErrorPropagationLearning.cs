@@ -124,15 +124,14 @@ namespace MlpPredictor
             NumEpoch = 0;
             float error = Single.MaxValue;
             List<float> learningRmsList = new List<float>();
-
             while (NumEpoch < maxNumEpoch && error > maxRms)
             {
-                if (NumEpoch % 25 == 0)
-                    Thread.Sleep(1);
+                if (NumEpoch % 20 == 0)
+                    Thread.Sleep(5);
 
                 if (token.IsCancellationRequested)
                 {
-                    break;
+                    goto learningEnding;
                 }
 
                 error = PerformEpoch();
@@ -146,8 +145,8 @@ namespace MlpPredictor
 
             UpdateNetworkWeights();
 
+            learningEnding:
             Rms = learningRmsList.ToArray();
-
             Dispose();
         }
 
